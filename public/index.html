@@ -76,38 +76,25 @@
       })
 
 
-    
-
     function post_data(){
-      let db = firebase.firestore()
+        let db = firebase.firestore()
 
-      var date = document.getElementById("date").value;
-      var hours = document.getElementById("hours").value;
-      var description = document.getElementById("description").value;
-      var project = document.getElementById("project").value;
-      var email = document.getElementById("title").innerHTML.split(" ").slice(-1)[0];
-    
-      db.collection("employees")
-      .doc(project).set({
-        [email]: {
-          [date]: {
-            [hours]: {
-              Work_Performed: description
-            }
-          } 
-        }
-      })
+        var date = document.getElementById("date").value;
+        var hours = document.getElementById("hours").value;
+        var description = document.getElementById("description").value;
+        var project = document.getElementById("project").value;
+        var email = document.getElementById("title").innerHTML.split(" ").slice(-1)[0];
 
+        console.log(db.DocumentSnapshot);
 
-      db.collection("projects")
-      .doc(project).set({
-        [date]: {
-          [email]: {
-            Work_Hours: hours,
+        var num = 
+
+        db.collection("employees")
+        .doc(project).collection(email).add({
+            Date: date,
+            Hours: hours,
             Work_Performed: description
-          }
-        } 
-      })
+        })
 
       alert("Information Submiited Successfully.")
 
