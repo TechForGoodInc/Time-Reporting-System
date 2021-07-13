@@ -75,7 +75,6 @@
           }
       })
 
-
     function post_data(){
         let db = firebase.firestore()
 
@@ -98,28 +97,22 @@
             return;
         }
 
-        console.log(db.DocumentSnapshot);
+        var dateDoc = db.collection('employees').doc(project).collection(email).doc(date);
 
-        db.collection("employees")
-        .doc(project).collection(email).add({
-            Date: date,
-            Hours: hours,
-            Work_Performed: description
-        })
+        dateDoc.collection('entries').get().then(snap => {
+            dateDoc.collection('entries').
+                doc("Entry #" + (snap.size + 1).toString()).set({
+                    Hours: hours,
+                    Work_Performed: description
+                })
+        });
 
       alert("Information Submitted Successfully.")
 
-
-
-    }
-
-
-
-      
+    } 
 
     </script>
 
-    
     
   <h3 id="title">TFG Time Reporting System</h3>
 
