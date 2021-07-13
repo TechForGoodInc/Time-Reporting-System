@@ -85,9 +85,20 @@
         var project = document.getElementById("project").value;
         var email = document.getElementById("title").innerHTML.split(" ").slice(-1)[0];
 
-        console.log(db.DocumentSnapshot);
+        if (hours === '' || parseInt(hours) > 24) {
+            alert("Please enter a valid number of hours");
+            return;
+        }
+        if (description === '') {
+            alert("Please enter a description");
+            return;
+        }
+        if (date === '') {
+            alert("Please enter a date");
+            return;
+        }
 
-        var num = 
+        console.log(db.DocumentSnapshot);
 
         db.collection("employees")
         .doc(project).collection(email).add({
