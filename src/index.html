@@ -1,0 +1,173 @@
+
+<body>
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="/__/firebase/8.7.0/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+       https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="/__/firebase/8.7.0/firebase-analytics.js"></script>
+
+  <!-- Initialize Firebase -->
+  <script src="/__/firebase/init.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-auth.js"></script>
+
+  <!-- <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-app.js"></script> -->
+  <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-firestore.js"></script>
+
+  <link rel="stylesheet" href="main.css">
+
+    <script>
+
+      var user;
+
+
+      function login(){
+        var provider = new firebase.auth.GoogleAuthProvider();
+
+        provider.setCustomParameters({
+          hd: "techforgoodinc.org"
+        });
+
+        firebase.auth().signInWithRedirect(provider);
+
+        firebase.auth()
+          .getRedirectResult()
+          .then((result) => {
+            if (result.credential) {
+              /** @type {firebase.auth.OAuthCredential} */
+              var credential = result.credential;
+
+              // This gives you a Google Access Token. You can use it to access the Google API.
+              var token = credential.accessToken;
+              // ...
+              console.log(user.first_name);
+            }
+            // The signed-in user info.
+            user = result.user;
+          }).catch((error) => {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            // ...
+          });
+      }
+
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          console.log(user.email);
+          var domain = user.email.split('@')[1]
+          console.log(domain);
+          if (domain == "techforgoodinc.org"){
+            console.log("Trusted");
+            document.getElementById("title").innerHTML = document.getElementById("title").innerHTML+" - "+user.email
+          }
+          else{
+            login();
+          }
+        } else {
+            login();
+          }
+      })
+
+
+    function logout() {
+        firebase.auth().signOut().then(function() {
+          // Redirect to google sign out.
+          window.location.assign('https://accounts.google.com/logout');
+        }).catch(function(error) {
+          // Error occurred.
+        });
+
+      }
+
+
+    function post_data(){
+        let db = firebase.firestore()
+
+        var date = document.getElementById("date").value;
+        var hours = document.getElementById("hours").value;
+        var description = document.getElementById("description").value;
+        var project = document.getElementById("project").value;
+        var email = document.getElementById("title").innerHTML.split(" ").slice(-1)[0];
+
+        if (hours === '' || parseInt(hours) > 24) {
+            alert("Please enter a valid number of hours");
+            return;
+        }
+        if (description === '') {
+            alert("Please enter a description");
+            return;
+        }
+        if (date === '') {
+            alert("Please enter a date");
+            return;
+        }
+
+        var dateDoc = db.collection('employees').doc(project).collection(email).doc(date);
+
+        dateDoc.collection('entries').get().then(snap => {
+            dateDoc.collection('entries').
+                doc("Entry #" + (snap.size + 1).toString()).set({
+                    Hours: hours,
+                    Work_Performed: description
+                })
+        });
+
+      alert("Information Submitted Successfully.")
+
+    } 
+
+    </script>
+
+    
+  <h3 id="title">TFG Time Reporting System</h3>
+
+  <div>
+    <button id="logout-btn" onclick="logout()">Logout</button>
+    <form onsubmit="return false">
+      <label for="date">Date (MM/DD/YY)</label>
+      <input type="date" id="date" name="date" placeholder="(MM/DD/YY)" required pattern="\d{4}-\d{2}-\d{2}">
+      <span class="validity"></span>
+
+      <br style=“line-height:2”> 
+
+      <label for="hours">Hours Worked (Numerical Form)</label>
+      <input type="number" id="hours" name="hours" placeholder="8" min="1" max="12" required>
+      <span class="validity"></span>
+
+      <br style=“line-height:2”>
+
+      <label for="description">Description of work done</label>
+      <input type="text" id="description" name="description" placeholder="Worked on ...." required>
+      <span class="validity"></span>
+
+      <label for="project">Project</label>
+      <select id="project" name="project">
+        <option value="Flant">Flant</option>
+        <option value="IDDPS">IDDPS</option>
+        <option value="Mission Uplink">Mission Uplink</option>
+        <option value="Make The Stars">Make The Stars</option>
+        <option value="OSSFTGG">OSSFTGG</option>
+        <option value="TFG Website">TFG Website</option>
+        <option value="Assurance">Assurance</option>
+        <option value="Project Interactivity">Project Interactivity</option>
+        <option value="Blockchain Donations">Blockchain Donations</option>
+        <option value="Re-Right">Re-Right</option>
+        <option value="FireSpot">FireSpot</option>
+        <option value="Other">Other</option>
+      </select>
+    
+      <button onclick="post_data()">Submit</button>
+    </form>
+  </div>
+
+
+
+
+</body>
