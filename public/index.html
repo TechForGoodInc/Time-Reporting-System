@@ -75,6 +75,18 @@
           }
       })
 
+
+    function logout() {
+        firebase.auth().signOut().then(function() {
+          // Redirect to google sign out.
+          window.location.assign('https://accounts.google.com/logout');
+        }).catch(function(error) {
+          // Error occurred.
+        });
+
+      }
+
+
     function post_data(){
         let db = firebase.firestore()
 
@@ -117,6 +129,7 @@
   <h3 id="title">TFG Time Reporting System</h3>
 
   <div>
+    <button id="logout-btn" onclick="logout()">Logout</button>
     <form onsubmit="return false">
       <label for="date">Date (MM/DD/YY)</label>
       <input type="date" id="date" name="date" placeholder="(MM/DD/YY)" required required pattern="\d{4}-\d{2}-\d{2}">
