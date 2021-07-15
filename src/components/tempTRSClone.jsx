@@ -1,18 +1,10 @@
 import React, { Component } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/auth';
-import 'firebase/firestore'
-import '../main.css'
+import 'firebase/firestore';
+import '../main.css';
+import firebaseConfig from '../firebaseCfg.js';
 
-
-var firebaseConfig = {
-    apiKey: "AIzaSyChevQ-kgPdeUfgrcuWLOI6Rt4B5powhGQ",
-    authDomain: "tfg-testdb.firebaseapp.com",
-    projectId: "tfg-testdb",
-    storageBucket: "tfg-testdb.appspot.com",
-    messagingSenderId: "361732252693",
-    appId: "1:361732252693:web:ef6b25d46defd7a120da1c"
-};
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
@@ -139,7 +131,7 @@ class TempTRSClone extends Component {
 
                     <form onSubmit={this.post_data}>
                         <label htmlFor="date">Date (MM/DD/YY)</label>
-                        <input type="date" id="date" name="date" placeholder="(MM/DD/YY)" required required pattern="\d{4}-\d{2}-\d{2}" onChange={this.changeHandler}/>
+                        <input type="date" id="date" name="date" placeholder="(MM/DD/YY)" required pattern="\d{4}-\d{2}-\d{2}" onChange={this.changeHandler}/>
                         <span className="validity"></span>
 
                         <br />
