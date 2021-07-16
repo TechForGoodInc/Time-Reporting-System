@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import DateInput from './DataEntry/dateInput';
-import NumInput from './DataEntry/numInput';
-import ProjectInput from './DataEntry/projectInput';
-import TextInput from './DataEntry/textInput';
+import DateInput from './dataEntry/dateInput';
+import NumInput from './dataEntry/numInput';
+import ProjectInput from './dataEntry/projectInput';
+import TextInput from './dataEntry/textInput';
 
 class HourLogForm extends Component {
     //State of the form
