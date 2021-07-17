@@ -79,13 +79,16 @@ class App extends Component {
             });
     }
 
-    handleLogout () {
+    handleLogout(e) {
+        e.preventDefault();
         firebase.auth().signOut().then(function () {
             // Redirect to google sign out.
             window.location.assign('https://accounts.google.com/logout');
 
         }).catch(function (error) {
             // Error occurred.
+            alert('Error signing out');
+            console.log(error);
         });
     }
 

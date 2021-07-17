@@ -5,7 +5,7 @@ class Header extends Component {
     render() {
         return (
             <div>
-                <LogoutBtn handleLogout={this.props.handleLogout}/>
+                <LogoutBtn handleLogout={(e) => { this.props.handleLogout(e) }}/>
                 <h3 id="title">TFG Time Reporting System - {this.props.email}</h3>
             </div>
         );
