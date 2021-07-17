@@ -28,7 +28,19 @@ class HourLogForm extends Component {
             alert("Please select a project");
             return;
         }
-        this.props.post_data(this.state);
+
+        let descString = this.state.description;
+        console.log(descString);
+
+        if (descString === " " || descString == null) {
+            alert("Please enter a description");
+            return;
+        } else if (descString.length <= 6) { //6 is an arbitrary number; 'worked' is 6 letters.
+            alert("Please enter a more descriptive description");
+            return;
+        } else {
+            this.props.post_data(this.state);
+        }
     }
 
     render() {
