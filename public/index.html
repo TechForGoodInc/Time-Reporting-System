@@ -1,179 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
 
-<body>
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>React App</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
 
-  <!-- The core Firebase JS SDK is always required and must be listed first -->
-  <script src="/__/firebase/8.7.0/firebase-app.js"></script>
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
 
-  <!-- TODO: Add SDKs for Firebase products that you want to use
-       https://firebase.google.com/docs/web/setup#available-libraries -->
-  <script src="/__/firebase/8.7.0/firebase-analytics.js"></script>
-
-  <!-- Initialize Firebase -->
-  <script src="/__/firebase/init.js"></script>
-
-  <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-auth.js"></script>
-
-  <!-- <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-app.js"></script> -->
-  <script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-firestore.js"></script>
-
-  <link rel="stylesheet" href="main.css">
-
-    <script>
-
-      var user;
-
-
-      function login(){
-        var provider = new firebase.auth.GoogleAuthProvider();
-
-        provider.setCustomParameters({
-          hd: "techforgoodinc.org"
-        });
-
-        firebase.auth().signInWithRedirect(provider);
-
-        firebase.auth()
-          .getRedirectResult()
-          .then((result) => {
-            if (result.credential) {
-              /** @type {firebase.auth.OAuthCredential} */
-              var credential = result.credential;
-
-              // This gives you a Google Access Token. You can use it to access the Google API.
-              var token = credential.accessToken;
-              // ...
-              console.log(user.first_name);
-            }
-            // The signed-in user info.
-            user = result.user;
-          }).catch((error) => {
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            // The email of the user's account used.
-            var email = error.email;
-            // The firebase.auth.AuthCredential type that was used.
-            var credential = error.credential;
-            // ...
-          });
-      }
-
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          console.log(user.email);
-          var domain = user.email.split('@')[1]
-          console.log(domain);
-          if (domain == "techforgoodinc.org"){
-            console.log("Trusted");
-            document.getElementById("title").innerHTML = document.getElementById("title").innerHTML+" - "+user.email
-          }
-          else{
-            login();
-          }
-        } else {
-            login();
-          }
-      })
-
-      const logoutBtn = document.querySelector('#logout-btn');
-      logoutBtn.addEventListener('click', e => {
-      e.preventDefault();
-      auth.signOut();
-      console.log('User signed out!');
-      })
-
-
-    
-
-    function post_data(){
-      let db = firebase.firestore()
-
-      var date = document.getElementById("date").value;
-      var hours = document.getElementById("hours").value;
-      var description = document.getElementById("description").value;
-      var project = document.getElementById("project").value;
-      var email = document.getElementById("title").innerHTML.split(" ").slice(-1)[0];
-    
-      db.collection("employees")
-      .doc(project).set({
-        [email]: {
-          [date]: {
-            [hours]: {
-              Work_Performed: description
-            }
-          } 
-        }
-      })
-
-
-      db.collection("projects")
-      .doc(project).set({
-        [date]: {
-          [email]: {
-            Work_Hours: hours,
-            Work_Performed: description
-          }
-        } 
-      })
-
-      alert("Information Submiited Successfully.")
-
-
-
-    }
-
-
-
-      
-
-    </script>
-
-    
-    
-  <h3 id="title">TFG Time Reporting System</h3>
-
-  <div>
-
-    <button id="logout-btn">Logout</button>
-    <form onsubmit="return false">
-      <label for="date">Date (MM/DD/YY)</label>
-      <input type="date" id="date" name="date" placeholder="(MM/DD/YY)" required required pattern="\d{4}-\d{2}-\d{2}">
-      <span class="validity"></span>
-
-      <br style=“line-height:2”> 
-
-      <label for="hours">Hours Worked (Numerical Form)</label>
-      <input type="number" id="hours" name="hours" placeholder="8" min="1" max="12" required>
-      <span class="validity"></span>
-
-      <br style=“line-height:2”>
-
-      <label for="description">Description of work done</label>
-      <input type="text" id="description" name="description" placeholder="Worked on ...." required>
-      <span class="validity"></span>
-
-      <label for="project">Project</label>
-      <select id="project" name="project">
-        <option value="Flant">Flant</option>
-        <option value="IDDPS">IDDPS</option>
-        <option value="Mission Uplink">Mission Uplink</option>
-        <option value="Make The Stars">Make The Stars</option>
-        <option value="OSSFTGG">OSSFTGG</option>
-        <option value="TFG Website">TFG Website</option>
-        <option value="Assurance">Assurance</option>
-        <option value="Project Interactivity">Project Interactivity</option>
-        <option value="Blockchain Donations">Blockchain Donations</option>
-        <option value="Re-Right">Re-Right</option>
-        <option value="FireSpot">FireSpot</option>
-        <option value="Other">Other</option>
-      </select>
-      <button onclick="post_data()">Submit</button>
-    </form>
-  </div>
-
-
-
-
-
-
-</body>
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
+</html>
