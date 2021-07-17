@@ -99,13 +99,31 @@ class App extends Component {
 
             var dateDoc = db.collection('employees').doc(this.state.formInfo.project).collection(this.state.user.email).doc(this.state.formInfo.date);
 
-            dateDoc.collection('entries').get().then(snap => {
-                dateDoc.collection('entries').
-                    doc("Entry #" + (snap.size + 1).toString()).set({
-                        Hours: this.state.formInfo.hours,
-                        Work_Performed: this.state.formInfo.description
+            dateDoc.get().then(snap => {
+                if (!snap.get('Entries')) { //If there is not currently an entry for this date
+                    dateDoc.set({
+                        Entries: [{
+                            ['Entry 1']: {
+                                Hours: this.state.formInfo.hours,
+                                Work_Performed: this.state.formInfo.description
+                            }
+                        }]
+                    });
+                }
+                else { //If there are multiple entries on this date
+                    dateDoc.update({
+                        Entries: firebase.firestore.FieldValue.arrayUnion({ //Append to existing array
+                            ['Entry ' + (snap.data().Entries.length + 1).toString()]: {
+                                Hours: this.state.formInfo.hours,
+                                Work_Performed: this.state.formInfo.description
+                            }
+                        })
                     })
-            });
+                }
+
+                console.log('Recording hours - Project:', this.state.formInfo.project, 'Date:', this.state.formInfo.date,
+                    '; Hours:', this.state.formInfo.hours, '; Work Performed:', this.state.formInfo.description);
+            })
 
             alert("Information Submitted Successfully.")
         })
