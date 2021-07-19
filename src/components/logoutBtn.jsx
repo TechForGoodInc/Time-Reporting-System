@@ -5,7 +5,7 @@ class LogoutBtn extends Component {
     render() {
         return (
             <React.Fragment>
-                <button onClick={this.props.handleLogout} style={{ float: 'right', color: 'white', background: 'red' }}>Log out</button>
+                <button id={'logoutBtn'} onClick={(e) => { this.props.handleLogout(e) }} style={{ float: 'right', color: 'white', background: 'red' }}>Log out</button>
             </React.Fragment>
         );
     }
