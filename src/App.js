@@ -15,10 +15,10 @@ firebase.initializeApp(firebaseConfig);
 class App extends Component {
     constructor() {
         super();
-        this.handleHistory=this.handleHistory.bind(this);
         this.state = {
             user: null,
             formInfo: null,
+            historyInfo:null,
             history_list: []
         }
     }
@@ -135,21 +135,48 @@ class App extends Component {
         })
     }
 
-    handleHistory() {
+    display_history = (formInput) => {
         let db = firebase.firestore();
-        let history_list = this.state.history_list;
-        let i = 0;
-        db.collection('employees').doc('OSSFTGG').collection(this.state.user.email).get().then((records) => {
-                        records.forEach((record) => {
-                            history_list.push({
-                                "id": ++i, "date": record.data().Date, "hours": record.data().Hours,
-                                "work": record.data().Work_Performed
-                            });
-                        })
-                        this.setState({history_list: history_list});
+        //this.setState({history_list: []});
+        let list = [];
+
+        console.log("History");
+        this.setState({ historyInfo: formInput }, () => {
+            db.collection('employees').doc(this.state.historyInfo.project).collection(this.state.user.email).doc(this.state.historyInfo.date).get().then((records) => {
+
+                let entries =  records.get('Entries');
+                if(entries==null) return;
+                for (let i = 0; i < entries.length; i++) {
+                    let entry = entries[i]['Entry '+(i+1)];
+                    console.log(entry);
+                    list.push({
+                        "id": i,
+                        "hours":entry.Hours,
+                        "work": entry.Work_Performed
+                    });
+
+                }
+                this.setState({history_list: list});
+
+                // for (let record in records.get('Entries')) {
+                //      console.log(record);
+                // }
+                //     for (let entry in record.data()) {
+                //         console.log(entry.data());
+                //
+                //         // history_list.push({
+                //         //     "id": ++i,
+                //         //     //"date": record.data().Date,
+                //         //     "hours":entry.Hours,
+                //         //     "work": entry.Work_Performed
+                //         //  });
+                //
+                //     }
+                // })
+                //this.setState({history_list: history_list});
+            })
+
         })
-
-
 
 
     }
@@ -161,16 +188,7 @@ class App extends Component {
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
                 <HourLogForm post_data={this.post_data}/>
 
-                <button onClick={this.handleHistory}>View History</button>
-                <table id="customers">
-                    <tbody>
-                {this.state.history_list.map((data) => {
-                    //console.log(data);
-                    return <History key={data.id} index={data.id} date={data.date}
-                                    hours={data.hours} work={data.work}/>
-                })}
-                    </tbody>
-                </table>
+                <History  display_history={this.display_history} list={this.state.history_list}/>
 
             </div>
         );
