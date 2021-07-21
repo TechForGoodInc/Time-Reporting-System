@@ -135,72 +135,59 @@ class App extends Component {
         })
     }
 
-    getContributedProjects = async () => {
+    getEntriesBetweenDates = async (startDate, endDate) => {
         let db = firebase.firestore();
-        let contributedProjects = []; //List of strings representing which projects the user has made an entry for
+        let res = [];
 
         let projects = await db.collection('employees').get();
 
         //Goes through each project in the list of projects and adds it to the list if the user has a post on that project
-        for(const doc of projects.docs) { 
+        for (const doc of projects.docs) {
 
             //Value = project name if user has made an entry to this project and undefined otherwise.
             let temp = await db.collection('employees').doc(doc.id).collection(this.state.user.email).get().then(async (query) => {
-                if (query.docs.length) { //User has made an entry for this project
-                    return doc.id;
+                let inRangeEntries = [];
+
+                //For every entry by this user in this project
+                for (const entry of query.docs) {
+                    let entryDate = new Date(entry.id + 'T12:00:00+00:00');
+
+                    //Setting every time to the same time to avoid errors with timezones
+                    startDate.setHours(12, 0 - startDate.getTimezoneOffset(), 0, 0);
+                    endDate.setHours(12, 0 - endDate.getTimezoneOffset(), 0, 0);
+                    //If date is in range
+                    if (startDate <= entryDate && entryDate <= endDate) {
+                        for (let j = 0; j < entry.data().Entries.length; ++j) {
+                            try {
+                                inRangeEntries.push({
+                                    ['project']: doc.id,
+                                    ['date']: entry.id,
+                                    ['hours']: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Hours,
+                                    ['desc']: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Work_Performed
+                                })
+                            } catch (error) {
+                                console.log('Error collecting entries:', error);
+                            }
+                        }
+                    }
                 }
-                return undefined;
+                if (inRangeEntries.length == 0) return undefined;
+
+                return inRangeEntries;
             })
 
-            if (temp != undefined) contributedProjects.push(temp);
+            if (temp != undefined) {
+                res = res.concat(temp);
+            }
         }
 
-        return contributedProjects;
+        console.log('All entries between', startDate, 'and', endDate, '=', res);
+        return res;
     }
 
     //Gets all entries from a specified user
     getAllEntries = async () => {
-        let db = firebase.firestore();
-        let entries = [];
-
-        let contributedProjects = await this.getContributedProjects();
-
-        console.log('contributedProjects.length =', contributedProjects.length, 'contributedProjects = ', contributedProjects);
-
-        //For each project user contributed to
-        for (let i = 0; i < contributedProjects.length; ++i) {
-
-            //Querying all user's entries in a project
-            db.collection('employees').doc(contributedProjects[i]).collection(this.state.user.email).get().then((all_entries) => {
-
-                for (const entry of all_entries.docs) {
-                    //If entry was made using a different db structure, ignore the entry
-                    if (entry.get('Entries') == null) continue;
-                    for (let j = 0; j < entry.data().Entries.length; ++j) {
-                        try {
-                            entries.push({
-                                ['project']: contributedProjects[i],
-                                ['date']: entry.id,
-                                ['hours']: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Hours,
-                                ['desc']: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Work_Performed
-                            })
-                        } catch (error) {
-                            console.log('Error collecting entries:', error);
-                        }
-                    }
-                    
-                }
-            })
-
-        }
-
-        console.log("All user's entries:", entries);
-        return entries;
-    }
-
-    //Returns an array of entries between start and end date, inclusive
-    getEntriesBetweenDates = (startDate, endDate, entries) => {
-
+        return await this.getEntriesBetweenDates(new Date('0000-01-01'), new Date('5000-01-01'));
     }
 
     display_history = (formInput) => {
