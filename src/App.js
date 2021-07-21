@@ -135,17 +135,20 @@ class App extends Component {
         })
     }
 
+    //Returns a promise that gives a list of entries falling between the startDate and endDate
     getEntriesBetweenDates = async (startDate, endDate) => {
         let db = firebase.firestore();
-        let res = [];
+        let res = []; //Resulting array containing all entries in range
 
         let projects = await db.collection('employees').get();
 
-        //Goes through each project in the list of projects and adds it to the list if the user has a post on that project
+        //Goes through each project in the list of projects
         for (const doc of projects.docs) {
 
-            //Value = project name if user has made an entry to this project and undefined otherwise.
+            //value becomes a list of entries in the date range in this current project
             let temp = await db.collection('employees').doc(doc.id).collection(this.state.user.email).get().then(async (query) => {
+
+                //Temp array to store list of entries in this project that are in range
                 let inRangeEntries = [];
 
                 //For every entry by this user in this project
@@ -155,8 +158,11 @@ class App extends Component {
                     //Setting every time to the same time to avoid errors with timezones
                     startDate.setHours(12, 0 - startDate.getTimezoneOffset(), 0, 0);
                     endDate.setHours(12, 0 - endDate.getTimezoneOffset(), 0, 0);
-                    //If date is in range
+
+                    //If date is in range, add it to the array
                     if (startDate <= entryDate && entryDate <= endDate) {
+
+                        //Goes through all entries in a specific date
                         for (let j = 0; j < entry.data().Entries.length; ++j) {
                             try {
                                 inRangeEntries.push({
@@ -171,14 +177,14 @@ class App extends Component {
                         }
                     }
                 }
+                //If there were no entries by the user in this project, return undefined
                 if (inRangeEntries.length == 0) return undefined;
 
                 return inRangeEntries;
             })
 
-            if (temp != undefined) {
-                res = res.concat(temp);
-            }
+            if (temp != undefined) res = res.concat(temp);
+
         }
 
         console.log('All entries between', startDate, 'and', endDate, '=', res);
