@@ -135,6 +135,74 @@ class App extends Component {
         })
     }
 
+    getContributedProjects = async () => {
+        let db = firebase.firestore();
+        let contributedProjects = []; //List of strings representing which projects the user has made an entry for
+
+        let projects = await db.collection('employees').get();
+
+        //Goes through each project in the list of projects and adds it to the list if the user has a post on that project
+        for(const doc of projects.docs) { 
+
+            //Value = project name if user has made an entry to this project and undefined otherwise.
+            let temp = await db.collection('employees').doc(doc.id).collection(this.state.user.email).get().then(async (query) => {
+                if (query.docs.length) { //User has made an entry for this project
+                    return doc.id;
+                }
+                return undefined;
+            })
+
+            if (temp != undefined) contributedProjects.push(temp);
+        }
+
+        return contributedProjects;
+    }
+
+    //Gets all entries from a specified user
+    getAllEntries = async () => {
+        let db = firebase.firestore();
+        let entries = [];
+
+        let contributedProjects = await this.getContributedProjects();
+
+        console.log('contributedProjects.length =', contributedProjects.length, 'contributedProjects = ', contributedProjects);
+
+        //For each project user contributed to
+        for (let i = 0; i < contributedProjects.length; ++i) {
+
+            //Querying all user's entries in a project
+            db.collection('employees').doc(contributedProjects[i]).collection(this.state.user.email).get().then((all_entries) => {
+
+                for (const entry of all_entries.docs) {
+                    //If entry was made using a different db structure, ignore the entry
+                    if (entry.get('Entries') == null) continue;
+                    for (let j = 0; j < entry.data().Entries.length; ++j) {
+                        try {
+                            entries.push({
+                                ['project']: contributedProjects[i],
+                                ['date']: entry.id,
+                                ['hours']: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Hours,
+                                ['desc']: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Work_Performed
+                            })
+                        } catch (error) {
+                            console.log('Error collecting entries:', error);
+                        }
+                    }
+                    
+                }
+            })
+
+        }
+
+        console.log("All user's entries:", entries);
+        return entries;
+    }
+
+    //Returns an array of entries between start and end date, inclusive
+    getEntriesBetweenDates = (startDate, endDate, entries) => {
+
+    }
+
     display_history = (formInput) => {
         let db = firebase.firestore();
         //this.setState({history_list: []});
@@ -189,7 +257,6 @@ class App extends Component {
                 <HourLogForm post_data={this.post_data}/>
 
                 <History  display_history={this.display_history} list={this.state.history_list}/>
-
             </div>
         );
     }
