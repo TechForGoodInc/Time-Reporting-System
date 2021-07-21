@@ -166,10 +166,10 @@ class App extends Component {
                         for (let j = 0; j < entry.data().Entries.length; ++j) {
                             try {
                                 inRangeEntries.push({
-                                    ['project']: doc.id,
-                                    ['date']: entry.id,
-                                    ['hours']: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Hours,
-                                    ['desc']: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Work_Performed
+                                    project: doc.id,
+                                    date: entry.id,
+                                    hours: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Hours,
+                                    desc: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Work_Performed
                                 })
                             } catch (error) {
                                 console.log('Error collecting entries:', error);
@@ -178,12 +178,12 @@ class App extends Component {
                     }
                 }
                 //If there were no entries by the user in this project, return undefined
-                if (inRangeEntries.length == 0) return undefined;
+                if (inRangeEntries.length === 0) return undefined;
 
                 return inRangeEntries;
             })
 
-            if (temp != undefined) res = res.concat(temp);
+            if (temp !== undefined) res = res.concat(temp);
 
         }
 
