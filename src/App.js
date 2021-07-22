@@ -191,6 +191,14 @@ class App extends Component {
         return res;
     }
 
+    getEntriesOnDate = async (d) => {
+        if(d instanceof Date)
+            return await this.getEntriesBetweenDates(d, d)
+
+        console.log('Error getting entry on date: parameter is not of type Date');
+        return [];
+    }
+
     //Gets all entries from a specified user
     getAllEntries = async () => {
         return await this.getEntriesBetweenDates(new Date('0000-01-01'), new Date('5000-01-01'));
@@ -249,7 +257,7 @@ class App extends Component {
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
                 <HourLogForm post_data={this.post_data}/>
 
-                <History  display_history={this.display_history} list={this.state.history_list}/>
+                <History getEntries={this.getEntriesBetweenDates} display_history={this.display_history} list={this.state.history_list}/>
             </div>
         );
     }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ProjectInput from "./dataEntry/projectInput";
 import DateInput from "./dataEntry/dateInput";
+import HistoryBlock from './historyBlock';
 
 class History extends Component {
     state = {
@@ -24,32 +25,20 @@ class History extends Component {
         }
     }
 
+    //TODO make a list of HistoryBlocks. First one displays today's entries, 
+    //second displays yesterday's, individual ones for each day of the past week, 
+    //then start making a HistoryBlock for each week before that. 
+    //ONLY LOAD ENTRIES IF USER CLICKS BUTTON SAYING SHOW HISTORY
     render() {
         return (
             <div>
                 <ProjectInput changeHandler={this.changeHandler} />
                 <DateInput changeHandler={this.changeHandler} />
                 <button onClick={this.viewHistory}>View History</button>
-                <table id="customers">
-                    <tbody>
-                    {this.props.list.map((data) => {
-                        return <tr key = {data.id} id={data.id} >
-                            {/*<td>*/}
-                            {/*    <input type="text" readOnly={true} defaultValue={this.props.date} />*/}
-                            {/*</td>*/}
-                            <td>
-                                <input type="text" readOnly={true} value={data.hours} />
-                            </td>
-                            <td>
-                                <input type="text" readOnly={true} value={data.work} />
-                            </td>
-                            <td>
-                                <button >Delete</button>
-                            </td>
-                        </tr>
-                    })}
-                    </tbody>
-                </table>
+                {/*This history block is just for testing*/}
+                <HistoryBlock startDate={new Date()} endDate={new Date()} getEntries={this.props.getEntries}></HistoryBlock>
+                <HistoryBlock startDate={new Date(new Date().setDate(new Date().getDate() - 7))} endDate={new Date()} getEntries={this.props.getEntries}></HistoryBlock>
+
             </div>
         );
     }
