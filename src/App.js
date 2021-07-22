@@ -8,6 +8,7 @@ import firebaseConfig from './firebaseCfg.js'
 
 import Header from './components/header';
 import HourLogForm from './components/hourLogForm';
+import TimerComponent from './components/TimerComponent';
 
 firebase.initializeApp(firebaseConfig);
 
@@ -16,7 +17,8 @@ class App extends Component {
         super();
         this.state = {
             user: null,
-            formInfo: null
+            formInfo: null,
+            timerStartTime: "-",
         }
     }
 
@@ -31,6 +33,7 @@ class App extends Component {
                 if (domain === "techforgoodinc.org") {
                     console.log("Trusted");
                     //document.getElementById("title").innerHTML = document.getElementById("title").innerHTML + " - " + user.email
+                    this.initializeTimerData();
                 }
                 else { //Doesn't allow non-techforgoodinc emails. This will change eventually to allow for organizations to set their own email requirements
                     this.handleLogin();
@@ -136,7 +139,8 @@ class App extends Component {
         return (
             <div style={{ padding: '20px' }}>
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
-                <HourLogForm post_data={this.post_data}/>
+                <HourLogForm post_data={this.post_data} />
+                <TimerComponent firebase={firebase} currentUser={this.state.user} />
             </div>
         );
     }
