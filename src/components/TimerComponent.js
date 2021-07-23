@@ -10,6 +10,7 @@ function TimerComponent({ firebase, currentUser, startTime, stopTime, hoursWorke
         let currentEntry = db.collection('timers').doc(currentUser.email).collection('timer').doc('time').get().then((doc) => {
             if (doc.exists) {
                 startTime = doc.data().Time.toString();
+                //document.getElementById('input_startTime').value = startTime.toString();
             } else {
                 startTime = "-";
             }
@@ -24,6 +25,10 @@ function TimerComponent({ firebase, currentUser, startTime, stopTime, hoursWorke
         startTime = now;
 
         console.log("Activate Timer: " + now);
+    }
+
+    function stopCurrentTimer() {
+
     }
 
     //Get saved start time from db
@@ -53,6 +58,15 @@ function TimerComponent({ firebase, currentUser, startTime, stopTime, hoursWorke
 
     function submitTimerData() {
         //Send data to App.js.post_data
+    }
+
+    const onStart = (e) => {
+        e.preventDefault();
+        startNewTimer();
+    }
+
+    const onStop = (e) => {
+        e.preventDefault();
     }
 
     function calculateHoursWorked() {
@@ -94,7 +108,7 @@ function TimerComponent({ firebase, currentUser, startTime, stopTime, hoursWorke
                             <input type='text' id='descInput' placeholder='Enter description of work completed' />
                         </td>
                         <td>
-                            <input type='text' value={startTime} readOnly />
+                            <input type='text' id='input-startTime' value={startTime} readOnly />
                         </td>
                         <td>
                             <input type='text' value={stopTime} readOnly />
@@ -103,10 +117,10 @@ function TimerComponent({ firebase, currentUser, startTime, stopTime, hoursWorke
                             <input type='text' value={hoursWorked} readOnly />
                         </td>
                         <td>
-                            <button onClick={startNewTimer} > Start</button>
+                            <button onClick={onStart} >Start</button>
                         </td>
                         <td>
-                            <button>Stop</button>
+                            <button onClick={onStop} >Stop</button>
                         </td>
                         <td>
                             <input type='submit' value='Submit' />

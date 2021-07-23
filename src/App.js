@@ -33,7 +33,6 @@ class App extends Component {
                 if (domain === "techforgoodinc.org") {
                     console.log("Trusted");
                     //document.getElementById("title").innerHTML = document.getElementById("title").innerHTML + " - " + user.email
-                    this.initializeTimerData();
                 }
                 else { //Doesn't allow non-techforgoodinc emails. This will change eventually to allow for organizations to set their own email requirements
                     this.handleLogin();
@@ -136,6 +135,11 @@ class App extends Component {
     }
 
     render = () => {
+        while (!this.state.user) {
+            return (
+                <div>Loading...</div>
+                )
+        }
         return (
             <div style={{ padding: '20px' }}>
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
