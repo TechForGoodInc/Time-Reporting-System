@@ -84,30 +84,33 @@ class HistoryBlock extends Component {
     render() {
         return (
             <div>
-                <div>When: {this.getDay()}</div> <div>Total Hours: {this.state.totalHours}</div>
+                <div align="center">{this.getDay()}</div>
+                <div align="right">Total Hours: {this.state.totalHours}</div>
                 <table id="customers">
-                    <tbody>
-                        {this.state.entries.map((data) => {
-                            return <tr key={data.id} id={data.id} >
-                                {/*<td>*/}
-                                {/*    <input type="text" readOnly={true} defaultValue={this.props.date} />*/}
-                                {/*</td>*/}
-                                <td>
-                                    <input type="text" readOnly={true} value={data.project} />
-                                </td>
-                                <td>
-                                    <input type="text" readOnly={true} value={data.desc} />
-                                </td>
-                                <td>
-                                    <input type="text" readOnly={true} value={data.hours} />
-                                </td>
-                            </tr>
-                        })}
-                    </tbody>
-                </table>
+                <tbody>
+                    {this.state.entries.map((data) => {
+                        return <tr key={data.id} id={data.id} align="center">
+                            {/*<td>*/}
+                            {/*    <input type="text" readOnly={true} defaultValue={this.props.date} />*/}
+                            {/*</td>*/}
+                            <td align="center">
+                                <input type="text" readOnly={true} value={data.project} />
+                            </td>
+                            <td width="70%">
+                                <input type="text" readOnly={true} value={data.desc} />
+                            </td>
+                            <td align="center">
+                                <input type="text" readOnly={true} value={data.hours} />
+                            </td>
+                            <td>
+                                <button><img src="https://cdn0.iconfinder.com/data/icons/glyphpack/45/edit-alt-512.png" width="30" height="30"></img></button>
+                            </td>
+                        </tr>
+                    })}
+                </tbody>
+            </table>
             </div>
-        );
-    }
+    )};
 }
 
 export default HistoryBlock;
