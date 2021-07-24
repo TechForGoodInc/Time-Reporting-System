@@ -41,7 +41,7 @@ class HistoryBlock extends Component {
         d2.setHours(12, 0 - d2.getTimezoneOffset(), 0, 0);
 
         if (d1 - d2 !== 0) {
-            return d1.getMonth() + '/' + d1.getDate() + '/' + d1.getFullYear() + ' - ' + d2.getMonth() + '/' + d2.getDate() + '/' + d2.getFullYear();
+            return (d1.getMonth() + 1) + '/' + d1.getDate() + '/' + d1.getFullYear() + ' - ' + (d2.getMonth() + 1) + '/' + d2.getDate() + '/' + d2.getFullYear();
         }
 
         if (today - d1 === 0) {
@@ -75,8 +75,8 @@ class HistoryBlock extends Component {
                     return 'Error';
             }
         } else {
-            
-            return d1.getMonth() + '/' + d1.getDate() + '/' + d1.getFullYear();
+
+            return (d1.getMonth() + 1) + '/' + d1.getDate() + '/' + d1.getFullYear();
         }
     }
 
