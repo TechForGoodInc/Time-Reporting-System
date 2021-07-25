@@ -59,10 +59,10 @@ class App extends Component {
             .then((result) => {
                 if (result.credential) {
                     /** @type {firebase.auth.OAuthCredential} */
-                    var credential = result.credential;
+                    //var credential = result.credential;
 
                     // This gives you a Google Access Token. You can use it to access the Google API.
-                    var token = credential.accessToken;
+                    //var token = credential.accessToken;
                     // ...
                     console.log(user.first_name);
                 }
@@ -70,14 +70,14 @@ class App extends Component {
                 user = result.user;
                 this.setState({ user: user });
             }).catch((error) => {
-                // Handle Errors here.
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                // The email of the user's account used.
-                var email = error.email;
-                // The firebase.auth.AuthCredential type that was used.
-                var credential = error.credential;
-                // ...
+                //// Handle Errors here.
+                //var errorCode = error.code;
+                //var errorMessage = error.message;
+                //// The email of the user's account used.
+                //var email = error.email;
+                //// The firebase.auth.AuthCredential type that was used.
+                //var credential = error.credential;
+                //// ...
             });
     }
 
@@ -112,7 +112,7 @@ class App extends Component {
                     dateDoc.set({
                         Date: this.state.formInfo.date,
                         Entries: [{
-                            ['Entry 1']: {
+                            'Entry 1': {
                                 Hours: this.state.formInfo.hours,
                                 Work_Performed: this.state.formInfo.description
                             }
@@ -143,19 +143,25 @@ class App extends Component {
         let db = firebase.firestore();
         let res = []; //Resulting array containing all entries in range
 
+        let d1String = startDate.getFullYear() + '-' + (startDate.getMonth() + 1 < 10 ? '0' : '') + (startDate.getMonth() + 1) + '-' + startDate.getDate();
+        let d2String = endDate.getFullYear() + '-' + (endDate.getMonth() + 1 < 10 ? '0' : '') + (endDate.getMonth() + 1) + '-' + endDate.getDate();
+
         let projects = await db.collection('employees').get();
 
         //Goes through each project in the list of projects
         for (const doc of projects.docs) {
 
             //value becomes a list of entries in the date range in this current project
-            let temp = await db.collection('employees').doc(doc.id).collection(this.state.user.email).orderBy('Date', 'desc').limit(100).get().then(async (query) => {
+            let temp = await db.collection('employees').doc(doc.id).collection(this.state.user.email).orderBy('Date', 'desc').startAt(d2String).endAt(d1String).limit(100).get().then(async (query) => {
+
+                console.log('queried');
 
                 //Temp array to store list of entries in this project that are in range
                 let inRangeEntries = [];
 
                 //For every entry by this user in this project
                 for (const entry of query.docs) {
+                    console.log('doc');
                     let entryDate = new Date(entry.id + 'T12:00:00+00:00');
 
                     //Setting every time to the same time to avoid errors with timezones

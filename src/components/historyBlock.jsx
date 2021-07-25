@@ -42,49 +42,51 @@ class HistoryBlock extends Component {
         if (d1 - d2 !== 0) {
             return (d1.getMonth() + 1) + '/' + d1.getDate() + '/' + d1.getFullYear() + ' - ' + (d2.getMonth() + 1) + '/' + d2.getDate() + '/' + d2.getFullYear();
         }
-
+        let ret = 'Error';
         if (today - d1 === 0) {
-            return 'Today';
+            ret = 'Today';
         } else if (yesterday <= d1) {
-            return 'Yesterday';
+            ret = 'Yesterday';
         } else if (lastWeek <= d1) {
             switch (d1.getDay()) {
                 case 0:
-                    return 'Sunday';
+                    ret = 'Sunday';
                     break;
                 case 1:
-                    return 'Monday';
+                    ret = 'Monday';
                     break;
                 case 2:
-                    return 'Tuesday';
+                    ret = 'Tuesday';
                     break;
                 case 3:
-                    return 'Wednesday';
+                    ret = 'Wednesday';
                     break;
                 case 4:
-                    return 'Thursday';
+                    ret = 'Thursday';
                     break;
                 case 5:
-                    return 'Friday';
+                    ret = 'Friday';
                     break;
                 case 6:
-                    return 'Saturday';
+                    ret = 'Saturday';
                     break;
                 default:
-                    return 'Error';
+                    ret = 'Error';
             }
+            return ret;
         } else {
 
             return (d1.getMonth() + 1) + '/' + d1.getDate() + '/' + d1.getFullYear();
         }
     }
 
-    //TODO Redesign this
+
     render() {
         return (
             <div>
                 <div align="center">{this.getDay()}</div>
                 <div align="right">Total Hours: {this.state.totalHours}</div>
+
                 <Table bordered hover>
                     <thead>
                         <tr>
@@ -113,7 +115,7 @@ class HistoryBlock extends Component {
                                 </td>
                                 
                                 <td width="5%">
-                                    <button style={{ border: 'none' }}><img src="https://cdn0.iconfinder.com/data/icons/glyphpack/45/edit-alt-512.png" width="30" height="30"></img></button>
+                                    <button style={{ border: 'none' }}><img src="https://cdn0.iconfinder.com/data/icons/glyphpack/45/edit-alt-512.png" width="30" height="30" alt=""></img></button>
                                 </td>
                             </tr>
                         })}
