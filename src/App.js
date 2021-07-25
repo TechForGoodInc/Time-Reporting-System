@@ -17,13 +17,12 @@ class App extends Component {
         super();
         this.state = {
             user: null,
-            formInfo: null,
-            historyInfo:null,
-            history_list: []
+            formInfo: null
         }
     }
 
     componentDidMount() {
+        document.title = 'Time Reporting System';
         //Signs user in if they are not already signed in
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
@@ -102,12 +101,16 @@ class App extends Component {
             console.log('Recording hours - Date:', this.state.formInfo.date,
                 '; Hours:', this.state.formInfo.hours, '; Work Performed:', this.state.formInfo.description);
             let db = firebase.firestore();
+            db.collection('employees').doc(this.state.formInfo.project).set({});
 
             var dateDoc = db.collection('employees').doc(this.state.formInfo.project).collection(this.state.user.email).doc(this.state.formInfo.date);
+
+            dateDoc.update({Date: this.state.formInfo.date})
 
             dateDoc.get().then(snap => {
                 if (!snap.get('Entries')) { //If there is not currently an entry for this date
                     dateDoc.set({
+                        Date: this.state.formInfo.date,
                         Entries: [{
                             ['Entry 1']: {
                                 Hours: this.state.formInfo.hours,
@@ -146,7 +149,7 @@ class App extends Component {
         for (const doc of projects.docs) {
 
             //value becomes a list of entries in the date range in this current project
-            let temp = await db.collection('employees').doc(doc.id).collection(this.state.user.email).get().then(async (query) => {
+            let temp = await db.collection('employees').doc(doc.id).collection(this.state.user.email).orderBy('Date', 'desc').limit(100).get().then(async (query) => {
 
                 //Temp array to store list of entries in this project that are in range
                 let inRangeEntries = [];
@@ -188,7 +191,7 @@ class App extends Component {
         }
 
         console.log('All entries between', startDate, 'and', endDate, '=', res);
-        return res;
+        return res.reverse();
     }
 
     getEntriesOnDate = async (d) => {
@@ -204,60 +207,13 @@ class App extends Component {
         return await this.getEntriesBetweenDates(new Date('0000-01-01'), new Date('5000-01-01'));
     }
 
-    display_history = (formInput) => {
-        let db = firebase.firestore();
-        //this.setState({history_list: []});
-        let list = [];
-
-        console.log("History");
-        this.setState({ historyInfo: formInput }, () => {
-            db.collection('employees').doc(this.state.historyInfo.project).collection(this.state.user.email).doc(this.state.historyInfo.date).get().then((records) => {
-
-                let entries =  records.get('Entries');
-                if(entries==null) return;
-                for (let i = 0; i < entries.length; i++) {
-                    let entry = entries[i]['Entry '+(i+1)];
-                    console.log(entry);
-                    list.push({
-                        "id": i,
-                        "hours":entry.Hours,
-                        "work": entry.Work_Performed
-                    });
-
-                }
-                this.setState({history_list: list});
-
-                // for (let record in records.get('Entries')) {
-                //      console.log(record);
-                // }
-                //     for (let entry in record.data()) {
-                //         console.log(entry.data());
-                //
-                //         // history_list.push({
-                //         //     "id": ++i,
-                //         //     //"date": record.data().Date,
-                //         //     "hours":entry.Hours,
-                //         //     "work": entry.Work_Performed
-                //         //  });
-                //
-                //     }
-                // })
-                //this.setState({history_list: history_list});
-            })
-
-        })
-
-
-    }
-
-
     render = () => {
         return (
             <div style={{ padding: '20px' }}>
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
                 <HourLogForm post_data={this.post_data}/>
 
-                <History getEntries={this.getEntriesBetweenDates} display_history={this.display_history} list={this.state.history_list}/>
+                <History getEntries={this.getEntriesBetweenDates} display_history={this.display_history} />
             </div>
         );
     }
