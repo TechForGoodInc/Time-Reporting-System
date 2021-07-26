@@ -6,7 +6,8 @@ class Header extends Component {
         return (
             <div>
                 {/*<LogoutBtn handleLogout={(e) => { this.props.handleLogout(e) }}/> Disabled until fixed */}
-                <h3 id="title">TFG Time Reporting System - {this.props.email}</h3>
+                <h4 id="title">TFG Time Reporting System</h4>
+                <h6>{this.props.email}</h6>
             </div>
         );
     }

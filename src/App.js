@@ -1,5 +1,4 @@
 import './App.css';
-import './main.css';
 import React, { Component } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/auth';
@@ -132,13 +131,12 @@ class App extends Component {
 
                 console.log('Recording hours - Project:', this.state.formInfo.project, 'Date:', this.state.formInfo.date,
                     '; Hours:', this.state.formInfo.hours, '; Work Performed:', this.state.formInfo.description);
-            })
+            }).then(() => { alert("Information Submitted Successfully\nRefresh to update history") });
 
-            alert("Information Submitted Successfully.")
         })
     }
 
-    //Returns a promise that gives a list of entries falling between the startDate and endDate
+    //Returns a promise that gives a list of entries falling between the startDate and endDate. Start and end date must be at most 1 year apart.
     getEntriesBetweenDates = async (startDate, endDate) => {
         let db = firebase.firestore();
         let res = []; //Resulting array containing all entries in range
@@ -152,16 +150,12 @@ class App extends Component {
         for (const doc of projects.docs) {
 
             //value becomes a list of entries in the date range in this current project
-            let temp = await db.collection('employees').doc(doc.id).collection(this.state.user.email).orderBy('Date', 'desc').startAt(d2String).endAt(d1String).limit(100).get().then(async (query) => {
-
-                console.log('queried');
-
+            let temp = await db.collection('employees').doc(doc.id).collection(this.state.user.email).orderBy('Date', 'desc').startAt(d2String).endAt(d1String).limit(365).get().then(async (query) => {
                 //Temp array to store list of entries in this project that are in range
                 let inRangeEntries = [];
 
                 //For every entry by this user in this project
                 for (const entry of query.docs) {
-                    console.log('doc');
                     let entryDate = new Date(entry.id + 'T12:00:00+00:00');
 
                     //Setting every time to the same time to avoid errors with timezones
@@ -195,7 +189,7 @@ class App extends Component {
             if (temp !== undefined) res = res.concat(temp);
 
         }
-
+        
         console.log('All entries between', startDate, 'and', endDate, '=', res);
         return res.reverse();
     }
@@ -208,17 +202,13 @@ class App extends Component {
         return [];
     }
 
-    //Gets all entries from a specified user
-    getAllEntries = async () => {
-        return await this.getEntriesBetweenDates(new Date('0000-01-01'), new Date('5000-01-01'));
-    }
-
     render = () => {
         return (
-            <div style={{ padding: '20px' }}>
+            <div className='App'>
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
                 <HourLogForm post_data={this.post_data}/>
-
+                <br/>
+                <br/>
                 <History getEntries={this.getEntriesBetweenDates} display_history={this.display_history} />
             </div>
         );

@@ -39,11 +39,11 @@ class HistoryBlock extends Component {
         d1.setHours(12, 0 - d1.getTimezoneOffset(), 0, 0);
         d2.setHours(12, 0 - d2.getTimezoneOffset(), 0, 0);
 
-        if (d1 - d2 !== 0) {
-            return (d1.getMonth() + 1) + '/' + d1.getDate() + '/' + d1.getFullYear() + ' - ' + (d2.getMonth() + 1) + '/' + d2.getDate() + '/' + d2.getFullYear();
-        }
         let ret = 'Error';
-        if (today - d1 === 0) {
+        if (d1 - d2 !== 0) {
+            ret = (d1.getMonth() + 1) + '/' + d1.getDate() + '/' + d1.getFullYear() + ' - ' + (d2.getMonth() + 1) + '/' + d2.getDate() + '/' + d2.getFullYear();
+        }
+        else if (today - d1 === 0) {
             ret = 'Today';
         } else if (yesterday <= d1) {
             ret = 'Yesterday';
@@ -73,54 +73,61 @@ class HistoryBlock extends Component {
                 default:
                     ret = 'Error';
             }
-            return ret;
         } else {
 
             return (d1.getMonth() + 1) + '/' + d1.getDate() + '/' + d1.getFullYear();
         }
+        return ret;
     }
 
 
     render() {
         return (
-            <div>
-                <div align="center">{this.getDay()}</div>
-                <div align="right">Total Hours: {this.state.totalHours}</div>
+            <div style={{ border: '2px solid rgba(0, 0, 0, 0.05)', borderRadius: '5px', padding: '20px', background: 'white'}}>
+                <div>
+                    <h6 align="center">{this.getDay()}</h6>
+                    <h6 align="right">Total Hours: {this.state.totalHours}</h6>
+                </div>
+                {(this.state.totalHours === 0) ? <h6>You have no entries for this date</h6> :
+                    (this.state.entries.length === 0) ? <h6 align='center'>Loading...</h6> :
+                        <Table bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>Project</th>
+                                    <th>Description</th>
+                                    <th>Date</th>
+                                    <th>Hours</th>
+                                    {/* Edit button disabled until edit functionality is built
+                                <th>Edit</th>
+                                */}
+                                </tr>
+                            </thead>
 
-                <Table bordered hover>
-                    <thead>
-                        <tr>
-                            <th>Project</th>
-                            <th>Description</th>
-                            <th>Date</th>
-                            <th>Hours</th>
-                            <th>Edit</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {this.state.entries.map((data, index) => {
-                            return <tr key={index} id={data.id}>
-                                <td>
-                                    <p>{data.project}</p>
-                                </td>
-                                <td width='70%'>
-                                    <p>{data.desc}</p>
-                                </td>
-                                <td>
-                                    <p>{data.date}</p>
-                                </td>
-                                <td align="center">
-                                    <p>{data.hours}</p>
-                                </td>
-                                
-                                <td width="5%">
-                                    <button style={{ border: 'none' }}><img src="https://cdn0.iconfinder.com/data/icons/glyphpack/45/edit-alt-512.png" width="30" height="30" alt=""></img></button>
-                                </td>
-                            </tr>
-                        })}
-                    </tbody>
-                </Table>
+                            <tbody>
+                                {this.state.entries.map((data, index) => {
+                                    return <tr key={index} id={data.id}>
+                                        <td>
+                                            <p>{data.project}</p>
+                                        </td>
+                                        <td width='70%'>
+                                            <p>{data.desc}</p>
+                                        </td>
+                                        <td>
+                                            <p>{data.date}</p>
+                                        </td>
+                                        <td align="center">
+                                            <p>{data.hours}</p>
+                                        </td>
+                                        {/* Edit button disabled until edit functionality is built
+                                    <td width="5%" style={{ border: 'none' }} align="center">
+                                        <button style={{ border: 'none' }}><img src="https://cdn0.iconfinder.com/data/icons/glyphpack/45/edit-alt-512.png" width="20" height="20" alt=""></img></button>
+                                    </td>
+                                    */}
+                                    </tr>
+                                })}
+                            </tbody>
+                        </Table>
+                }
             </div>
     )};
 }
