@@ -92,3 +92,5 @@ node_modules/
 
 # VS
 .vs/
+# IDEA
+.idea/
