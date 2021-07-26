@@ -135,11 +135,6 @@ class App extends Component {
     }
 
     render = () => {
-        while (!this.state.user) {
-            return (
-                <div>Loading...</div>
-                )
-        }
         return (
             <div style={{ padding: '20px' }}>
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
