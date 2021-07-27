@@ -145,7 +145,7 @@ function TimerComponent({ firebase, currentUser, startTime, stopTime }) {
                                 <option value="Other">Other</option>
                             </select>
                         </td>
-                        <td style={{ width: '50%' }} >
+                        <td style={{ width: '48%' }} >
                             <input type='text' id='descInput' placeholder='Enter description of work completed' />
                         </td>
                         <td>
