@@ -155,6 +155,9 @@ function TimerComponent({ firebase, currentUser, startTime, stopTime }) {
                             <button onClick={stopCurrentTimer} >Stop</button>
                         </td>
                         <td>
+                            <button onClick={removeTimer} >Delete</button>
+                        </td>
+                        <td>
                             <input type='submit' onSubmit={submitTimerData} value='Submit' />
                         </td> 
                     </tr>
