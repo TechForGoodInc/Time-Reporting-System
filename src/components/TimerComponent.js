@@ -130,10 +130,19 @@ function TimerComponent({ firebase, currentUser, startTime, stopTime }) {
                         <td style={{ width: '20%' }} >
                             <select id='projectSelector'>
                                 <option defaultValue='Select Project' hidden value='selectProject'>Select Project</option>
-                                <option value='ossftgg'>OSSFTGG</option>
-                                <option value='flant'>Flant</option>
-                                <option value='iddps'>IDDPS</option>
-                                <option value='other'>Other</option>
+                                <option value="Flant">Flant</option>
+                                <option value="IDDPS">IDDPS</option>
+                                <option value="Mission Uplink">Mission Uplink</option>
+                                <option value="Make The Stars">Make The Stars</option>
+                                <option value="OSSFTGG">OSSFTGG</option>
+                                <option value="TFG Website">TFG Website</option>
+                                <option value="Assurance">Assurance</option>
+                                <option value="Project Interactivity">Project Interactivity</option>
+                                <option value="Blockchain Donations">Blockchain Donations</option>
+                                <option value="Re-Right">Re-Right</option>
+                                <option value="FireSpot">FireSpot</option>
+                                <option value="Graphic Design">Graphic Design</option>
+                                <option value="Other">Other</option>
                             </select>
                         </td>
                         <td style={{ width: '50%' }} >
