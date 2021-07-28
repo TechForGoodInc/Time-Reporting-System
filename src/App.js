@@ -8,7 +8,6 @@ import firebaseConfig from './firebaseCfg.js'
 import Header from './components/header';
 import HourLogForm from './components/hourLogForm';
 import History from "./components/history";
-import DeleteBtn from "./components/delete";
 
 firebase.initializeApp(firebaseConfig);
 
@@ -94,11 +93,6 @@ class App extends Component {
         });
     }
 
-    handleDelete(e) {
-        e.preventDefault();
-
-    }
-
     //Uploads data to the database
     post_data = (formInput) => {
 
@@ -137,7 +131,7 @@ class App extends Component {
 
                 console.log('Recording hours - Project:', this.state.formInfo.project, 'Date:', this.state.formInfo.date,
                     '; Hours:', this.state.formInfo.hours, '; Work Performed:', this.state.formInfo.description);
-            }).then(() => { alert("Information Submitted Successfully\nRefresh to update history\nThanks!") });
+            }).then(() => { alert("Information Submitted Successfully\nRefresh to update history") });
 
         })
     }
@@ -207,11 +201,6 @@ class App extends Component {
         console.log('Error getting entry on date: parameter is not of type Date');
         return [];
     }
-
-    getEntry = async (d, id) => {
-        var entries = await this.getEntriesOnDate(d);
-        return entries[id];  
-        }
 
     render = () => {
         return (
