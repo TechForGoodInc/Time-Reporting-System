@@ -9,7 +9,7 @@ import firebaseConfig from './firebaseCfg.js'
 import Header from './components/header';
 import HourLogForm from './components/hourLogForm';
 import TimerComponent from './components/TimerComponent';
-
+import DeleteBtn from "./components/delete"
 firebase.initializeApp(firebaseConfig);
 
 class App extends Component {
@@ -132,6 +132,10 @@ class App extends Component {
 
             alert("Information Submitted Successfully.")
         })
+    }
+
+    delete_data = (formInput) => {
+        
     }
 
     render = () => {
