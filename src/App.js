@@ -9,7 +9,7 @@ import firebaseConfig from './firebaseCfg.js'
 import Header from './components/header';
 import HourLogForm from './components/hourLogForm';
 import TimerComponent from './components/TimerComponent';
-import DeleteBtn from "./components/delete"
+
 firebase.initializeApp(firebaseConfig);
 
 class App extends Component {
@@ -108,22 +108,24 @@ class App extends Component {
                 if (!snap.get('Entries')) { //If there is not currently an entry for this date
                     dateDoc.set({
                         Entries: [{
-                            ['Entry 1']: {
+                            ['Entry ' + this.state.formInfo.id]: {
                                 Hours: this.state.formInfo.hours,
                                 Work_Performed: this.state.formInfo.description
                             }
                         }]
                     });
+                    this.state.formInfo.id++;
                 }
                 else { //If there are multiple entries on this date
                     dateDoc.update({
                         Entries: firebase.firestore.FieldValue.arrayUnion({ //Append to existing array
-                            ['Entry ' + (snap.data().Entries.length + 1).toString()]: {
+                            ['Entry ' + this.state.formInfo.id]: {
                                 Hours: this.state.formInfo.hours,
                                 Work_Performed: this.state.formInfo.description
                             }
                         })
                     })
+                    this.state.formInfo.id++;
                 }
 
                 console.log('Recording hours - Project:', this.state.formInfo.project, 'Date:', this.state.formInfo.date,
@@ -135,7 +137,21 @@ class App extends Component {
     }
 
     delete_data = (formInput) => {
-        
+        this.setState({ formInfo: formInput }, () => {
+            let db = firebase.firestore();
+            var dateDoc = db.collection('employees').doc(this.state.formInfo.project).collection(this.state.user.email).doc(this.state.formInfo.date);
+            dateDoc.get().then(snap => {
+                    if (!snap.get('Entries')) { //If there is not currently an entry for this date
+                        alert("There is no entry to delete on this date.");
+                    }
+                    else { //If there are entries on this date
+                        
+                    }
+
+                })
+        })
+        alert("Information succesfully deleted.")
+
     }
 
     render = () => {
