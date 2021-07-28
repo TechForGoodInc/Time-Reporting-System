@@ -139,7 +139,7 @@ class App extends Component {
             <div style={{ padding: '20px' }}>
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
                 <HourLogForm post_data={this.post_data} />
-                <TimerComponent firebase={firebase} currentUser={this.state.user} />
+                <TimerComponent firebase={firebase} currentUser={this.state.user} postData={this.post_data} />
             </div>
         );
     }
