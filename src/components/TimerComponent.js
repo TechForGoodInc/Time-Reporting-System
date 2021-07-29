@@ -151,7 +151,7 @@ function TimerComponent({ firebase, currentUser, startTime, stopTime, postData, 
                             <td>
                                 {timerIsActive() ?
                                     <Button className='tempButton' style={{ backgroundColor: 'red' }} onClick={stopCurrentTimer} >Stop</Button> :
-                                    <Button className='tempButton' style={{ backgroundColor: '#4CAF50' }} onClick={startNewTimer} >Start</Button>
+                                    <Button className='tempButton' style={{ backgroundColor: '#4CAF50' }} onClick={startNewTimer} >Start</Button> :
                                     <Button className='tempButton' style={{ backgroundColor: 'red' }} onClick={removeTimer} >Delete</Button>
                                 }
                             </td>
