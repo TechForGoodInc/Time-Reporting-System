@@ -75,7 +75,7 @@ class HourLogForm extends Component {
                 <form onSubmit={this.handleDelete}>
                     <DateInput changeHandler={this.changeHandler} />
                     <NumInput2 changehandler = {this.changeHandler}/>
-                    <input type="submit" value = "Delete" />
+                    <input type="submit" value = "Delete"/>
                 </form>
 
             </div>

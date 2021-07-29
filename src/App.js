@@ -139,6 +139,7 @@ class App extends Component {
     // deletes data from the database
     delete_data = (formInput) => {
         this.setState({ formInfo: formInput }, () => {
+            var deleted = false;
             let db = firebase.firestore();
             var dateDoc = db.collection('employees').doc(this.state.formInfo.project).collection(this.state.user.email).doc(this.state.formInfo.date);
             dateDoc.get().then(snap => {
@@ -146,15 +147,18 @@ class App extends Component {
                         alert("There is no entry to delete on this date.");
                     }
                     else { //If there are entries on this date
-                        for (var entry in dateDoc.get('Entries')) {
-                            if (entry.id === this.state.formInfo.id) { // Only delete the entry with the given id
+                        for (var entry in snap.get('Entries')) {
+                            if (entry == this.state.formInfo.id) { // Only delete the entry with the given id
                                 dateDoc.delete();
+                                deleted = true;
                                 alert("Information succesfully deleted.");
                                 break;
-                            } else {
-                                alert("There is no entry on this date with this ID.");
                             }
                         }
+                        if (!deleted) {
+                            alert("There is no entry with this ID on this date.")
+                        }
+
                     }
 
                 })

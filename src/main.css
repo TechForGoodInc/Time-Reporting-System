@@ -23,6 +23,21 @@ input[type=submit]:hover {
   background-color: #45a049;
 }
 
+input[type=delete] {
+  width: 5%;
+  background-color: #F83939;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=delete]:hover {
+  background-color: #B83939;
+}
+
 div {
   border-radius: 5px;
   background-color: #f2f2f2;
