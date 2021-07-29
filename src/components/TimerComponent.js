@@ -137,32 +137,31 @@ function TimerComponent({ firebase, currentUser, startTime, stopTime, postData, 
         <div className='timerComponent'>
             <form onSubmit={submitTimerData} >
                 <table>
-                    <tr>
-                        <td style={{ width: '20%' }} >
-                            <ProjectInput changeHandler={changeHandler} />
-                        </td>
-                        <td style={{ width: '48%' }} >
-                            <input type='text' id='description' name='description' placeholder='Enter description of work completed' onChange={changeHandler} required />
-                        </td>
-                        <td>
-                            <input type='text' id='input-startTime' readOnly />
-                        </td>
-                        <td>
-                            <input type='text' id='input_stopTime' readOnly />
-                        </td>
-                        <td>
-                            <input type='text' id='hours' name='hours' readOnly onChange={changeHandler} />
-                        </td>
-                        <td>
-                            <button onClick={startNewTimer} >Start</button>
-                        </td>
-                        <td>
-                            <button onClick={stopCurrentTimer} >Stop</button>
-                        </td>
-                        <td>
-                            <input type='submit' onSubmit={submitTimerData} value='Submit' />
-                        </td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <td style={{ width: '20%' }} >
+                                <ProjectInput changeHandler={changeHandler} />
+                            </td>
+                            <td>
+                                <button onClick={startNewTimer} >Start</button>
+                            </td>
+                            <td style={{ width: '48%' }} >
+                                <input type='text' id='description' name='description' placeholder='Enter description of work completed' onChange={changeHandler} required />
+                            </td>
+                            <td>
+                                <input type='text' id='input-startTime' readOnly />
+                            </td>
+                            <td>
+                                <input type='text' id='input_stopTime' readOnly />
+                            </td>
+                            <td>
+                                <input type='text' id='hours' name='hours' readOnly onChange={changeHandler} />
+                            </td>
+                            <td>
+                                <input type='submit' onSubmit={submitTimerData} value='Submit' />
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </form>
         </div>

@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+
+.timerComponent {
+    border: solid;
+    border-color: darkgrey;
+    background-color: white;
+    border-width: 2px;
+    padding: 5px;
+}
