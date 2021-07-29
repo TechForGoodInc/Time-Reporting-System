@@ -136,6 +136,7 @@ class App extends Component {
         })
     }
 
+    // deletes data from the database
     delete_data = (formInput) => {
         this.setState({ formInfo: formInput }, () => {
             let db = firebase.firestore();
@@ -148,15 +149,17 @@ class App extends Component {
                         for (var entry in dateDoc.get('Entries')) {
                             if (entry.id === this.state.formInfo.id) { // Only delete the entry with the given id
                                 dateDoc.delete();
+                                alert("Information succesfully deleted.");
+                                break;
                             } else {
-                                alert("There is no entry on this date with this ID.")
+                                alert("There is no entry on this date with this ID.");
                             }
                         }
                     }
 
                 })
         })
-        alert("Information succesfully deleted.")
+        
 
     }
 
@@ -164,7 +167,7 @@ class App extends Component {
         return (
             <div style={{ padding: '20px' }}>
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
-                <HourLogForm post_data={this.post_data} />
+                <HourLogForm post_data={this.post_data} delete_data={this.delete_data} />
                 <TimerComponent firebase={firebase} currentUser={this.state.user} />
             </div>
         );

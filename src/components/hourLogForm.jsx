@@ -4,7 +4,8 @@ import DateInput from './dataEntry/dateInput';
 import NumInput from './dataEntry/numInput';
 import ProjectInput from './dataEntry/projectInput';
 import TextInput from './dataEntry/textInput';
-import NumInput2 from './dataEntry/numinput2'
+import NumInput2 from './dataEntry/numinput2';
+
 class HourLogForm extends Component {
     //State of the form
     state = {
@@ -50,7 +51,7 @@ class HourLogForm extends Component {
             alert("Please select a date");
             return;
         }
-        this.props.delete_data(this.state.date, this.state.id)
+        this.props.delete_data(this.state)
     }
 
     render() {
@@ -69,9 +70,12 @@ class HourLogForm extends Component {
                     <ProjectInput changeHandler={this.changeHandler} />
 
                     <input type="submit" value="Submit" />
+                    
+                </form>
+                <form onSubmit={this.handleDelete}>
                     <DateInput changeHandler={this.changeHandler} />
                     <NumInput2 changehandler = {this.changeHandler}/>
-                    <input type="button" value = "Delete" />
+                    <input type="submit" value = "Delete" />
                 </form>
 
             </div>
