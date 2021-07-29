@@ -152,8 +152,8 @@ function TimerComponent({ firebase, currentUser, startTime, stopTime, postData, 
                                 {timerIsActive() ?
                                     <Button className='tempButton' style={{ backgroundColor: 'red' }} onClick={stopCurrentTimer} >Stop</Button> :
                                     <Button className='tempButton' style={{ backgroundColor: '#4CAF50' }} onClick={startNewTimer} >Start</Button>
-                                    <Button className='tempButton' style={{ backgroundColor: 'red' }} onClick={removeTimer} >Delete</Button>
                                 }
+                                {/*<Button className='tempButton' style={{ backgroundColor: 'red' }} onClick={removeTimer} >Delete</Button>*/}
                             </td>
                             <td style={{ width: '48%' }} >
                                 <input type='text' id='description' name='description' placeholder='Enter description of work completed' onChange={changeHandler} required />
