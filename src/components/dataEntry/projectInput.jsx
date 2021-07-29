@@ -18,6 +18,7 @@ class ProjectInput extends Component {
                     <option value="Blockchain Donations">Blockchain Donations</option>
                     <option value="Re-Right">Re-Right</option>
                     <option value="FireSpot">FireSpot</option>
+                    <option value="Graphic Design">Graphic Design</option>
                     <option value="Other">Other</option>
                 </select>
             </React.Fragment>

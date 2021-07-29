@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import Button from 'react-bootstrap/Button'
 import ProjectInput from './dataEntry/projectInput';
 
 function TimerComponent({ firebase, currentUser, startTime, stopTime, postData, date, hours, description, project, state }) {
@@ -60,6 +61,11 @@ function TimerComponent({ firebase, currentUser, startTime, stopTime, postData, 
                 alert("No active timer.");
             }
         })
+    }
+
+    //TODO Build this function so that we could determine whether the timer is running
+    function timerIsActive () {
+        return false;
     }
 
     //Delete saved start time from db
@@ -143,7 +149,10 @@ function TimerComponent({ firebase, currentUser, startTime, stopTime, postData, 
                                 <ProjectInput changeHandler={changeHandler} />
                             </td>
                             <td>
-                                <button onClick={startNewTimer} >Start</button>
+                                {timerIsActive() ?
+                                    <Button className='tempButton' style={{ backgroundColor: 'red' }} onClick={stopCurrentTimer} >Stop</Button> :
+                                    <Button className='tempButton' style={{ backgroundColor: '#4CAF50' }} onClick={startNewTimer} >Start</Button>
+                                }
                             </td>
                             <td style={{ width: '48%' }} >
                                 <input type='text' id='description' name='description' placeholder='Enter description of work completed' onChange={changeHandler} required />
