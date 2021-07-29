@@ -108,7 +108,7 @@ class App extends Component {
                 if (!snap.get('Entries')) { //If there is not currently an entry for this date
                     dateDoc.set({
                         Entries: [{
-                            ['Entry ' + this.state.formInfo.id]: {
+                            [this.state.formInfo.id]: {
                                 Hours: this.state.formInfo.hours,
                                 Work_Performed: this.state.formInfo.description
                             }
@@ -119,7 +119,7 @@ class App extends Component {
                 else { //If there are multiple entries on this date
                     dateDoc.update({
                         Entries: firebase.firestore.FieldValue.arrayUnion({ //Append to existing array
-                            ['Entry ' + this.state.formInfo.id]: {
+                            [this.state.formInfo.id]: {
                                 Hours: this.state.formInfo.hours,
                                 Work_Performed: this.state.formInfo.description
                             }
@@ -145,7 +145,13 @@ class App extends Component {
                         alert("There is no entry to delete on this date.");
                     }
                     else { //If there are entries on this date
-                        
+                        for (var entry in dateDoc.get('Entries')) {
+                            if (entry.id === this.state.formInfo.id) { // Only delete the entry with the given id
+                                dateDoc.delete();
+                            } else {
+                                alert("There is no entry on this date with this ID.")
+                            }
+                        }
                     }
 
                 })
