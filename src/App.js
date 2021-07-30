@@ -17,7 +17,8 @@ class App extends Component {
         this.state = {
             user: null,
             formInfo: null,
-            timerStartTime: "-",
+            activeTimer: null,
+            startTime: null,
         }
     }
 
@@ -33,6 +34,7 @@ class App extends Component {
                 if (domain === "techforgoodinc.org") {
                     console.log("Trusted");
                     //document.getElementById("title").innerHTML = document.getElementById("title").innerHTML + " - " + user.email
+                    this.timerIsActive();
                 }
                 else { //Doesn't allow non-techforgoodinc emails. This will change eventually to allow for organizations to set their own email requirements
                     this.handleLogin();
@@ -69,6 +71,7 @@ class App extends Component {
                 // The signed-in user info.
                 user = result.user;
                 this.setState({ user: user });
+                this.timerIsActive();
             }).catch((error) => {
                 //// Handle Errors here.
                 //var errorCode = error.code;
@@ -79,6 +82,60 @@ class App extends Component {
                 //var credential = error.credential;
                 //// ...
             });
+    }
+
+    timerIsActive = () => {
+        if (!this.state.user) {
+            this.handleLogin();
+            return;
+        } else {
+            let db = firebase.firestore();
+            db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').get().then((doc) => {
+                if (doc.exists) {
+                    this.setState({ activeTimer: true });
+                } else {
+                    this.setState({ activeTimer: false });
+                }
+            }).then(() => console.log(this.state.activeTimer))
+        }
+    }
+
+    startTimer = (e) => {
+        e.preventDefault();
+        console.log("startTimer: " + this.state.activeTimer);
+
+        if (this.state.activeTimer) {
+            alert("User has active timer");
+        } else {
+            let newDate = new Date();
+            let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes();
+            let db = firebase.firestore();
+            db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').get().then((doc) => {
+                if (doc.exists) {
+                    if (!doc.data().Time) {
+                        db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').set({ Time: now });
+                        //TODO: set start time in state
+                        this.setState({ activeTimer: true });
+                        this.setState({ startTime: now });
+                        alert("Timer Started!");
+                    }
+                } else {
+                    db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').set({ Time: now });
+                    //TODO: set start time in state
+                    this.setState({ activeTimer: true });
+                    this.setState({ startTime: now });
+                    alert("Timer Started!");
+                }
+            })
+        }
+    }
+
+    stopTimer = () => {
+        this.setState({ activeTimer: false }).then(() => {
+            console.log("stopping timer");
+            console.log(this.state.activeTimer);
+        })
+        
     }
 
     handleLogout(e) {
@@ -95,7 +152,8 @@ class App extends Component {
     }
 
     //Uploads data to the database
-    post_data = (data) => {
+    //Renamed to follow conventions
+    postData = (data) => {
 
         console.log("post_data");
 
@@ -213,7 +271,7 @@ class App extends Component {
         return (
             <div className='App'>
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
-                <HourLogger post_data={this.post_data} firebase={firebase} currentUser={this.state.user}/>
+                <HourLogger postData={this.postData} activeTimer={this.state.activeTimer} startTimer={this.startTimer} stopTimer={this.stopTimer} />
                 <br/>
                 <br/>
                 <History getEntries={this.getEntriesBetweenDates} display_history={this.display_history} />
