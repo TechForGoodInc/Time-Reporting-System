@@ -95,46 +95,52 @@ class App extends Component {
     }
 
     //Uploads data to the database
-    post_data = (formInput) => {
+    post_data = (data) => {
 
-        this.setState({ formInfo: formInput }, () => {
-            console.log('Recording hours - Date:', this.state.formInfo.date,
-                '; Hours:', this.state.formInfo.hours, '; Work Performed:', this.state.formInfo.description);
-            let db = firebase.firestore();
-            db.collection('employees').doc(this.state.formInfo.project).set({});
+        console.log("post_data");
 
-            var dateDoc = db.collection('employees').doc(this.state.formInfo.project).collection(this.state.user.email).doc(this.state.formInfo.date);
 
-            dateDoc.update({Date: this.state.formInfo.date})
 
-            dateDoc.get().then(snap => {
-                if (!snap.get('Entries')) { //If there is not currently an entry for this date
-                    dateDoc.set({
-                        Date: this.state.formInfo.date,
-                        Entries: [{
-                            'Entry 1': {
-                                Hours: this.state.formInfo.hours,
-                                Work_Performed: this.state.formInfo.description
-                            }
-                        }]
-                    });
-                }
-                else { //If there are multiple entries on this date
-                    dateDoc.update({
-                        Entries: firebase.firestore.FieldValue.arrayUnion({ //Append to existing array
-                            ['Entry ' + (snap.data().Entries.length + 1).toString()]: {
-                                Hours: this.state.formInfo.hours,
-                                Work_Performed: this.state.formInfo.description
-                            }
-                        })
-                    })
-                }
+        //Old working code
 
-                console.log('Recording hours - Project:', this.state.formInfo.project, 'Date:', this.state.formInfo.date,
-                    '; Hours:', this.state.formInfo.hours, '; Work Performed:', this.state.formInfo.description);
-            }).then(() => { alert("Information Submitted Successfully\nRefresh to update history") });
+        //this.setState({ formInfo: data }, () => {
+        //    console.log('Recording hours - Date:', this.state.formInfo.date,
+        //        '; Hours:', this.state.formInfo.hours, '; Work Performed:', this.state.formInfo.description);
+        //    let db = firebase.firestore();
+        //    db.collection('employees').doc(this.state.formInfo.project).set({});
 
-        })
+        //    var dateDoc = db.collection('employees').doc(this.state.formInfo.project).collection(this.state.user.email).doc(this.state.formInfo.date);
+
+        //    dateDoc.update({Date: this.state.formInfo.date})
+
+        //    dateDoc.get().then(snap => {
+        //        if (!snap.get('Entries')) { //If there is not currently an entry for this date
+        //            dateDoc.set({
+        //                Date: this.state.formInfo.date,
+        //                Entries: [{
+        //                    'Entry 1': {
+        //                        Hours: this.state.formInfo.hours,
+        //                        Work_Performed: this.state.formInfo.description
+        //                    }
+        //                }]
+        //            });
+        //        }
+        //        else { //If there are multiple entries on this date
+        //            dateDoc.update({
+        //                Entries: firebase.firestore.FieldValue.arrayUnion({ //Append to existing array
+        //                    ['Entry ' + (snap.data().Entries.length + 1).toString()]: {
+        //                        Hours: this.state.formInfo.hours,
+        //                        Work_Performed: this.state.formInfo.description
+        //                    }
+        //                })
+        //            })
+        //        }
+
+        //        console.log('Recording hours - Project:', this.state.formInfo.project, 'Date:', this.state.formInfo.date,
+        //            '; Hours:', this.state.formInfo.hours, '; Work Performed:', this.state.formInfo.description);
+        //    }).then(() => { alert("Information Submitted Successfully\nRefresh to update history") });
+
+        //})
     }
 
     //Returns a promise that gives a list of entries falling between the startDate and endDate. Start and end date must be at most 1 year apart.

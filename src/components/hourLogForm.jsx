@@ -39,7 +39,7 @@ class HourLogForm extends Component {
             alert("Please enter a more descriptive description");
             return;
         } else {
-            this.props.post_data(this.state);
+            //this.props.post_data(this.state);
         }
     }
 
