@@ -87,13 +87,13 @@ class TimerComponent extends Component {
                                     <TextInput changeHandler={this.changeHandler} />
                                 </td>
                                 <td>
-                                    <input type="text" id="inputStartTime" changeHandler={this.changeHandler} value={(this.props.startTime).substr(2)} readOnly />
+                                    <div>{(this.props.startTime).substr(2)}</div>
                                 </td>
                                 <td>
-                                    <input type="text" id="inputStopTime" changeHandler={this.changeHandler} value={(this.props.stopTime).substr(2)} readOnly />
+                                    <div>{(this.props.stopTime).substr(2)}</div>
                                 </td>
                                 <td>
-                                    <input type="text" id="inputHoursWorked" changeHandler={this.changeHandler} value={this.props.hoursWorked} readOnly />
+                                    <div>{this.props.hoursWorked}</div>
                                 </td>
                                 <td>
                                     <input type="submit" onSubmit={this.submitForm} value="Submit" />
