@@ -100,7 +100,7 @@ class App extends Component {
                     this.setState({ activeTimer: false });
                     this.setState({ startTime: "-" });
                 }
-            }).then(() => console.log(this.state.activeTimer))
+            })
         }
     }
 
@@ -151,8 +151,6 @@ class App extends Component {
                 }
             })
         }
-
-        
     }
 
     removeTimer = () => {
@@ -225,16 +223,42 @@ class App extends Component {
     //Renamed to follow conventions
     postData = (data) => {
 
-        console.log(data.date);
-        console.log(data.hours);
-        console.log(data.description);
-        console.log(data.project);
-        this.removeTimer();
-        this.timerIsActive();
+        let db = firebase.firestore();
+        db.collection('employees').doc(data.project).set({});
+        let dateDoc = db.collection('employees').doc(data.project).collection(this.state.user.email).doc(data.date);
+        dateDoc.update({ Date: data.date });
+        dateDoc.get().then(snap => {
+            if (!snap.get('Entries')) {
+                dateDoc.set({
+                    Date: data.date,
+                    Entries: [{
+                        'Entry 1': {
+                            Hours: data.hours,
+                            Work_Performed: data.description
+                        }
+                    }]
+                });
+            } else {
+                dateDoc.update({
+                    Entries: firebase.firestore.FieldValue.arrayUnion({
+                        ['Entry' + (snap.data().Entries.length + 1).toString()]: {
+                            Hours: data.hours,
+                            Work_Performed: data.description
+                        }
+                    })
+                })
+            }
+        }).then(() => {
+            alert("Information Submitted Successfully\nRefresh to update history");
+            this.removeTimer();
+            this.timerIsActive();
+        });
+        
+        
 
 
 
-        //Old working code
+        //Legacy code
 
         //this.setState({ formInfo: data }, () => {
         //    console.log('Recording hours - Date:', this.state.formInfo.date,

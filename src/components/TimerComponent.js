@@ -108,7 +108,7 @@ class TimerComponent extends Component {
 }
 
 TimerComponent.propTypes = {
-    activeTimer: PropTypes.bool.isRequired,
+    activeTimer: PropTypes.bool,
     startTimer: PropTypes.func.isRequired,
     stopTimer: PropTypes.func.isRequired,
     postData: PropTypes.func.isRequired,
