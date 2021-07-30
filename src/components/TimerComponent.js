@@ -28,6 +28,7 @@ function TimerComponent(props) {
                                     <Button className="tempButton" style={{ backgroundColor: "red" }} >Stop</Button> :
                                     <Button className="tempButton" style={{ backgroundColor: "4CAF50" }}>Start</Button>
                                 }
+                                {/*<Button className='tempButton' style={{ backgroundColor: 'red' }} onClick={removeTimer} >Delete</Button>*/}
                             </td>
                         </tr>
                     </tbody>
@@ -46,4 +47,4 @@ TimerComponent.propTypes = {
     postData: PropTypes.func.isRequired,
 }
 
-export default TimerComponent;
+export default TimerComponent
