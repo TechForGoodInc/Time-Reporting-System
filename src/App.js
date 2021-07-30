@@ -18,7 +18,9 @@ class App extends Component {
             user: null,
             formInfo: null,
             activeTimer: null,
-            startTime: null,
+            startTime: "-",
+            stopTime: "-",
+            hoursWorked: 0,
         }
     }
 
@@ -93,8 +95,10 @@ class App extends Component {
             db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').get().then((doc) => {
                 if (doc.exists) {
                     this.setState({ activeTimer: true });
+                    this.setState({ startTime: doc.data().Time });
                 } else {
                     this.setState({ activeTimer: false });
+                    this.setState({ startTime: "-" });
                 }
             }).then(() => console.log(this.state.activeTimer))
         }
@@ -102,7 +106,6 @@ class App extends Component {
 
     startTimer = (e) => {
         e.preventDefault();
-        console.log("startTimer: " + this.state.activeTimer);
 
         if (this.state.activeTimer) {
             alert("User has active timer");
@@ -130,12 +133,79 @@ class App extends Component {
         }
     }
 
-    stopTimer = () => {
-        this.setState({ activeTimer: false }).then(() => {
-            console.log("stopping timer");
-            console.log(this.state.activeTimer);
-        })
+    stopTimer = (e) => {
+        e.preventDefault();
+
+        if (!this.state.activeTimer) {
+            alert("There is no active timer.");
+        } else {
+            let newDate = new Date();
+            let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes();
+            let db = firebase.firestore();
+            db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').get().then((doc) => {
+                if (doc.exists) {
+                    this.setState({ stopTime: now }, () => {
+                        this.setState({ hoursWorked: this.calculateHoursWorked() });
+                    });
+                    this.setState({ activeTimer: false });
+                }
+            })
+        }
+
         
+    }
+
+    removeTimer = () => {
+        let db = firebase.firestore();
+        db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').delete().then(() => {
+            this.setState({ activeTimer: false });
+            this.setState({ startTime: "-" });
+            this.setState({ stopTime: "-" });
+            this.setState({ hoursWorked: 0 });
+        }).catch((error) => {
+            console.error("Error deleting: ", error);
+        })
+    }
+
+    calculateHoursWorked() {
+        let newDate = new Date();
+        let now = this.getFormattedTimeString(newDate);
+        if (parseInt(newDate.getDay()) !== parseInt(this.state.startTime[0])) {
+            //Timer is more than 1 day, or new day has begun, user needs to enter time manually.
+            return;
+        }
+        let currentTime = now.split(':');
+        let currentHours = currentTime[1];
+        let currentMinutes = currentTime[2];
+
+        let beginningTime = this.state.startTime.split(':');
+        let startHours = beginningTime[1];
+        let startMinutes = beginningTime[2];
+
+        let totalHours = (parseInt(currentHours) - parseInt(startHours));
+        let totalMinutes = 0;
+        if (parseInt(currentMinutes) < parseInt(startMinutes)) {
+            let extraMinutes = 60 - parseInt(startMinutes);
+            totalMinutes = parseInt(currentMinutes) + extraMinutes;
+        } else {
+            totalMinutes = parseInt(currentMinutes) - parseInt(startMinutes);
+        }
+        let totalTime = totalHours + ':' + totalMinutes;
+
+        return totalTime;
+    }
+
+    getFormattedTimeString(date) {
+        let day = date.getDay()
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        if (hours < 10) {
+            hours = '0' + hours;
+        }
+        if (minutes < 10) {
+            minutes = '0' + minutes;
+        }
+        return day + ':' + hours + ':' + minutes;
     }
 
     handleLogout(e) {
@@ -155,7 +225,12 @@ class App extends Component {
     //Renamed to follow conventions
     postData = (data) => {
 
-        console.log("post_data");
+        console.log(data.date);
+        console.log(data.hours);
+        console.log(data.description);
+        console.log(data.project);
+        this.removeTimer();
+        this.timerIsActive();
 
 
 
@@ -271,7 +346,9 @@ class App extends Component {
         return (
             <div className='App'>
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
-                <HourLogger postData={this.postData} activeTimer={this.state.activeTimer} startTimer={this.startTimer} stopTimer={this.stopTimer} />
+                <HourLogger postData={this.postData} activeTimer={this.state.activeTimer}
+                    startTimer={this.startTimer} stopTimer={this.stopTimer} startTime={this.state.startTime}
+                    stopTime={this.state.stopTime} hoursWorked={this.state.hoursWorked} />
                 <br/>
                 <br/>
                 <History getEntries={this.getEntriesBetweenDates} display_history={this.display_history} />

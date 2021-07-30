@@ -12,17 +12,51 @@ class TimerComponent extends Component {
             startTimer: null,
             stopTimer: null,
             postData: null,
-            date: null,
             hours: 0,
             description: null,
             project: "unselected",
         }
     }
 
-    submitForm(event) {
+    submitForm = (event) => {
         event.preventDefault();
 
-        //TODO: postData
+        if (this.props.activeTimer) {
+            alert("Please stop the active timer");
+            return;
+        }
+        if (this.state.project === "unselected") {
+            alert("Please select a project");
+            return;
+        }
+        if (!this.state.description || this.state.description === " ") {
+            alert("Please enter a description");
+            return;
+        }
+        if (this.state.description.length < 6) {
+            alert("Please enter a more descriptive description");
+            return;
+        }
+
+        let now = new Date();
+        let formattedDate = "";
+        let day = now.getDate();
+        let month = now.getMonth() + 1;
+        if (day < 10) {
+            day = "0" + day;
+        }
+        if (month < 10) {
+            month = "0" + month;
+        }
+        formattedDate = now.getFullYear() + "-" + month + "-" + day;
+        
+        let dummy = require("./dataEntry/entryData.js");
+        let data = new dummy(formattedDate, this.props.hoursWorked, this.state.description, this.state.project);
+
+        this.props.postData(data);
+
+        this.setState({ description: null });
+        this.setState({ project: "unselected" });
     }
 
     changeHandler = (event) => {
@@ -53,13 +87,13 @@ class TimerComponent extends Component {
                                     <TextInput changeHandler={this.changeHandler} />
                                 </td>
                                 <td>
-                                    <input type="text" id="inputStartTime" changeHandler={this.changeHandler} readOnly />
+                                    <input type="text" id="inputStartTime" changeHandler={this.changeHandler} value={(this.props.startTime).substr(2)} readOnly />
                                 </td>
                                 <td>
-                                    <input type="text" id="inputStopTime" changeHandler={this.changeHandler} readOnly />
+                                    <input type="text" id="inputStopTime" changeHandler={this.changeHandler} value={(this.props.stopTime).substr(2)} readOnly />
                                 </td>
                                 <td>
-                                    <input type="text" id="inputHoursWorked" changeHandler={this.changeHandler} readOnly />
+                                    <input type="text" id="inputHoursWorked" changeHandler={this.changeHandler} value={this.props.hoursWorked} readOnly />
                                 </td>
                                 <td>
                                     <input type="submit" onSubmit={this.submitForm} value="Submit" />
@@ -74,7 +108,7 @@ class TimerComponent extends Component {
 }
 
 TimerComponent.propTypes = {
-    activeTimer: PropTypes.bool,
+    activeTimer: PropTypes.bool.isRequired,
     startTimer: PropTypes.func.isRequired,
     stopTimer: PropTypes.func.isRequired,
     postData: PropTypes.func.isRequired,
