@@ -236,23 +236,6 @@ class App extends Component {
 
         let timeString = totalHours + '.' + totalMinutes;
         let totalTime = parseFloat(timeString);
-        //let currentTime = now.split(':');
-        //let currentHours = currentTime[1];
-        //let currentMinutes = currentTime[2];
-
-        //let beginningTime = this.state.startTime.split(':');
-        //let startHours = beginningTime[1];
-        //let startMinutes = beginningTime[2];
-
-        //let totalHours = (parseInt(currentHours) - parseInt(startHours));
-        //let totalMinutes = 0;
-        //if (parseInt(currentMinutes) < parseInt(startMinutes)) {
-        //    let extraMinutes = 60 - parseInt(startMinutes);
-        //    totalMinutes = parseInt(currentMinutes) + extraMinutes;
-        //} else {
-        //    totalMinutes = parseInt(currentMinutes) - parseInt(startMinutes);
-        //}
-        //let totalTime = parseFloat(totalHours + '.' + (totalMinutes / 60));
 
         console.log("Total Time: " + totalTime);
         return totalTime;
