@@ -92,7 +92,7 @@ class App extends Component {
             return;
         } else {
             let db = firebase.firestore();
-            db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').get().then((doc) => {
+            db.collection('timers').doc(this.state.user.email).get().then((doc) => {
                 if (doc.exists) {
                     this.setState({ activeTimer: true });
                     this.setState({ startTime: doc.data().Time });
@@ -101,6 +101,17 @@ class App extends Component {
                     this.setState({ startTime: "-" });
                 }
             })
+
+            //old
+            //db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').get().then((doc) => {
+            //    if (doc.exists) {
+            //        this.setState({ activeTimer: true });
+            //        this.setState({ startTime: doc.data().Time });
+            //    } else {
+            //        this.setState({ activeTimer: false });
+            //        this.setState({ startTime: "-" });
+            //    }
+            //})
         }
     }
 
@@ -113,23 +124,38 @@ class App extends Component {
             let newDate = new Date();
             let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes();
             let db = firebase.firestore();
-            db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').get().then((doc) => {
+            db.collection('timers').doc(this.state.user.email).get().then((doc) => {
                 if (doc.exists) {
                     if (!doc.data().Time) {
-                        db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').set({ Time: now });
-                        //TODO: set start time in state
+                        db.collection('timers').doc(this.state.user.email).set({ Time: now });
                         this.setState({ activeTimer: true });
                         this.setState({ startTime: now });
-                        alert("Timer Started!");
+                        alert("Timer started!");
                     }
                 } else {
-                    db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').set({ Time: now });
-                    //TODO: set start time in state
+                    db.collection('timers').doc(this.state.user.email).set({ Time: now });
                     this.setState({ activeTimer: true });
                     this.setState({ startTime: now });
                     alert("Timer Started!");
                 }
             })
+
+            //old
+            //db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').get().then((doc) => {
+            //    if (doc.exists) {
+            //        if (!doc.data().Time) {
+            //            db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').set({ Time: now });
+            //            this.setState({ activeTimer: true });
+            //            this.setState({ startTime: now });
+            //            alert("Timer Started!");
+            //        }
+            //    } else {
+            //        db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').set({ Time: now });
+            //        this.setState({ activeTimer: true });
+            //        this.setState({ startTime: now });
+            //        alert("Timer Started!");
+            //    }
+            //})
         }
     }
 
@@ -142,7 +168,7 @@ class App extends Component {
             let newDate = new Date();
             let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes();
             let db = firebase.firestore();
-            db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').get().then((doc) => {
+            db.collection('timers').doc(this.state.user.email).get().then((doc) => {
                 if (doc.exists) {
                     this.setState({ stopTime: now }, () => {
                         this.setState({ hoursWorked: this.calculateHoursWorked() });
@@ -150,12 +176,22 @@ class App extends Component {
                     this.setState({ activeTimer: false });
                 }
             })
+
+            //old
+            //db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').get().then((doc) => {
+            //    if (doc.exists) {
+            //        this.setState({ stopTime: now }, () => {
+            //            this.setState({ hoursWorked: this.calculateHoursWorked() });
+            //        });
+            //        this.setState({ activeTimer: false });
+            //    }
+            //})
         }
     }
 
     removeTimer = () => {
         let db = firebase.firestore();
-        db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').delete().then(() => {
+        db.collection('timers').doc(this.state.user.email).delete().then(() => {
             this.setState({ activeTimer: false });
             this.setState({ startTime: "-" });
             this.setState({ stopTime: "-" });
@@ -163,6 +199,16 @@ class App extends Component {
         }).catch((error) => {
             console.error("Error deleting: ", error);
         })
+
+        //old
+        //db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').delete().then(() => {
+        //    this.setState({ activeTimer: false });
+        //    this.setState({ startTime: "-" });
+        //    this.setState({ stopTime: "-" });
+        //    this.setState({ hoursWorked: 0 });
+        //}).catch((error) => {
+        //    console.error("Error deleting: ", error);
+        //})
     }
 
     calculateHoursWorked() {
@@ -172,25 +218,27 @@ class App extends Component {
             //Timer is more than 1 day, or new day has begun, user needs to enter time manually.
             return;
         }
+        
+
         let currentTime = now.split(':');
         let currentHours = currentTime[1];
-        let currentMinutes = currentTime[2];
+        //let currentMinutes = currentTime[2];
 
         let beginningTime = this.state.startTime.split(':');
         let startHours = beginningTime[1];
-        let startMinutes = beginningTime[2];
+        //let startMinutes = beginningTime[2];
 
         let totalHours = (parseInt(currentHours) - parseInt(startHours));
-        let totalMinutes = 0;
-        if (parseInt(currentMinutes) < parseInt(startMinutes)) {
-            let extraMinutes = 60 - parseInt(startMinutes);
-            totalMinutes = parseInt(currentMinutes) + extraMinutes;
-        } else {
-            totalMinutes = parseInt(currentMinutes) - parseInt(startMinutes);
-        }
-        let totalTime = totalHours + ':' + totalMinutes;
+        //let totalMinutes = 0;
+        //if (parseInt(currentMinutes) < parseInt(startMinutes)) {
+        //    let extraMinutes = 60 - parseInt(startMinutes);
+        //    totalMinutes = parseInt(currentMinutes) + extraMinutes;
+        //} else {
+        //    totalMinutes = parseInt(currentMinutes) - parseInt(startMinutes);
+        //}
+        //let totalTime = totalHours + ':' + totalMinutes;
 
-        return totalTime;
+        return totalHours;
     }
 
     getFormattedTimeString(date) {
@@ -222,6 +270,11 @@ class App extends Component {
     //Uploads data to the database
     //Renamed to follow conventions
     postData = (data) => {
+
+        if (data.hours < 1) {
+            alert("Hours worked are less than 1");
+            return;
+        }
 
         let db = firebase.firestore();
         db.collection('employees').doc(data.project).set({});

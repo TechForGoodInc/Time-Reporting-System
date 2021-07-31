@@ -83,16 +83,16 @@ class TimerComponent extends Component {
                                     }
                                     {/*<Button className='tempButton' style={{ backgroundColor: 'red' }} onClick={removeTimer} >Delete</Button>*/}
                                 </td>
-                                <td style={{ width: "48%" }}>
+                                <td style={{ width: "65%" }}>
                                     <TextInput changeHandler={this.changeHandler} />
                                 </td>
-                                <td>
+                                <td style={{ width: "5%" }}>
                                     <div>{(this.props.startTime).substr(2)}</div>
                                 </td>
-                                <td>
+                                <td style={{ width: "5%" }}>
                                     <div>{(this.props.stopTime).substr(2)}</div>
                                 </td>
-                                <td>
+                                <td style={{ width: "5%" }}>
                                     <div>{this.props.hoursWorked}</div>
                                 </td>
                                 <td>
