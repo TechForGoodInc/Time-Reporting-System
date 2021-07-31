@@ -218,17 +218,33 @@ class App extends Component {
             //Timer is more than 1 day, or new day has begun, user needs to enter time manually.
             return;
         }
-        
 
         let currentTime = now.split(':');
         let currentHours = currentTime[1];
+        let currentMinutes = currentTime[2];
+        let beginningTime = this.state.startTime.split(':')
+        let startHours = beginningTime[1];
+        let startMinutes = beginningTime[2];
+        let totalHours = (parseFloat(currentHours) - parseFloat(startHours));
+        let totalMinutes = 0;
+        if (parseFloat(currentMinutes) < parseFloat(startMinutes)) {
+            let extraMinutes = 60 - parseFloat(startMinutes);
+            totalMinutes = parseFloat(currentMinutes) + extraMinutes;
+        } else {
+            totalMinutes = parseFloat(currentMinutes) - parseFloat(startMinutes);
+        }
+
+        let timeString = totalHours + '.' + totalMinutes;
+        let totalTime = parseFloat(timeString);
+        //let currentTime = now.split(':');
+        //let currentHours = currentTime[1];
         //let currentMinutes = currentTime[2];
 
-        let beginningTime = this.state.startTime.split(':');
-        let startHours = beginningTime[1];
+        //let beginningTime = this.state.startTime.split(':');
+        //let startHours = beginningTime[1];
         //let startMinutes = beginningTime[2];
 
-        let totalHours = (parseInt(currentHours) - parseInt(startHours));
+        //let totalHours = (parseInt(currentHours) - parseInt(startHours));
         //let totalMinutes = 0;
         //if (parseInt(currentMinutes) < parseInt(startMinutes)) {
         //    let extraMinutes = 60 - parseInt(startMinutes);
@@ -236,9 +252,10 @@ class App extends Component {
         //} else {
         //    totalMinutes = parseInt(currentMinutes) - parseInt(startMinutes);
         //}
-        //let totalTime = totalHours + ':' + totalMinutes;
+        //let totalTime = parseFloat(totalHours + '.' + (totalMinutes / 60));
 
-        return totalHours;
+        console.log("Total Time: " + totalTime);
+        return totalTime;
     }
 
     getFormattedTimeString(date) {
@@ -270,11 +287,6 @@ class App extends Component {
     //Uploads data to the database
     //Renamed to follow conventions
     postData = (data) => {
-
-        if (data.hours < 1) {
-            alert("Hours worked are less than 1");
-            return;
-        }
 
         let db = firebase.firestore();
         db.collection('employees').doc(data.project).set({});

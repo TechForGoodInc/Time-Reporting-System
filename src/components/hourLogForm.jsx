@@ -54,7 +54,7 @@ class HourLogForm extends Component {
                     <DateInput changeHandler={this.changeHandler} />
                     <br />
                     <br />
-                    <NumInput minimum={1} maximum={12} changeHandler={this.changeHandler} />
+                    <NumInput minimum={0} maximum={12} changeHandler={this.changeHandler} />
                     <br />
                     <br />
                     <TextInput changeHandler={this.changeHandler} />
