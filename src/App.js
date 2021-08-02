@@ -7,7 +7,7 @@ import 'firebase/firestore';
 import firebaseConfig from './firebaseCfg.js'
 
 import Header from './components/header';
-import HourLogForm from './components/hourLogForm';
+import HourLogForm from './components/manualEntry';
 
 firebase.initializeApp(firebaseConfig);
 
