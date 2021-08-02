@@ -4,6 +4,7 @@ import DateInput from './dataEntry/dateInput';
 import NumInput from './dataEntry/numInput';
 import ProjectInput from './dataEntry/projectInput';
 import TextInput from './dataEntry/textInput';
+import entryData from './dataEntry/entryData.js';
 
 class HourLogForm extends Component {
     //State of the form
@@ -39,8 +40,7 @@ class HourLogForm extends Component {
             alert("Please enter a more descriptive description");
             return;
         } else {
-            let dummy = require("./dataEntry/entryData.js");
-            let data = new dummy(this.state.date, this.state.hours, this.state.description, this.state.project);
+            let data = new entryData(this.state.date, this.state.hours, this.state.description, this.state.project);
             this.props.post_data(data);
 
             //this.props.post_data(this.state);  - OLD

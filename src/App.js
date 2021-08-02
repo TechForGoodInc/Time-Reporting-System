@@ -211,11 +211,13 @@ class App extends Component {
         //})
     }
 
-    calculateHoursWorked() {
+    calculateHoursWorked = () => {
         let newDate = new Date();
         let now = this.getFormattedTimeString(newDate);
         if (parseInt(newDate.getDay()) !== parseInt(this.state.startTime[0])) {
             //Timer is more than 1 day, or new day has begun, user needs to enter time manually.
+            alert("Timer is more than 24 hours, please enter time manually.");
+            this.removeTimer();
             return;
         }
 
@@ -241,7 +243,7 @@ class App extends Component {
         return totalTime;
     }
 
-    getFormattedTimeString(date) {
+    getFormattedTimeString = (date) => {
         let day = date.getDay()
         let hours = date.getHours();
         let minutes = date.getMinutes();

@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button';
 import ProjectInput from './dataEntry/projectInput';
 import PropTypes from 'prop-types';
 import TextInput from './dataEntry/textInput';
+import entryData from './dataEntry/entryData.js';
 
 class TimerComponent extends Component {
     constructor(props) {
@@ -49,14 +50,13 @@ class TimerComponent extends Component {
             month = "0" + month;
         }
         formattedDate = now.getFullYear() + "-" + month + "-" + day;
-        
-        let dummy = require("./dataEntry/entryData.js");
-        let data = new dummy(formattedDate, this.props.hoursWorked, this.state.description, this.state.project);
+
+        var data = new entryData(formattedDate, this.props.hoursWorked, this.state.description, this.state.project);
 
         this.props.postData(data);
 
-        this.setState({ description: null });
-        this.setState({ project: "unselected" });
+        //this.setState({ description: null });
+        //this.setState({ project: "unselected" });
     }
 
     changeHandler = (event) => {

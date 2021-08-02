@@ -1,4 +1,4 @@
-module.exports = class entryData {
+export default class entryData {
     constructor(date, hours, description, project) {
         this.date = date;
         this.hours = hours;
