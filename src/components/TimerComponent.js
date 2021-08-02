@@ -54,7 +54,7 @@ class TimerComponent extends Component {
         }
         formattedDate = now.getFullYear() + "-" + month + "-" + day;
 
-        var data = new entryData(formattedDate, this.props.hoursWorked, this.state.description, this.state.project);
+        var data = new entryData(formattedDate, this.props.hoursWorked.toString(), this.state.description, this.state.project);
 
         this.props.postData(data);
 
