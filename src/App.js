@@ -115,8 +115,7 @@ class App extends Component {
         }
     }
 
-    startTimer = (e) => {
-        e.preventDefault();
+    startTimer = () => {
 
         if (this.state.activeTimer) {
             alert("User has active timer");
@@ -159,8 +158,7 @@ class App extends Component {
         }
     }
 
-    stopTimer = (e) => {
-        e.preventDefault();
+    stopTimer = () => {
 
         if (!this.state.activeTimer) {
             alert("There is no active timer.");
@@ -291,7 +289,7 @@ class App extends Component {
             } else {
                 dateDoc.update({
                     Entries: firebase.firestore.FieldValue.arrayUnion({
-                        ['Entry' + (snap.data().Entries.length + 1).toString()]: {
+                        ['Entry ' + (snap.data().Entries.length + 1).toString()]: {
                             Hours: data.hours,
                             Work_Performed: data.description
                         }

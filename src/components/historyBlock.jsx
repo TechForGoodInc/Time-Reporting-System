@@ -22,7 +22,7 @@ class HistoryBlock extends Component {
     getTotalHours() {
         let sum = 0;
         for (let entry of this.state.entries) {
-            sum += parseInt(entry['hours']);
+            sum += parseFloat(entry['hours']);
         }
         this.setState({ totalHours: sum });
     }

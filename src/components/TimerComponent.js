@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import Button from 'react-bootstrap/Button';
-import ProjectInput from './dataEntry/projectInput';
 import PropTypes from 'prop-types';
+
+import Button from 'react-bootstrap/Button';
+
+import ProjectInput from './dataEntry/projectInput';
 import TextInput from './dataEntry/textInput';
 import entryData from './dataEntry/entryData.js';
 
@@ -16,6 +18,7 @@ class TimerComponent extends Component {
             hours: 0,
             description: null,
             project: "unselected",
+            show: false
         }
     }
 
@@ -66,9 +69,22 @@ class TimerComponent extends Component {
         })
     }
 
+    togglePopup = () => {
+        this.setState({ show: !this.state.show });
+    }
+
     render = () => {
         return (
             <div className="timerComponent">
+                {this.state.show &&
+                    <div className='popup-window'>
+                    <div className='popup-box'>
+                        <h4 style={{ marginBottom: '20px' }}>Are you sure you want to stop the timer?</h4>
+                        <Button variant='secondary' style={{ float: 'left', display: 'inline-block', width: '44%', marginInline: '3%'}} onClick={this.togglePopup}>Cancel</Button>
+                        <Button variant='danger' style={{ float: 'right', display: 'inline-block', width: '44%', marginInline: '3%' }} onClick={() => { this.togglePopup(); this.props.stopTimer() }}>Stop Timer</Button>
+                        </div>
+                    </div>
+                }
                 <form onSubmit={this.submitForm}>
                     <table>
                         <tbody>
@@ -78,8 +94,9 @@ class TimerComponent extends Component {
                                 </td>
                                 <td>
                                     {this.props.activeTimer ?
-                                        <Button className="tempButton" style={{ backgroundColor: "red" }} onClick={this.props.stopTimer} >Stop</Button> :
-                                        <Button className="tempButton" style={{ backgroundColor: "4CAF50" }} onClick={this.props.startTimer}>Start</Button>
+                                        <Button variant='danger' onClick={this.togglePopup} >Stop</Button> :
+                                        //If the timer was started and is now stopped, we show nothing. Otherwise, the timer isn't started so we show the start button
+                                        this.props.stopTime.length <= 1 && <Button variant='success' onClick={this.props.startTimer}>Start</Button>
                                     }
                                     {/*<Button className='tempButton' style={{ backgroundColor: 'red' }} onClick={removeTimer} >Delete</Button>*/}
                                 </td>
@@ -96,8 +113,9 @@ class TimerComponent extends Component {
                                     <div>{this.props.hoursWorked}</div>
                                 </td>
                                 <td>
-                                    <input type="submit" onSubmit={this.submitForm} value="Submit" />
+                                    <Button variant='success' type='submit' onSubmit={this.submitForm}>Submit</Button>
                                 </td>
+
                             </tr>
                         </tbody>
                     </table>

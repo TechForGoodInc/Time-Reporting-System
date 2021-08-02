@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import Button from 'react-bootstrap/Button';
+
 import DateInput from './dataEntry/dateInput';
 import NumInput from './dataEntry/numInput';
 import ProjectInput from './dataEntry/projectInput';
@@ -50,7 +52,7 @@ class HourLogForm extends Component {
     render() {
         return (
             <div>
-                <form onSubmit={this.handleSubmit}>
+                <form id='hourEntryForm' onSubmit={this.handleSubmit}>
                     <DateInput changeHandler={this.changeHandler} />
                     <br />
                     <br />
@@ -62,7 +64,7 @@ class HourLogForm extends Component {
                     <br />
                     <ProjectInput changeHandler={this.changeHandler} />
 
-                    <input type="submit" value="Submit" />
+                    <Button variant='success' type='submit' style={{ marginTop: '20px', width: '100%' }}>Submit</Button>
                 </form>
             </div>
         );
