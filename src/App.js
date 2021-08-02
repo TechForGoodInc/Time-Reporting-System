@@ -419,7 +419,7 @@ class App extends Component {
             <div className='App'>
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
                 <HourLogger postData={this.postData} activeTimer={this.state.activeTimer}
-                    startTimer={this.startTimer} stopTimer={this.stopTimer} startTime={this.state.startTime}
+                    startTimer={this.startTimer} stopTimer={this.stopTimer} removeTimer={this.removeTimer} startTime={this.state.startTime}
                     stopTime={this.state.stopTime} hoursWorked={this.state.hoursWorked} />
                 <br/>
                 <br/>

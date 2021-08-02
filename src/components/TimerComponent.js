@@ -18,7 +18,11 @@ class TimerComponent extends Component {
             hours: 0,
             description: null,
             project: "unselected",
-            show: false
+            show: false,
+            timerBarState: 
+                this.props.activeTimer ?
+                    'timer started' :
+                    this.props.stopTime.length <= 1 ? 'timer not started' : 'timer stopped'
         }
     }
 
@@ -73,7 +77,63 @@ class TimerComponent extends Component {
         this.setState({ show: !this.state.show });
     }
 
+    getNotStartedTimerBar() {
+        return (
+            <tbody>
+                <tr>
+                    <td>
+                        <Button variant='success' onClick={this.props.startTimer}>Start Timer</Button>
+                    </td>
+                </tr>
+            </tbody>
+        )
+    }
+
+    getStartedTimerBar() {
+        return (
+            <tbody>
+                <tr>
+                    <td>
+                        <Button variant='danger' onClick={this.togglePopup} >Stop Timer</Button>
+                    </td>
+                </tr>
+            </tbody>
+        )
+    }
+
+    getStoppedTimerBar() {
+        console.log(this.props.startTime);
+        return (
+            <tbody>
+                <tr>
+                    <td style={{ width: "20%" }}>
+                        <ProjectInput changeHandler={this.changeHandler} />
+                    </td>
+                    <td style={{ width: "65%" }}>
+                        <TextInput changeHandler={this.changeHandler} />
+                    </td>
+                    <td style={{ width: "5%", textAlign: 'center'}}>
+                        <p>{(this.props.startTime)}</p>
+                    </td>
+                    <td style={{ width: "5%", textAlign: 'center' }}>
+                        <p>{(this.props.stopTime)}</p>
+                    </td>
+                    <td style={{ width: "5%", textAlign: 'center' }}>
+                        <p>{this.props.hoursWorked}</p>
+                    </td>
+                </tr>
+                <tr>
+                        <Button variant='secondary' onClick={this.props.removeTimer}>Delete this entry</Button>
+                        <Button variant='success' type='submit' onSubmit={this.submitForm}>Submit</Button>
+                </tr>
+            </tbody>
+        )
+    }
+
     render = () => {
+        const startedTimerBar = this.getStartedTimerBar(); //When the timer is started and user is not ready to submit
+        const notStartedTimerBar = this.getNotStartedTimerBar(); //When the timer has not been started
+        const stoppedTimerBar = this.getStoppedTimerBar(); //When the timer is stopped and user is going to submit
         return (
             <div className="timerComponent">
                 {this.state.show &&
@@ -81,43 +141,17 @@ class TimerComponent extends Component {
                     <div className='popup-box'>
                         <h4 style={{ marginBottom: '20px' }}>Are you sure you want to stop the timer?</h4>
                         <Button variant='secondary' style={{ float: 'left', display: 'inline-block', width: '44%', marginInline: '3%'}} onClick={this.togglePopup}>Cancel</Button>
-                        <Button variant='danger' style={{ float: 'right', display: 'inline-block', width: '44%', marginInline: '3%' }} onClick={() => { this.togglePopup(); this.props.stopTimer() }}>Stop Timer</Button>
+                        <Button variant='danger' style={{ float: 'right', display: 'inline-block', width: '44%', marginInline: '3%' }} onClick={() => { this.togglePopup(); this.props.stopTimer(); this.setState({ timerBarState: 'timer stopped' }) }}>Stop Timer</Button>
                         </div>
                     </div>
                 }
                 <form onSubmit={this.submitForm}>
                     <table>
-                        <tbody>
-                            <tr>
-                                <td style={{ width: "20%" }}>
-                                    <ProjectInput changeHandler={this.changeHandler} />
-                                </td>
-                                <td>
-                                    {this.props.activeTimer ?
-                                        <Button variant='danger' onClick={this.togglePopup} >Stop</Button> :
-                                        //If the timer was started and is now stopped, we show nothing. Otherwise, the timer isn't started so we show the start button
-                                        this.props.stopTime.length <= 1 && <Button variant='success' onClick={this.props.startTimer}>Start</Button>
-                                    }
-                                    {/*<Button className='tempButton' style={{ backgroundColor: 'red' }} onClick={removeTimer} >Delete</Button>*/}
-                                </td>
-                                <td style={{ width: "65%" }}>
-                                    <TextInput changeHandler={this.changeHandler} />
-                                </td>
-                                <td style={{ width: "5%" }}>
-                                    <div>{(this.props.startTime).substr(2)}</div>
-                                </td>
-                                <td style={{ width: "5%" }}>
-                                    <div>{(this.props.stopTime).substr(2)}</div>
-                                </td>
-                                <td style={{ width: "5%" }}>
-                                    <div>{this.props.hoursWorked}</div>
-                                </td>
-                                <td>
-                                    <Button variant='success' type='submit' onSubmit={this.submitForm}>Submit</Button>
-                                </td>
-
-                            </tr>
-                        </tbody>
+                        {this.props.activeTimer ?
+                            startedTimerBar :
+                            this.props.stopTime.length <= 1 ?
+                                notStartedTimerBar : stoppedTimerBar
+                        }
                     </table>
                 </form>
             </div>

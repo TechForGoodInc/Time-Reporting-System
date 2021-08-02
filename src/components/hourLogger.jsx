@@ -16,7 +16,7 @@ class HourLogger extends Component {
 				</Tab>
 				<Tab className='hourLoggerTab' eventKey='timer-entry' title='Timer Entry'>
 					<TimerComponent postData={this.props.postData} activeTimer={this.props.activeTimer}
-						startTimer={this.props.startTimer} stopTimer={this.props.stopTimer} startTime={this.props.startTime}
+						startTimer={this.props.startTimer} stopTimer={this.props.stopTimer} removeTimer={this.props.removeTimer} startTime={this.props.startTime}
 						stopTime={this.props.stopTime} hoursWorked={this.props.hoursWorked} />
 
 				</Tab>
