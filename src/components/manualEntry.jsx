@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 
+import Button from 'react-bootstrap/Button';
+
 import DateInput from './dataEntry/dateInput';
 import NumInput from './dataEntry/numInput';
 import ProjectInput from './dataEntry/projectInput';
 import TextInput from './dataEntry/textInput';
+import entryData from './dataEntry/entryData.js';
 
-class HourLogForm extends Component {
+class ManualEntry extends Component {
     //State of the form
     state = {
         date: null,
@@ -36,21 +39,24 @@ class HourLogForm extends Component {
             alert("Please enter a description");
             return;
         } else if (descString.length <= 6) { //6 is an arbitrary number; 'worked' is 6 letters.
-            alert("Please enter a more descriptive description");
+            alert("Please enter a more expressive description");
             return;
         } else {
-            this.props.post_data(this.state);
+            let data = new entryData(this.state.date, this.state.hours.toString(), this.state.description, this.state.project);
+            this.props.post_data(data);
+
+            //this.props.post_data(this.state);  - OLD
         }
     }
 
     render() {
         return (
             <div>
-                <form onSubmit={this.handleSubmit}>
+                <form id='hourEntryForm' onSubmit={this.handleSubmit}>
                     <DateInput changeHandler={this.changeHandler} />
                     <br />
                     <br />
-                    <NumInput minimum={1} maximum={12} changeHandler={this.changeHandler} />
+                    <NumInput minimum={0} maximum={14} changeHandler={this.changeHandler} />
                     <br />
                     <br />
                     <TextInput changeHandler={this.changeHandler} />
@@ -58,11 +64,11 @@ class HourLogForm extends Component {
                     <br />
                     <ProjectInput changeHandler={this.changeHandler} />
 
-                    <input type="submit" value="Submit" />
+                    <Button variant='success' type='submit' style={{ marginTop: '20px', width: '100%' }}>Submit</Button>
                 </form>
             </div>
         );
     }
 }
 
-export default HourLogForm;
+export default ManualEntry;
