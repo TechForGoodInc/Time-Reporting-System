@@ -40,7 +40,7 @@ class HourLogForm extends Component {
             alert("Please enter a more descriptive description");
             return;
         } else {
-            let data = new entryData(this.state.date, this.state.hours, this.state.description, this.state.project);
+            let data = new entryData(this.state.date, this.state.hours.toString(), this.state.description, this.state.project);
             this.props.post_data(data);
 
             //this.props.post_data(this.state);  - OLD
