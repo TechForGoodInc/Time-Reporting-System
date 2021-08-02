@@ -6,21 +6,7 @@ import ProjectInput from './dataEntry/projectInput';
 import TextInput from './dataEntry/textInput';
 
 class manualEntry extends Component {
-    componentDidMount(){
-        document.title = "manualEntry"
-      }
 
-      render(){
-        return(
-          <b> test </b>
-        )
-      }
-    }
-    
-    ReactDOM.render(
-      <Doc />,
-      document.getElementById('container')
-    );
     //State of the form
     state = {
         date: null,
@@ -58,7 +44,7 @@ class manualEntry extends Component {
         }
     }
 
-    render() ;{
+    render() {
         return (
             <div>
                 <form onSubmit={this.handleSubmit}>
@@ -77,6 +63,7 @@ class manualEntry extends Component {
                 </form>
             </div>
         );
-    };
+    }
+}
 
 export default manualEntry;
