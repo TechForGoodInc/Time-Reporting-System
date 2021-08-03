@@ -86,7 +86,7 @@ class HistoryBlock extends Component {
             <div style={{ border: '2px solid rgba(0, 0, 0, 0.05)', borderRadius: '5px', padding: '20px', background: 'white'}}>
                 <div>
                     <h6 align="center">{this.getDay()}</h6>
-                    <h6 align="right">Total Hours: {this.state.totalHours}</h6>
+                    <h6 align="right">Total Hours: {this.state.totalHours && this.state.totalHours.toFixed(1)}</h6>
                 </div>
                 {(this.state.totalHours === 0) ? <h6>You have no entries for this date</h6> :
                     (this.state.entries.length === 0) ? <h6 align='center'>Loading...</h6> :

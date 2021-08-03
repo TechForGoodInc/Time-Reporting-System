@@ -11,19 +11,22 @@ class TimerComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTimer: props.activeTimer,
-            startTimer: null,
-            stopTimer: null,
-            postData: null,
-            hours: 0,
             description: null,
             project: "unselected",
-            show: false,
-            timerBarState: 
-                this.props.activeTimer ?
-                    'timer started' :
-                    this.props.stopTime.length <= 1 ? 'timer not started' : 'timer stopped'
+            showPopup: false,
+            startTimeAsDate: null,
+            submitting: false,
+            time: {
+                hours: 0,
+                minutes: 0,
+                seconds: 0,
+                milliseconds: 0
+            }
         }
+    }
+
+    componentDidMount = () => {
+        
     }
 
     submitForm = (event) => {
@@ -74,7 +77,7 @@ class TimerComponent extends Component {
     }
 
     togglePopup = () => {
-        this.setState({ show: !this.state.show });
+        this.setState({ showPopup: !this.state.showPopup });
     }
 
     getNotStartedTimerBar() {
@@ -83,6 +86,9 @@ class TimerComponent extends Component {
                 <tr>
                     <td>
                         <Button variant='success' onClick={this.props.startTimer}>Start Timer</Button>
+                    </td>
+                    <td>
+                        00:00:00
                     </td>
                 </tr>
             </tbody>
@@ -96,13 +102,15 @@ class TimerComponent extends Component {
                     <td>
                         <Button variant='danger' onClick={this.togglePopup} >Stop Timer</Button>
                     </td>
+                    <td>
+                        {this.state.time.hours}:{this.state.time.minutes}:{this.state.time.seconds}
+                    </td>
                 </tr>
             </tbody>
         )
     }
 
     getStoppedTimerBar() {
-        console.log(this.props.startTime);
         return (
             <tbody>
                 <tr>
@@ -112,7 +120,7 @@ class TimerComponent extends Component {
                     <td style={{ width: "65%" }}>
                         <TextInput changeHandler={this.changeHandler} />
                     </td>
-                    <td style={{ width: "5%", textAlign: 'center'}}>
+                    <td style={{ width: "5%", textAlign: 'center' }}>
                         <p>{(this.props.startTime)}</p>
                     </td>
                     <td style={{ width: "5%", textAlign: 'center' }}>
@@ -123,25 +131,89 @@ class TimerComponent extends Component {
                     </td>
                 </tr>
                 <tr>
-                        <Button variant='secondary' onClick={this.props.removeTimer}>Delete this entry</Button>
-                        <Button variant='success' type='submit' onSubmit={this.submitForm}>Submit</Button>
+                    <td>
+                        <Button variant='secondary' onClick={() => {
+                            this.props.removeTimer();
+                            clearInterval(this.intervalID);
+                            this.setState({ submitting: false });
+                        }}>Delete this entry</Button>
+                        <Button variant='success' type='submit' onClick={() => { this.setState({ submitting: false }); }}>Submit</Button>
+                    </td>
                 </tr>
             </tbody>
         )
+    }
+
+    msToTime(duration) {
+        let milliseconds = parseInt((duration % 1000));
+        let seconds = Math.floor((duration / 1000) % 60);
+        let minutes = Math.floor((duration / (1000 * 60)) % 60);
+        let hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+        hours = hours.toString().padStart(2, '0');
+        minutes = minutes.toString().padStart(2, '0');
+        seconds = seconds.toString().padStart(2, '0');
+        milliseconds = milliseconds.toString().padStart(3, '0');
+
+        return {
+            hours,
+            minutes,
+            seconds,
+            milliseconds
+        };
+    }
+
+    run() {
+        const diff = Date.now() - this.state.startTimeAsDate;
+        this.setState(() => ({
+        time: this.msToTime(diff)
+    }));
+    }
+
+    startClock = () => {
+        console.log('start time =', this.props.startTime)
+        let stad = new Date();
+        let split = this.props.startTime.split(':');
+        let splitInt = [];
+        for (const e of split) splitInt.push(parseInt(e));
+        stad.setHours(splitInt[0], splitInt[1], splitInt[2], 0);
+
+        this.setState({ startTimeAsDate: stad });
+        this.intervalID = setInterval(() => this.run(), 1000);
+    }
+
+    stopTimer = () => {
+        this.togglePopup();
+        this.props.stopTimer();
+        this.setState({ submitting: true });
+
+        let temp = this.intervalID;
+        clearInterval(temp);
+        this.intervalID = null;
+    }
+
+    componentDidUpdate = () => {
+        console.log(!this.intervalID, this.props.activeTimer, this.props.startTime.length > 1, !this.state.submitting)
+        if (!this.intervalID && this.props.activeTimer && this.props.startTime.length > 1 && !this.state.submitting) {
+            this.startClock();
+        }
     }
 
     render = () => {
         const startedTimerBar = this.getStartedTimerBar(); //When the timer is started and user is not ready to submit
         const notStartedTimerBar = this.getNotStartedTimerBar(); //When the timer has not been started
         const stoppedTimerBar = this.getStoppedTimerBar(); //When the timer is stopped and user is going to submit
+
+        
+
         return (
             <div className="timerComponent">
-                {this.state.show &&
+                {this.state.showPopup &&
                     <div className='popup-window'>
                     <div className='popup-box'>
                         <h4 style={{ marginBottom: '20px' }}>Are you sure you want to stop the timer?</h4>
                         <Button variant='secondary' style={{ float: 'left', display: 'inline-block', width: '44%', marginInline: '3%'}} onClick={this.togglePopup}>Cancel</Button>
-                        <Button variant='danger' style={{ float: 'right', display: 'inline-block', width: '44%', marginInline: '3%' }} onClick={() => { this.togglePopup(); this.props.stopTimer(); this.setState({ timerBarState: 'timer stopped' }) }}>Stop Timer</Button>
+                        <Button variant='danger' style={{ float: 'right', display: 'inline-block', width: '44%', marginInline: '3%' }} onClick={this.stopTimer}>Stop Timer</Button>
                         </div>
                     </div>
                 }

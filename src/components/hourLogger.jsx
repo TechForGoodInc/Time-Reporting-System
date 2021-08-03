@@ -8,9 +8,24 @@ import TimerComponent from './TimerComponent';
 
 class HourLogger extends Component {
 
+	state = {
+		key: 'manual-entry'
+    }
+
+	componentDidUpdate() {
+		if (this.props.activeTimer && this.state.key !== 'timer-entry')
+			this.setState({ key: 'timer-entry' });
+	}
+
+	componentdid
+
+	setKey = (k) => {
+		this.setState({ key: k });
+    }
+
 	render() {
 		return (
-			<Tabs defaultActiveKey='manual-entry'>
+			<Tabs id='hourLoggerTabs' activeKey={this.state.key} onSelect={(k) => this.setKey(k)}>
 				<Tab className='hourLoggerTab' eventKey='manual-entry' title='Manual Entry'>
 					<ManualEntry post_data={this.props.postData}/>
 				</Tab>
