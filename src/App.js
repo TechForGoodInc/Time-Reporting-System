@@ -8,6 +8,7 @@ import firebaseConfig from './firebaseCfg.js'
 import Header from './components/header';
 import HourLogForm from './components/hourLogForm';
 import History from "./components/history";
+import FeedbackModal from './components/FeedbackModal';
 
 firebase.initializeApp(firebaseConfig);
 
@@ -16,7 +17,8 @@ class App extends Component {
         super();
         this.state = {
             user: null,
-            formInfo: null
+            formInfo: null,
+            modalOpen: false
         }
     }
 
@@ -202,14 +204,19 @@ class App extends Component {
         return [];
     }
 
+    changeModalState = (value) => {
+        this.setState({ modalOpen: value });
+    }
+
     render = () => {
         return (
             <div className='App'>
-                <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
+                <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} openModal={this.changeModalState} />
                 <HourLogForm post_data={this.post_data}/>
                 <br/>
                 <br/>
                 <History getEntries={this.getEntriesBetweenDates} display_history={this.display_history} />
+                { this.state.modalOpen && < FeedbackModal closeModal={this.changeModalState} firebase={firebase} user={this.state.user} />}
             </div>
         );
     }
