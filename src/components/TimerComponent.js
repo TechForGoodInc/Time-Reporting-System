@@ -176,7 +176,8 @@ class TimerComponent extends Component {
         let split = this.props.startTime.split(':');
         let splitInt = [];
         for (const e of split) splitInt.push(parseInt(e));
-        stad.setHours(splitInt[0], splitInt[1], splitInt[2], 0);
+        //stad.setHours(splitInt[1], splitInt[2], 0);
+        stad.setHours(split[1], split[2], 0);
 
         this.setState({ startTimeAsDate: stad });
         this.intervalID = setInterval(() => this.run(), 1000);

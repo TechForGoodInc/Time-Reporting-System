@@ -234,9 +234,13 @@ class App extends Component {
             totalMinutes = parseFloat(currentMinutes) - parseFloat(startMinutes);
         }
 
-        let timeString = totalHours + '.' + totalMinutes;
+        totalMinutes = totalMinutes / 60;
+        let minutes = totalMinutes.toString().split('.');
+
+        let timeString = totalHours + '.' + minutes[1];
         let totalTime = parseFloat(timeString);
 
+        console.log("Time string: " + timeString);
         console.log("Total Time: " + totalTime);
         return totalTime;
     }
