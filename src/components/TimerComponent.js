@@ -114,10 +114,17 @@ class TimerComponent extends Component {
         return (
             <tbody>
                 <tr>
+                    <th></th>
+                    <th></th>
+                    <th style={{ textAlign: 'center' }}>Started</th>
+                    <th style={{ textAlign: 'center' }}>Stopped</th>
+                    <th style={{ textAlign: 'center' }}>Hours</th>
+                </tr>
+                <tr>
                     <td style={{ width: "20%" }}>
                         <ProjectInput changeHandler={this.changeHandler} />
                     </td>
-                    <td style={{ width: "65%" }}>
+                    <td style={{ width: "70%" }}>
                         <TextInput changeHandler={this.changeHandler} />
                     </td>
                     <td style={{ width: "5%", textAlign: 'center' }}>
