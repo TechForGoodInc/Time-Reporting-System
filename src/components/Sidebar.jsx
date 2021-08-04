@@ -13,7 +13,7 @@ export default props => {
       </a>
 
       <a className="menu-item" href="/...">
-        Calander
+        Calendar
       </a>
 
       <a className="menu-item" href="/...">
