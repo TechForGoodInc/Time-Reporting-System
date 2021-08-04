@@ -268,11 +268,13 @@ class App extends Component {
   render = () => {
     return (
       <div style={{ padding: '20px' }}>
-        <Router />
         <Header
           handleLogout={this.handleLogout}
           email={this.state.user ? this.state.user.email : ''}
         />
+        <Nav />
+        <Router />
+
         {/* <HourLogForm post_data={this.post_data} />*/}
 
         <History
