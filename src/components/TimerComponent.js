@@ -116,9 +116,9 @@ class TimerComponent extends Component {
                 <tr>
                     <th></th>
                     <th></th>
-                    <th style={{ textAlign: 'center' }}>Started</th>
-                    <th style={{ textAlign: 'center' }}>Stopped</th>
-                    <th style={{ textAlign: 'center' }}>Hours</th>
+                    <th style={{ color:'green', textAlign: 'center' }}>Started</th>
+                    <th style={{ color:'green', textAlign: 'center' }}>Stopped</th>
+                    <th style={{ color:'green', textAlign: 'center' }}>Hours</th>
                 </tr>
                 <tr>
                     <td style={{ width: "20%" }}>
