@@ -10,7 +10,7 @@ function FeedbackModal({ closeModal, firebase, user }) {
 
     const submitFeedback = () => {
         if (feedbackType === "" || feedback === "" || feedbackTitle === "") {
-            alert("Please fil out the required fields");
+            alert("Please fill out the required fields");
             return;
         } else {
             postFeedback();
@@ -18,27 +18,43 @@ function FeedbackModal({ closeModal, firebase, user }) {
     }
 
     const postFeedback = () => {
-        let now = new Date();
+        let now = new Date().toString();
         let db = firebase.firestore();
-        db.collection("report-system").doc(feedbackType).collection(user.email).doc(now.toString()).get().then((doc) => {
-            if (doc.exists) {
-                db.collection("report-system").doc(feedbackType).collection(user.email).doc(now.toString()).set({
-                    Title: feedbackTitle,
-                    Feedback: feedback
-                });
-            } else {
-                db.collection("report-system").doc(feedbackType).collection(user.email).doc(now.toString()).set({
-                    Title: feedbackTitle,
-                    Feedback: feedback
-                });
-            }
+
+        db.collection("report-system").add({
+            Date: now,
+            Title: feedbackTitle,
+            Feedback: feedback,
+            Type: feedbackType,
+            Email: user.email
         }).then(() => {
             alert((feedbackType === "bug") ? "Thanks for reporting this bug." : "Thanks for contacting us.");
             setFeedback("");
             setFeedbackTitle("");
             setFeedbackType("");
             closeModal(false);
-        });
+        })
+
+        //Previous version
+        //db.collection("report-system").doc(feedbackType).collection(user.email).doc(now.toString()).get().then((doc) => {
+        //    if (doc.exists) {
+        //        db.collection("report-system").doc(feedbackType).collection(user.email).doc(now.toString()).set({
+        //            Title: feedbackTitle,
+        //            Feedback: feedback
+        //        });
+        //    } else {
+        //        db.collection("report-system").doc(feedbackType).collection(user.email).doc(now.toString()).set({
+        //            Title: feedbackTitle,
+        //            Feedback: feedback
+        //        });
+        //    }
+        //}).then(() => {
+        //    alert((feedbackType === "bug") ? "Thanks for reporting this bug." : "Thanks for contacting us.");
+        //    setFeedback("");
+        //    setFeedbackTitle("");
+        //    setFeedbackType("");
+        //    closeModal(false);
+        //});
     }
 
     return (
