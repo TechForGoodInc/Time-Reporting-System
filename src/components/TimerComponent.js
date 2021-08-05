@@ -138,12 +138,15 @@ class TimerComponent extends Component {
                     </td>
                 </tr>
                 <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                     <td>
                         <Button variant='secondary' onClick={() => {
                             this.props.removeTimer();
                             clearInterval(this.intervalID);
                             this.setState({ submitting: false });
-                        }}>Delete this entry</Button>
+                        }}>Delete</Button>
                         <Button variant='success' type='submit' onClick={() => { this.setState({ submitting: false }); }}>Submit</Button>
                     </td>
                 </tr>
