@@ -101,17 +101,6 @@ class App extends Component {
                     this.setState({ startTime: "-" });
                 }
             })
-
-            //old
-            //db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').get().then((doc) => {
-            //    if (doc.exists) {
-            //        this.setState({ activeTimer: true });
-            //        this.setState({ startTime: doc.data().Time });
-            //    } else {
-            //        this.setState({ activeTimer: false });
-            //        this.setState({ startTime: "-" });
-            //    }
-            //})
         }
     }
 
@@ -138,23 +127,6 @@ class App extends Component {
                     alert("Timer Started!");
                 }
             })
-
-            //old
-            //db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').get().then((doc) => {
-            //    if (doc.exists) {
-            //        if (!doc.data().Time) {
-            //            db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').set({ Time: now });
-            //            this.setState({ activeTimer: true });
-            //            this.setState({ startTime: now });
-            //            alert("Timer Started!");
-            //        }
-            //    } else {
-            //        db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').set({ Time: now });
-            //        this.setState({ activeTimer: true });
-            //        this.setState({ startTime: now });
-            //        alert("Timer Started!");
-            //    }
-            //})
         }
     }
 
@@ -174,16 +146,6 @@ class App extends Component {
                     this.setState({ activeTimer: false });
                 }
             })
-
-            //old
-            //db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').get().then((doc) => {
-            //    if (doc.exists) {
-            //        this.setState({ stopTime: now }, () => {
-            //            this.setState({ hoursWorked: this.calculateHoursWorked() });
-            //        });
-            //        this.setState({ activeTimer: false });
-            //    }
-            //})
         }
     }
 
@@ -197,16 +159,6 @@ class App extends Component {
         }).catch((error) => {
             console.error("Error deleting: ", error);
         })
-
-        //old
-        //db.collection('timers').doc(this.state.user.email).collection('timer').doc('time').delete().then(() => {
-        //    this.setState({ activeTimer: false });
-        //    this.setState({ startTime: "-" });
-        //    this.setState({ stopTime: "-" });
-        //    this.setState({ hoursWorked: 0 });
-        //}).catch((error) => {
-        //    console.error("Error deleting: ", error);
-        //})
     }
 
     calculateHoursWorked = () => {

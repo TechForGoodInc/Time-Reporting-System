@@ -25,10 +25,6 @@ class TimerComponent extends Component {
         }
     }
 
-    componentDidMount = () => {
-        
-    }
-
     submitForm = (event) => {
         event.preventDefault();
 
@@ -61,7 +57,7 @@ class TimerComponent extends Component {
         }
         formattedDate = now.getFullYear() + "-" + month + "-" + day;
 
-        var data = new entryData(formattedDate, this.props.hoursWorked.toString(), this.state.description, this.state.project);
+        var data = new entryData(formattedDate, this.props.hoursWorked.toFixed(2).toString(), this.state.description, this.state.project);
 
         this.props.postData(data);
     }
@@ -134,36 +130,38 @@ class TimerComponent extends Component {
         return (
             <div>
                 <table>
-                    <tr>
-                        <td style={{ width: '1%' }}>
-                            <ProjectInput changeHandler={this.changeHandler} />
-                        </td>
-                        <td>
-                            <TextInput changeHandler={this.changeHandler} />
-                        </td>
-                        <td className='hour-entry-bar-large' width='1%'>
-                            <table width='200px'>
-                                <tbody>
-                                    <tr>
-                                        <th style={{ color: 'green', textAlign: 'center', width: '500px' }}>Start</th>
-                                        <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Stop</th>
-                                        <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Hours</th>
-                                    </tr>
-                                    <tr>
-                                        <td style={{ width: "33.3%", textAlign: 'center' }}>
-                                            <p>{this.formatTime(this.props.startTime).substring(3)}</p>
-                                        </td>
-                                        <td style={{ width: "33.3%", textAlign: 'center' }}>
-                                            <p>{this.formatTime(this.props.stopTime).substring(3)}</p>
-                                        </td>
-                                        <td style={{ width: "33.3%", textAlign: 'center' }}>
-                                            <p>{this.props.hoursWorked.toFixed(2)}</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <td style={{ width: '1%' }}>
+                                <ProjectInput changeHandler={this.changeHandler} />
+                            </td>
+                            <td>
+                                <TextInput changeHandler={this.changeHandler} />
+                            </td>
+                            <td className='hour-entry-bar-large' width='1%'>
+                                <table width='200px'>
+                                    <tbody>
+                                        <tr>
+                                            <th style={{ color: 'green', textAlign: 'center', width: '500px' }}>Start</th>
+                                            <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Stop</th>
+                                            <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Hours</th>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                                <p>{this.formatTime(this.props.startTime).substring(3)}</p>
+                                            </td>
+                                            <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                                <p>{this.formatTime(this.props.stopTime).substring(3)}</p>
+                                            </td>
+                                            <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                                <p>{this.props.hoursWorked.toFixed(2)}</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
 
                 <table className='hour-entry-bar-small' width='200px'>
@@ -194,7 +192,7 @@ class TimerComponent extends Component {
                         this.setState({ submitting: false });
                     }}
                     >Delete</Button>
-                    <Button variant='success' type='submit' style={{ width: '100px', float: 'right', marginInline: '10px'}} onClick={() => { this.setState({ submitting: false }); }}>Submit</Button>
+                    <Button variant='success' type='submit' style={{ width: '100px', float: 'right', marginInline: '10px' }} onClick={() => { this.setState({ submitting: false }); }}>Submit</Button>
                 </div>
             </div>
         )
@@ -230,10 +228,7 @@ class TimerComponent extends Component {
         console.log('start time =', this.props.startTime)
         let stad = new Date();
         let split = this.props.startTime.split(':');
-        let splitInt = [];
-        for (const e of split) splitInt.push(parseInt(e));
-        //stad.setHours(splitInt[1], splitInt[2], 0);
-        stad.setHours(split[1], split[2], 0);
+        stad.setHours(split[1], split[2], split[3]);
 
         this.setState({ startTimeAsDate: stad });
         this.intervalID = setInterval(() => this.run(), 1000);
