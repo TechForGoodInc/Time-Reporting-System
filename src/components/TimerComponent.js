@@ -11,15 +11,22 @@ class TimerComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTimer: props.activeTimer,
-            startTimer: null,
-            stopTimer: null,
-            postData: null,
-            hours: 0,
             description: null,
             project: "unselected",
-            show: false
+            showPopup: false,
+            startTimeAsDate: null,
+            submitting: false,
+            time: {
+                hours: 0,
+                minutes: 0,
+                seconds: 0,
+                milliseconds: 0
+            }
         }
+    }
+
+    componentDidMount = () => {
+        
     }
 
     submitForm = (event) => {
@@ -70,54 +77,175 @@ class TimerComponent extends Component {
     }
 
     togglePopup = () => {
-        this.setState({ show: !this.state.show });
+        this.setState({ showPopup: !this.state.showPopup });
+    }
+
+    formatTime(d) {
+        let arr = d.split(':');
+        let newArr = [];
+        if (d[0] !== '-') {
+            for (let i = 0; i < arr.length; ++i) {
+                if (d[i] !== '-')
+                    newArr.push(arr[i].length === 1 ? '0'.concat(arr[i]) : arr[i]);
+            }
+            return newArr[0] + ':' + newArr[1] + ':' + newArr[2];
+        }
+
+        return d;
+    }
+
+    getNotStartedTimerBar() {
+        return (
+            <tbody>
+                <tr>
+                    <td>
+                        <Button variant='success' onClick={this.props.startTimer}>Start Timer</Button>
+                    </td>
+                    <td>
+                        00:00:00
+                    </td>
+                </tr>
+            </tbody>
+        )
+    }
+
+    getStartedTimerBar() {
+        return (
+            <tbody>
+                <tr>
+                    <td>
+                        <Button variant='danger' onClick={this.togglePopup} >Stop Timer</Button>
+                    </td>
+                    <td>
+                        {this.formatTime(this.state.time.hours + ':' + this.state.time.minutes + ':' + this.state.time.seconds)}
+                    </td>
+                </tr>
+            </tbody>
+        )
+    }
+
+    getStoppedTimerBar() {
+        return (
+            <tbody>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th style={{ color: 'green', textAlign: 'center', width: '500px' }}>Start</th>
+                    <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Stop</th>
+                    <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Hours</th>
+                </tr>
+                <tr>
+                    <td style={{ width: "20%" }}>
+                        <ProjectInput changeHandler={this.changeHandler} />
+                    </td>
+                    <td style={{ width: "70%" }}>
+                        <TextInput changeHandler={this.changeHandler} />
+                    </td>
+                    <td style={{ width: "5%", textAlign: 'center' }}>
+                        <p>{this.formatTime(this.props.startTime).substring(3)}</p>
+                    </td>
+                    <td style={{ width: "5%", textAlign: 'center' }}>
+                        <p>{this.formatTime(this.props.stopTime).substring(3)}</p>
+                    </td>
+                    <td style={{ width: "5%", textAlign: 'center' }}>
+                        <p>{this.props.hoursWorked.toFixed(2)}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colSpan='5' style={{ textAlign: 'right' }}>
+                        <Button variant='secondary' style={{ float: 'left' }} onClick={() => {
+                            this.props.removeTimer();
+                            clearInterval(this.intervalID);
+                            this.setState({ submitting: false });
+                        }}
+                        >Delete</Button>
+                        <Button variant='success' type='submit' onClick={() => { this.setState({ submitting: false }); }}>Submit</Button>
+                    </td>
+                </tr>
+            </tbody>
+        )
+    }
+
+    msToTime(duration) {
+        let milliseconds = parseInt((duration % 1000));
+        let seconds = Math.floor((duration / 1000) % 60);
+        let minutes = Math.floor((duration / (1000 * 60)) % 60);
+        let hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+        hours = hours.toString().padStart(2, '0');
+        minutes = minutes.toString().padStart(2, '0');
+        seconds = seconds.toString().padStart(2, '0');
+        milliseconds = milliseconds.toString().padStart(3, '0');
+
+        return {
+            hours,
+            minutes,
+            seconds,
+            milliseconds
+        };
+    }
+
+    run() {
+        const diff = Date.now() - this.state.startTimeAsDate;
+        this.setState(() => ({
+        time: this.msToTime(diff)
+    }));
+    }
+
+    startClock = () => {
+        console.log('start time =', this.props.startTime)
+        let stad = new Date();
+        let split = this.props.startTime.split(':');
+        let splitInt = [];
+        for (const e of split) splitInt.push(parseInt(e));
+        //stad.setHours(splitInt[1], splitInt[2], 0);
+        stad.setHours(split[1], split[2], 0);
+
+        this.setState({ startTimeAsDate: stad });
+        this.intervalID = setInterval(() => this.run(), 1000);
+    }
+
+    stopTimer = () => {
+        this.togglePopup();
+        this.props.stopTimer();
+        this.setState({ submitting: true });
+
+        let temp = this.intervalID;
+        clearInterval(temp);
+        this.intervalID = null;
+    }
+
+    componentDidUpdate = () => {
+        if (!this.intervalID && this.props.activeTimer && this.props.startTime.length > 1 && !this.state.submitting) {
+            this.startClock();
+        }
     }
 
     render = () => {
+        const startedTimerBar = this.getStartedTimerBar(); //When the timer is started and user is not ready to submit
+        const notStartedTimerBar = this.getNotStartedTimerBar(); //When the timer has not been started
+        const stoppedTimerBar = this.getStoppedTimerBar(); //When the timer is stopped and user is going to submit
+
+        
+
         return (
             <div className="timerComponent">
-                {this.state.show &&
+                {this.state.showPopup &&
                     <div className='popup-window'>
                     <div className='popup-box'>
                         <h4 style={{ marginBottom: '20px' }}>Are you sure you want to stop the timer?</h4>
                         <Button variant='secondary' style={{ float: 'left', display: 'inline-block', width: '44%', marginInline: '3%'}} onClick={this.togglePopup}>Cancel</Button>
-                        <Button variant='danger' style={{ float: 'right', display: 'inline-block', width: '44%', marginInline: '3%' }} onClick={() => { this.togglePopup(); this.props.stopTimer() }}>Stop Timer</Button>
+                        <Button variant='danger' style={{ float: 'right', display: 'inline-block', width: '44%', marginInline: '3%' }} onClick={this.stopTimer}>Stop Timer</Button>
                         </div>
                     </div>
                 }
                 <form onSubmit={this.submitForm}>
                     <table>
-                        <tbody>
-                            <tr>
-                                <td style={{ width: "20%" }}>
-                                    <ProjectInput changeHandler={this.changeHandler} />
-                                </td>
-                                <td>
-                                    {this.props.activeTimer ?
-                                        <Button variant='danger' onClick={this.togglePopup} >Stop</Button> :
-                                        //If the timer was started and is now stopped, we show nothing. Otherwise, the timer isn't started so we show the start button
-                                        this.props.stopTime.length <= 1 && <Button variant='success' onClick={this.props.startTimer}>Start</Button>
-                                    }
-                                    {/*<Button className='tempButton' style={{ backgroundColor: 'red' }} onClick={removeTimer} >Delete</Button>*/}
-                                </td>
-                                <td style={{ width: "65%" }}>
-                                    <TextInput changeHandler={this.changeHandler} />
-                                </td>
-                                <td style={{ width: "5%" }}>
-                                    <div>{(this.props.startTime).substr(2)}</div>
-                                </td>
-                                <td style={{ width: "5%" }}>
-                                    <div>{(this.props.stopTime).substr(2)}</div>
-                                </td>
-                                <td style={{ width: "5%" }}>
-                                    <div>{this.props.hoursWorked}</div>
-                                </td>
-                                <td>
-                                    <Button variant='success' type='submit' onSubmit={this.submitForm}>Submit</Button>
-                                </td>
-
-                            </tr>
-                        </tbody>
+                        {this.props.activeTimer ?
+                            startedTimerBar :
+                            this.props.stopTime.length <= 1 ?
+                                notStartedTimerBar : stoppedTimerBar
+                        }
                     </table>
                 </form>
             </div>

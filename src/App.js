@@ -121,7 +121,7 @@ class App extends Component {
             alert("User has active timer");
         } else {
             let newDate = new Date();
-            let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes();
+            let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes() + ':' + newDate.getSeconds();
             let db = firebase.firestore();
             db.collection('timers').doc(this.state.user.email).get().then((doc) => {
                 if (doc.exists) {
@@ -234,9 +234,13 @@ class App extends Component {
             totalMinutes = parseFloat(currentMinutes) - parseFloat(startMinutes);
         }
 
-        let timeString = totalHours + '.' + totalMinutes;
+        totalMinutes = totalMinutes / 60;
+        let minutes = totalMinutes.toString().split('.');
+
+        let timeString = totalHours + '.' + minutes[1];
         let totalTime = parseFloat(timeString);
 
+        console.log("Time string: " + timeString);
         console.log("Total Time: " + totalTime);
         return totalTime;
     }
@@ -419,7 +423,7 @@ class App extends Component {
             <div className='App'>
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
                 <HourLogger postData={this.postData} activeTimer={this.state.activeTimer}
-                    startTimer={this.startTimer} stopTimer={this.stopTimer} startTime={this.state.startTime}
+                    startTimer={this.startTimer} stopTimer={this.stopTimer} removeTimer={this.removeTimer} startTime={this.state.startTime}
                     stopTime={this.state.stopTime} hoursWorked={this.state.hoursWorked} />
                 <br/>
                 <br/>
