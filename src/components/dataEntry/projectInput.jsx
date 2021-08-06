@@ -5,7 +5,7 @@ class ProjectInput extends Component {
     render() {
         return (
             <React.Fragment>
-                <select id="project" name="project" onChange={this.props.changeHandler}>
+                <select id="project" name="project" onChange={this.props.changeHandler} style={{ width: '180px' }}>
                     <option value="unselected">Select a Project</option>
                     <option value="Flant">Flant</option>
                     <option value="IDDPS">IDDPS</option>

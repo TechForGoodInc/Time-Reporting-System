@@ -64,9 +64,6 @@ class TimerComponent extends Component {
         var data = new entryData(formattedDate, this.props.hoursWorked.toString(), this.state.description, this.state.project);
 
         this.props.postData(data);
-
-        //this.setState({ description: null });
-        //this.setState({ project: "unselected" });
     }
 
     changeHandler = (event) => {
@@ -96,73 +93,110 @@ class TimerComponent extends Component {
 
     getNotStartedTimerBar() {
         return (
-            <tbody>
-                <tr>
-                    <td>
-                        <Button variant='success' onClick={this.props.startTimer}>Start Timer</Button>
-                    </td>
-                    <td>
-                        00:00:00
-                    </td>
-                </tr>
-            </tbody>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <Button variant='success' onClick={this.props.startTimer}>Start Timer</Button>
+                        </td>
+                        <td>
+                            <div style={{marginLeft: '20px', fontSize: '25px'}}>
+                                00:00:00
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         )
     }
 
     getStartedTimerBar() {
         return (
-            <tbody>
-                <tr>
-                    <td>
-                        <Button variant='danger' onClick={this.togglePopup} >Stop Timer</Button>
-                    </td>
-                    <td>
-                        {this.formatTime(this.state.time.hours + ':' + this.state.time.minutes + ':' + this.state.time.seconds)}
-                    </td>
-                </tr>
-            </tbody>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <Button variant='danger' onClick={this.togglePopup} >Stop Timer</Button>
+                        </td>
+                        <td>
+                            <div style={{ marginLeft: '20px', fontSize: '25px' }}>
+                                {this.formatTime(this.state.time.hours + ':' + this.state.time.minutes + ':' + this.state.time.seconds)}
+                            </div>
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         )
     }
 
     getStoppedTimerBar() {
         return (
-            <tbody>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th style={{ color: 'green', textAlign: 'center', width: '500px' }}>Start</th>
-                    <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Stop</th>
-                    <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Hours</th>
-                </tr>
-                <tr>
-                    <td style={{ width: "20%" }}>
-                        <ProjectInput changeHandler={this.changeHandler} />
-                    </td>
-                    <td style={{ width: "70%" }}>
-                        <TextInput changeHandler={this.changeHandler} />
-                    </td>
-                    <td style={{ width: "5%", textAlign: 'center' }}>
-                        <p>{this.formatTime(this.props.startTime).substring(3)}</p>
-                    </td>
-                    <td style={{ width: "5%", textAlign: 'center' }}>
-                        <p>{this.formatTime(this.props.stopTime).substring(3)}</p>
-                    </td>
-                    <td style={{ width: "5%", textAlign: 'center' }}>
-                        <p>{this.props.hoursWorked.toFixed(2)}</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td colSpan='5' style={{ textAlign: 'right' }}>
-                        <Button variant='secondary' style={{ float: 'left' }} onClick={() => {
-                            this.props.removeTimer();
-                            clearInterval(this.intervalID);
-                            this.setState({ submitting: false });
-                        }}
-                        >Delete</Button>
-                        <Button variant='success' type='submit' onClick={() => { this.setState({ submitting: false }); }}>Submit</Button>
-                    </td>
-                </tr>
-            </tbody>
+            <div>
+                <table>
+                    <tr>
+                        <td style={{ width: '1%' }}>
+                            <ProjectInput changeHandler={this.changeHandler} />
+                        </td>
+                        <td>
+                            <TextInput changeHandler={this.changeHandler} />
+                        </td>
+                        <td className='hour-entry-bar-large' width='1%'>
+                            <table width='200px'>
+                                <tbody>
+                                    <tr>
+                                        <th style={{ color: 'green', textAlign: 'center', width: '500px' }}>Start</th>
+                                        <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Stop</th>
+                                        <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Hours</th>
+                                    </tr>
+                                    <tr>
+                                        <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                            <p>{this.formatTime(this.props.startTime).substring(3)}</p>
+                                        </td>
+                                        <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                            <p>{this.formatTime(this.props.stopTime).substring(3)}</p>
+                                        </td>
+                                        <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                            <p>{this.props.hoursWorked.toFixed(2)}</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+                <table className='hour-entry-bar-small' width='200px'>
+                    <tbody>
+                        <tr>
+                            <th style={{ color: 'green', textAlign: 'center', width: '500px' }}>Start</th>
+                            <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Stop</th>
+                            <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Hours</th>
+                        </tr>
+                        <tr>
+                            <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                <p>{this.formatTime(this.props.startTime).substring(3)}</p>
+                            </td>
+                            <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                <p>{this.formatTime(this.props.stopTime).substring(3)}</p>
+                            </td>
+                            <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                <p>{this.props.hoursWorked.toFixed(2)}</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div>
+                    <Button variant='secondary' style={{ width: '100px', marginInline: '10px' }} onClick={() => {
+                        this.props.removeTimer();
+                        clearInterval(this.intervalID);
+                        this.setState({ submitting: false });
+                    }}
+                    >Delete</Button>
+                    <Button variant='success' type='submit' style={{ width: '100px', float: 'right', marginInline: '10px'}} onClick={() => { this.setState({ submitting: false }); }}>Submit</Button>
+                </div>
+            </div>
         )
     }
 
@@ -240,13 +274,11 @@ class TimerComponent extends Component {
                     </div>
                 }
                 <form onSubmit={this.submitForm}>
-                    <table>
-                        {this.props.activeTimer ?
-                            startedTimerBar :
-                            this.props.stopTime.length <= 1 ?
-                                notStartedTimerBar : stoppedTimerBar
-                        }
-                    </table>
+                    {this.props.activeTimer ?
+                        startedTimerBar :
+                        this.props.stopTime.length <= 1 ?
+                            notStartedTimerBar : stoppedTimerBar
+                    }
                 </form>
             </div>
             )
