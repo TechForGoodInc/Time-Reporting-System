@@ -80,6 +80,20 @@ class TimerComponent extends Component {
         this.setState({ showPopup: !this.state.showPopup });
     }
 
+    formatTime(d) {
+        let arr = d.split(':');
+        let newArr = [];
+        if (d[0] !== '-') {
+            for (let i = 0; i < arr.length; ++i) {
+                if (d[i] !== '-')
+                    newArr.push(arr[i].length === 1 ? '0'.concat(arr[i]) : arr[i]);
+            }
+            return newArr[0] + ':' + newArr[1] + ':' + newArr[2];
+        }
+
+        return d;
+    }
+
     getNotStartedTimerBar() {
         return (
             <tbody>
@@ -103,7 +117,7 @@ class TimerComponent extends Component {
                         <Button variant='danger' onClick={this.togglePopup} >Stop Timer</Button>
                     </td>
                     <td>
-                        {this.state.time.hours}:{this.state.time.minutes}:{this.state.time.seconds}
+                        {this.formatTime(this.state.time.hours + ':' + this.state.time.minutes + ':' + this.state.time.seconds)}
                     </td>
                 </tr>
             </tbody>
@@ -116,9 +130,9 @@ class TimerComponent extends Component {
                 <tr>
                     <th></th>
                     <th></th>
-                    <th style={{ color:'green', textAlign: 'center' }}>Started</th>
-                    <th style={{ color:'green', textAlign: 'center' }}>Stopped</th>
-                    <th style={{ color:'green', textAlign: 'center' }}>Hours</th>
+                    <th style={{ color: 'green', textAlign: 'center', width: '500px' }}>Start</th>
+                    <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Stop</th>
+                    <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Hours</th>
                 </tr>
                 <tr>
                     <td style={{ width: "20%" }}>
@@ -128,25 +142,23 @@ class TimerComponent extends Component {
                         <TextInput changeHandler={this.changeHandler} />
                     </td>
                     <td style={{ width: "5%", textAlign: 'center' }}>
-                        <p>{(this.props.startTime)}</p>
+                        <p>{this.formatTime(this.props.startTime).substring(3)}</p>
                     </td>
                     <td style={{ width: "5%", textAlign: 'center' }}>
-                        <p>{(this.props.stopTime)}</p>
+                        <p>{this.formatTime(this.props.stopTime).substring(3)}</p>
                     </td>
                     <td style={{ width: "5%", textAlign: 'center' }}>
-                        <p>{this.props.hoursWorked}</p>
+                        <p>{this.props.hoursWorked.toFixed(2)}</p>
                     </td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <Button variant='secondary' onClick={() => {
+                    <td colSpan='5' style={{ textAlign: 'right' }}>
+                        <Button variant='secondary' style={{ float: 'left' }} onClick={() => {
                             this.props.removeTimer();
                             clearInterval(this.intervalID);
                             this.setState({ submitting: false });
-                        }}>Delete</Button>
+                        }}
+                        >Delete</Button>
                         <Button variant='success' type='submit' onClick={() => { this.setState({ submitting: false }); }}>Submit</Button>
                     </td>
                 </tr>
@@ -204,7 +216,6 @@ class TimerComponent extends Component {
     }
 
     componentDidUpdate = () => {
-        console.log(!this.intervalID, this.props.activeTimer, this.props.startTime.length > 1, !this.state.submitting)
         if (!this.intervalID && this.props.activeTimer && this.props.startTime.length > 1 && !this.state.submitting) {
             this.startClock();
         }
