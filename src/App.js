@@ -5,12 +5,13 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import firebaseConfig from './firebaseCfg.js';
+import { Switch, Route } from 'react-router-dom';
 
 import Header from './components/header';
 import HourLogForm from './components/hourLogForm';
 import History from './components/history';
-import Router from './components/Router';
 import Calendar from './components/Calendar';
+import UserSettings from './components/UserSettings';
 import Nav from './components/Nav';
 
 firebase.initializeApp(firebaseConfig);
@@ -273,7 +274,11 @@ class App extends Component {
           email={this.state.user ? this.state.user.email : ''}
         />
         <Nav />
-        <Router />
+        <Switch>
+          <Route path="/calendar" exact component={Calendar}></Route>
+          <Route path="/settings" exact component={UserSettings}></Route>
+          <Route path="/" exact component={HourLogForm}></Route>
+        </Switch>
 
         {/* <HourLogForm post_data={this.post_data} />*/}
 
