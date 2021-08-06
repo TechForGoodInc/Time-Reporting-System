@@ -49,26 +49,37 @@ class ManualEntry extends Component {
         }
     }
 
-    render() {
+    render = () => {
         return (
-            <div>
-                <form id='hourEntryForm' onSubmit={this.handleSubmit}>
-                    <DateInput changeHandler={this.changeHandler} />
-                    <br />
-                    <br />
-                    <NumInput minimum={0} maximum={14} changeHandler={this.changeHandler} />
-                    <br />
-                    <br />
-                    <TextInput changeHandler={this.changeHandler} />
-                    <br />
-                    <br />
-                    <ProjectInput changeHandler={this.changeHandler} />
-
-                    <Button variant='success' type='submit' style={{ marginTop: '20px', width: '100%' }}>Submit</Button>
+                <form onSubmit={this.submitForm}>
+                    <table>
+                        <tbody>
+                            <tr>
+                            <br />
+                            <NumInput minimum={0} maximum={24} changeHandler={this.changeHandler} />
+                            <br />
+                                <td style={{ width: "20%" }}>
+                                    <ProjectInput changeHandler={this.changeHandler} />
+                                </td>
+                                <td style={{ width: "65%" }}>
+                                    <TextInput changeHandler={this.changeHandler} />
+                                </td>
+                                <td>
+                                    <Button variant='success' type='submit' onSubmit={this.submitForm}>Submit</Button>
+                                </td>
+                                
+                        
+                            </tr>
+                        </tbody>
+                    </table>
                 </form>
-            </div>
-        );
+        )
     }
 }
+
+
+
+
+
 
 export default ManualEntry;
