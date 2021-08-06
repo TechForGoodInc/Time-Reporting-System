@@ -1,17 +1,14 @@
 import './App.css';
 import './main.css';
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import firebaseConfig from './firebaseCfg.js';
-
 import Header from './components/header';
 import Router from './components/Router';
-import HourLogForm from './components/hourLogForm';
 import History from './components/history';
-import Calendar from './components/Calendar';
-import UserSettings from './components/UserSettings';
 import Nav from './components/Nav';
 
 firebase.initializeApp(firebaseConfig);
@@ -274,9 +271,8 @@ class App extends Component {
           email={this.state.user ? this.state.user.email : ''}
         />
         <Nav />
-        <Router post_data={this.post_data} />
-
-        <History
+        <Router
+          post_data={this.post_data}
           getEntries={this.getEntriesBetweenDates}
           display_history={this.display_history}
         />

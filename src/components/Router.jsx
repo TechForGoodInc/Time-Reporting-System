@@ -1,7 +1,8 @@
-import HourLogForm from './hourLogForm';
 import Calendar from './Calendar';
 import UserSettings from './UserSettings';
+import { Redirect } from 'react-router-dom';
 import { Switch, Route } from 'react-router-dom';
+import LogYourHours from './LogYourHours';
 
 function Router(props) {
   return (
@@ -11,7 +12,13 @@ function Router(props) {
       <Route
         path="/"
         exact
-        render={() => <HourLogForm post_data={props.post_data} />}
+        render={() => (
+          <LogYourHours
+            post_data={props.post_data}
+            getEntries={props.getEntries}
+            display_history={props.display_history}
+          />
+        )}
       ></Route>
     </Switch>
   );
