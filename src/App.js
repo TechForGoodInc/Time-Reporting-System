@@ -121,7 +121,7 @@ class App extends Component {
             alert("User has active timer");
         } else {
             let newDate = new Date();
-            let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes();
+            let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes() + ':' + newDate.getSeconds();
             let db = firebase.firestore();
             db.collection('timers').doc(this.state.user.email).get().then((doc) => {
                 if (doc.exists) {
