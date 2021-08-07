@@ -132,10 +132,10 @@ class TimerComponent extends Component {
                 <table>
                     <tbody>
                         <tr>
-                            <td style={{ width: '1%' }}>
+                            <td style={{ width: '1%', paddingRight: '5px' }}>
                                 <ProjectInput changeHandler={this.changeHandler} />
                             </td>
-                            <td>
+                            <td style={{ paddingLeft: '5px' }}>
                                 <TextInput changeHandler={this.changeHandler} />
                             </td>
                             <td className='hour-entry-bar-large' width='1%'>
