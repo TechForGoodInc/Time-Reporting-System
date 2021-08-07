@@ -41,7 +41,7 @@ class TimerComponent extends Component {
             return;
         }
         if (this.state.description.length < 6) {
-            alert("Please enter a more descriptive description");
+            alert("Please enter a more expressive description");
             return;
         }
 

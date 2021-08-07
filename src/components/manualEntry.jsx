@@ -11,7 +11,7 @@ import entryData from './dataEntry/entryData.js';
 class ManualEntry extends Component {
     //State of the form
     state = {
-        date: new Date().toISOString().substr(0, 10),
+        date: new Date(new Date().setHours(0, 0 - new Date().getTimezoneOffset(), 0, 0)).toISOString().substr(0, 10),
         hours: null,
         description: null,
         project: 'unselected'
