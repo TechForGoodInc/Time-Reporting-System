@@ -14,21 +14,7 @@ class ManualEntry extends Component {
         date: new Date().toISOString().substr(0, 10),
         hours: null,
         description: null,
-        project: 'unselected',
-        screenWidth: window.screen.width
-    }
-
-    componentDidMount() {
-        window.addEventListener("resize", this.resize.bind(this));
-        this.resize();
-    }
-
-    resize() {
-        this.setState({ screenWidth: window.innerWidth });
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener("resize", this.resize.bind(this));
+        project: 'unselected'
     }
 
     //Sets the state every time the form is changed
@@ -64,49 +50,56 @@ class ManualEntry extends Component {
         return (
             <form id='hourEntryForm' onSubmit={this.handleSubmit}>
                 
-                <table style={{ display: 'inline-block' }}>
+                <table style={{ display: 'inline-block', width: '100%' }}>
                     <tbody>
                         <tr>
 
                             <td width='1%' style={{ paddingInline: '5px'}}>
                                 <DateInput changeHandler={this.changeHandler} />
                             </td>
-                            <td className='hour-entry-bar-small' width='100%'></td>
+                            {this.props.screenWidth <= 800 && <td className='hour-entry-bar-small' width='100%'></td>}
                             <td width='1%' style={{ paddingRight: '5px' }}>
                                 <div>Hours:</div>
                             </td>
                             <td width='1%' style={{ paddingInline: '5px' }}>
-                                <NumInput minimum={0} maximum={24} changeHandler={this.changeHandler} />
+                                <NumInput minimum={0.01} maximum={24} changeHandler={this.changeHandler} />
                             </td>
-                            <td className='hour-entry-bar-large' style={{ width: '1%', paddingInline: '5px' }}>
-                                {this.state.screenWidth > 700 && <ProjectInput changeHandler={this.changeHandler} />}
+                            <td style={{ width: '1%', paddingInline: '5px' }}>
+                                {this.props.screenWidth > 800 && <ProjectInput changeHandler={this.changeHandler} />}
                             </td>
-                            <td className='hour-entry-bar-large' width='100%' style={{ paddingInline: '5px' }}>
-                                {this.state.screenWidth > 700 && <TextInput changeHandler={this.changeHandler} />}
+                            <td width='100%' style={{ paddingInline: '5px' }}>
+                                {this.props.screenWidth > 800 && <TextInput changeHandler={this.changeHandler} />}
                             </td>
-                            <td className='hour-entry-bar-large' style={{ paddingLeft: '5px' }}>
-                                <Button variant='success' type='submit' style={{ width: '100px', align: 'right' }}>Submit</Button>
-                            </td>
+                            {this.props.screenWidth > 800 &&
+                                <td style={{ paddingLeft: '5px' }}>
+                                    <Button variant='success' type='submit' style={{ width: '100px', align: 'right' }}>Submit</Button>
+                                </td>
+                            }
                         </tr>
                     </tbody>
                 </table>
+                <br />
+                {this.props.screenWidth <= 800 &&
+                    <div>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td style={{ width: '1%', paddingRight: '5px' }}>
+                                        <ProjectInput changeHandler={this.changeHandler} />
+                                    </td>
+                                    <td width='100%' style={{ paddingLeft: '5px' }}>
+                                        <TextInput changeHandler={this.changeHandler} />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div align='right'>
+                            <Button variant='success' type='submit' style={{ width: '100%', align: 'right' }}>Submit</Button>
+                        </div>
+                    </div>
+                }
 
-                <table className='hour-entry-bar-small'>
-                    <tbody>
-                        <tr>
-                            <td className='hour-entry-bar-hide-first-row' style={{ width: '1%', paddingRight: '5px' }}>
-                                {this.state.screenWidth <= 700 && <ProjectInput changeHandler={this.changeHandler} />}
-                            </td>
-                            <td className='hour-entry-bar-hide-first-row' width='100%' style={{ paddingLeft: '5px' }}>
-                                {this.state.screenWidth <= 700 && <TextInput changeHandler={this.changeHandler} />}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
 
-                <div className='hour-entry-bar-small' align='right'>
-                    <Button variant='success' type='submit' style={{ width: '100%', align: 'right' }}>Submit</Button>
-                </div>
             </form>
         )
     }

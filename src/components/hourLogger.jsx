@@ -17,8 +17,6 @@ class HourLogger extends Component {
 			this.setState({ key: 'timer-entry' });
 	}
 
-	componentdid
-
 	setKey = (k) => {
 		this.setState({ key: k });
     }
@@ -27,10 +25,10 @@ class HourLogger extends Component {
 		return (
 			<Tabs id='hourLoggerTabs' activeKey={this.state.key} onSelect={(k) => this.setKey(k)}>
 				<Tab className='hourLoggerTab' eventKey='manual-entry' title='Manual Entry'>
-					<ManualEntry post_data={this.props.postData}/>
+					<ManualEntry post_data={this.props.postData} screenWidth={this.props.screenWidth}/>
 				</Tab>
 				<Tab className='hourLoggerTab' eventKey='timer-entry' title='Timer Entry'>
-					<TimerComponent postData={this.props.postData} activeTimer={this.props.activeTimer}
+					<TimerComponent postData={this.props.postData} activeTimer={this.props.activeTimer} screenWidth={this.props.screenWidth}
 						startTimer={this.props.startTimer} stopTimer={this.props.stopTimer} removeTimer={this.props.removeTimer} startTime={this.props.startTime}
 						stopTime={this.props.stopTime} hoursWorked={this.props.hoursWorked} />
 

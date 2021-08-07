@@ -138,52 +138,56 @@ class TimerComponent extends Component {
                             <td style={{ paddingLeft: '5px' }}>
                                 <TextInput changeHandler={this.changeHandler} />
                             </td>
-                            <td className='hour-entry-bar-large' width='1%'>
-                                <table width='200px'>
-                                    <tbody>
-                                        <tr>
-                                            <th style={{ color: 'green', textAlign: 'center', width: '500px' }}>Start</th>
-                                            <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Stop</th>
-                                            <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Hours</th>
-                                        </tr>
-                                        <tr>
-                                            <td style={{ width: "33.3%", textAlign: 'center' }}>
-                                                <p>{this.formatTime(this.props.startTime).substring(3)}</p>
-                                            </td>
-                                            <td style={{ width: "33.3%", textAlign: 'center' }}>
-                                                <p>{this.formatTime(this.props.stopTime).substring(3)}</p>
-                                            </td>
-                                            <td style={{ width: "33.3%", textAlign: 'center' }}>
-                                                <p>{this.props.hoursWorked.toFixed(2)}</p>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
+                            {this.props.screenWidth > 800 &&
+                                <td width='1%'>
+                                    <table width='200px'>
+                                        <tbody>
+                                            <tr>
+                                                <th style={{ color: 'green', textAlign: 'center', width: '500px' }}>Start</th>
+                                                <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Stop</th>
+                                                <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Hours</th>
+                                            </tr>
+                                            <tr>
+                                                <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                                    <p>{this.formatTime(this.props.startTime).substring(3)}</p>
+                                                </td>
+                                                <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                                    <p>{this.formatTime(this.props.stopTime).substring(3)}</p>
+                                                </td>
+                                                <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                                    <p>{this.props.hoursWorked.toFixed(2)}</p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            }
                         </tr>
                     </tbody>
                 </table>
 
-                <table className='hour-entry-bar-small' width='200px'>
-                    <tbody>
-                        <tr>
-                            <th style={{ color: 'green', textAlign: 'center', width: '500px' }}>Start</th>
-                            <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Stop</th>
-                            <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Hours</th>
-                        </tr>
-                        <tr>
-                            <td style={{ width: "33.3%", textAlign: 'center' }}>
-                                <p>{this.formatTime(this.props.startTime).substring(3)}</p>
-                            </td>
-                            <td style={{ width: "33.3%", textAlign: 'center' }}>
-                                <p>{this.formatTime(this.props.stopTime).substring(3)}</p>
-                            </td>
-                            <td style={{ width: "33.3%", textAlign: 'center' }}>
-                                <p>{this.props.hoursWorked.toFixed(2)}</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                {this.props.screenWidth <= 800 &&
+                    <table width='200px' align='center'>
+                        <tbody>
+                            <tr>
+                                <th style={{ color: 'green', textAlign: 'center', width: '500px' }}>Start</th>
+                                <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Stop</th>
+                                <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Hours</th>
+                            </tr>
+                            <tr>
+                                <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                    <p>{this.formatTime(this.props.startTime).substring(3)}</p>
+                                </td>
+                                <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                    <p>{this.formatTime(this.props.stopTime).substring(3)}</p>
+                                </td>
+                                <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                    <p>{this.props.hoursWorked.toFixed(2)}</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
 
                 <div>
                     <Button variant='secondary' style={{ width: '100px', marginInline: '10px' }} onClick={() => {

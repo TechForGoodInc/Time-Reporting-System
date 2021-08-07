@@ -21,11 +21,17 @@ class App extends Component {
             startTime: "-",
             stopTime: "-",
             hoursWorked: 0,
+            screenWidth: window.innerWidth
         }
     }
 
     componentDidMount() {
         document.title = 'Time Reporting System';
+
+        //For when window is resized
+        window.addEventListener("resize", this.resize.bind(this));
+        this.resize();
+
         //Signs user in if they are not already signed in
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
@@ -45,6 +51,14 @@ class App extends Component {
                 this.handleLogin();
             }
         });
+    }
+
+    resize() {
+        this.setState({ screenWidth: window.innerWidth });
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.resize.bind(this));
     }
 
     handleLogin = () => {
@@ -72,8 +86,7 @@ class App extends Component {
                 }
                 // The signed-in user info.
                 user = result.user;
-                this.setState({ user: user });
-                this.timerIsActive();
+                this.setState({ user: user }, this.timerIsActive());
             }).catch((error) => {
                 //// Handle Errors here.
                 //var errorCode = error.code;
@@ -88,8 +101,8 @@ class App extends Component {
 
     timerIsActive = () => {
         if (!this.state.user) {
-            this.handleLogin();
-            return;
+            this.setState({ activeTimer: false });
+            this.setState({ startTime: "-" });
         } else {
             let db = firebase.firestore();
             db.collection('timers').doc(this.state.user.email).get().then((doc) => {
@@ -257,51 +270,6 @@ class App extends Component {
             this.removeTimer();
             this.timerIsActive();
         });
-        
-        
-
-
-
-        //Legacy code
-
-        //this.setState({ formInfo: data }, () => {
-        //    console.log('Recording hours - Date:', this.state.formInfo.date,
-        //        '; Hours:', this.state.formInfo.hours, '; Work Performed:', this.state.formInfo.description);
-        //    let db = firebase.firestore();
-        //    db.collection('employees').doc(this.state.formInfo.project).set({});
-
-        //    var dateDoc = db.collection('employees').doc(this.state.formInfo.project).collection(this.state.user.email).doc(this.state.formInfo.date);
-
-        //    dateDoc.update({Date: this.state.formInfo.date})
-
-        //    dateDoc.get().then(snap => {
-        //        if (!snap.get('Entries')) { //If there is not currently an entry for this date
-        //            dateDoc.set({
-        //                Date: this.state.formInfo.date,
-        //                Entries: [{
-        //                    'Entry 1': {
-        //                        Hours: this.state.formInfo.hours,
-        //                        Work_Performed: this.state.formInfo.description
-        //                    }
-        //                }]
-        //            });
-        //        }
-        //        else { //If there are multiple entries on this date
-        //            dateDoc.update({
-        //                Entries: firebase.firestore.FieldValue.arrayUnion({ //Append to existing array
-        //                    ['Entry ' + (snap.data().Entries.length + 1).toString()]: {
-        //                        Hours: this.state.formInfo.hours,
-        //                        Work_Performed: this.state.formInfo.description
-        //                    }
-        //                })
-        //            })
-        //        }
-
-        //        console.log('Recording hours - Project:', this.state.formInfo.project, 'Date:', this.state.formInfo.date,
-        //            '; Hours:', this.state.formInfo.hours, '; Work Performed:', this.state.formInfo.description);
-        //    }).then(() => { alert("Information Submitted Successfully\nRefresh to update history") });
-
-        //})
     }
 
     //Returns a promise that gives a list of entries falling between the startDate and endDate. Start and end date must be at most 1 year apart.
@@ -373,8 +341,9 @@ class App extends Component {
     render = () => {
         return (
             <div className='App'>
+                testing
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
-                <HourLogger postData={this.postData} activeTimer={this.state.activeTimer}
+                <HourLogger postData={this.postData} activeTimer={this.state.activeTimer} screenWidth={this.state.screenWidth}
                     startTimer={this.startTimer} stopTimer={this.stopTimer} removeTimer={this.removeTimer} startTime={this.state.startTime}
                     stopTime={this.state.stopTime} hoursWorked={this.state.hoursWorked} />
                 <br/>
