@@ -60,6 +60,7 @@ class TimerComponent extends Component {
         var data = new entryData(formattedDate, this.props.hoursWorked.toFixed(2).toString(), this.state.description, this.state.project);
 
         this.props.postData(data);
+        this.setState({ project: 'unselected' });
     }
 
     changeHandler = (event) => {
