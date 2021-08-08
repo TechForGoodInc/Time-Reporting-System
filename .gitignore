@@ -87,9 +87,6 @@ node_modules/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
-
 # VS
 .vs/
 # IDEA

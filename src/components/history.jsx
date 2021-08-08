@@ -41,19 +41,10 @@ class History extends Component {
         })
     }
 
-    //TODO make a list of HistoryBlocks. First one displays today's entries, 
-    //second displays yesterday's, individual ones for each day of the past week, 
-    //then start making a HistoryBlock for each week before that. 
-    //ONLY LOAD ENTRIES IF USER CLICKS BUTTON SAYING SHOW HISTORY
     render() {
         
         return (
             <div>
-                {/* This history block is just for testing
-                <HistoryBlock startDate={new Date()} endDate={new Date()} getEntries={this.props.getEntries}></HistoryBlock>
-                <HistoryBlock startDate={new Date(new Date().setDate(new Date().getDate() - 7))} endDate={new Date(new Date().setDate(new Date().getDate() - 1))} getEntries={this.props.getEntries}></HistoryBlock>
-                */}
-
                 <div>
                     <h3>History</h3>
                     <ul style={{ listStyleType: 'none', paddingLeft: '0px' }}>
