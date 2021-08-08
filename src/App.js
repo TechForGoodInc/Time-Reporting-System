@@ -6,8 +6,8 @@ import 'firebase/firestore';
 import firebaseConfig from './firebaseCfg.js'
 
 import Header from './components/header';
-import HourLogForm from './components/hourLogForm';
 import History from "./components/history";
+import HourLogger from "./components/hourLogger";
 
 firebase.initializeApp(firebaseConfig);
 
@@ -16,12 +16,22 @@ class App extends Component {
         super();
         this.state = {
             user: null,
-            formInfo: null
+            formInfo: null,
+            activeTimer: null,
+            startTime: "-",
+            stopTime: "-",
+            hoursWorked: 0,
+            screenWidth: window.innerWidth
         }
     }
 
     componentDidMount() {
         document.title = 'Time Reporting System';
+
+        //For when window is resized
+        window.addEventListener("resize", this.resize.bind(this));
+        this.resize();
+
         //Signs user in if they are not already signed in
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
@@ -32,6 +42,7 @@ class App extends Component {
                 if (domain === "techforgoodinc.org") {
                     console.log("Trusted");
                     //document.getElementById("title").innerHTML = document.getElementById("title").innerHTML + " - " + user.email
+                    this.timerIsActive();
                 }
                 else { //Doesn't allow non-techforgoodinc emails. This will change eventually to allow for organizations to set their own email requirements
                     this.handleLogin();
@@ -40,6 +51,14 @@ class App extends Component {
                 this.handleLogin();
             }
         });
+    }
+
+    resize() {
+        this.setState({ screenWidth: window.innerWidth });
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.resize.bind(this));
     }
 
     handleLogin = () => {
@@ -67,7 +86,7 @@ class App extends Component {
                 }
                 // The signed-in user info.
                 user = result.user;
-                this.setState({ user: user });
+                this.setState({ user: user }, this.timerIsActive());
             }).catch((error) => {
                 //// Handle Errors here.
                 //var errorCode = error.code;
@@ -78,6 +97,122 @@ class App extends Component {
                 //var credential = error.credential;
                 //// ...
             });
+    }
+
+    timerIsActive = () => {
+        if (!this.state.user) {
+            this.setState({ activeTimer: false });
+            this.setState({ startTime: "-" });
+        } else {
+            let db = firebase.firestore();
+            db.collection('timers').doc(this.state.user.email).get().then((doc) => {
+                if (doc.exists) {
+                    this.setState({ activeTimer: true });
+                    this.setState({ startTime: doc.data().Time });
+                } else {
+                    this.setState({ activeTimer: false });
+                    this.setState({ startTime: "-" });
+                }
+            })
+        }
+    }
+
+    startTimer = () => {
+
+        if (this.state.activeTimer) {
+            alert("User has active timer");
+        } else {
+            let newDate = new Date();
+            let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes() + ':' + newDate.getSeconds();
+            let db = firebase.firestore();
+            db.collection('timers').doc(this.state.user.email).get().then((doc) => {
+                if (doc.exists) {
+                    if (!doc.data().Time) {
+                        db.collection('timers').doc(this.state.user.email).set({ Time: now });
+                        this.setState({ activeTimer: true });
+                        this.setState({ startTime: now });
+                        alert("Timer started!");
+                    }
+                } else {
+                    db.collection('timers').doc(this.state.user.email).set({ Time: now });
+                    this.setState({ activeTimer: true });
+                    this.setState({ startTime: now });
+                    alert("Timer Started!");
+                }
+            })
+        }
+    }
+
+    stopTimer = () => {
+
+        if (!this.state.activeTimer) {
+            alert("There is no active timer.");
+        } else {
+            let newDate = new Date();
+            let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes();
+            let db = firebase.firestore();
+            db.collection('timers').doc(this.state.user.email).get().then((doc) => {
+                if (doc.exists) {
+                    this.setState({ stopTime: now }, () => {
+                        this.setState({ hoursWorked: this.calculateHoursWorked() });
+                    });
+                    this.setState({ activeTimer: false });
+                }
+            })
+        }
+    }
+
+    removeTimer = () => {
+        let db = firebase.firestore();
+        db.collection('timers').doc(this.state.user.email).delete().then(() => {
+            this.setState({ activeTimer: false });
+            this.setState({ startTime: "-" });
+            this.setState({ stopTime: "-" });
+            this.setState({ hoursWorked: 0 });
+        }).catch((error) => {
+            console.error("Error deleting: ", error);
+        })
+    }
+
+    calculateHoursWorked = () => {
+        let stad = new Date();
+
+        if (parseInt(stad.getDay()) !== parseInt(this.state.startTime[0])) {
+            //Timer is more than 1 day, or new day has begun, user needs to enter time manually.
+            alert("Timer is more than 24 hours, please enter time manually.");
+            this.removeTimer();
+            return;
+        }
+
+        let split = this.state.startTime.split(':');
+        stad.setHours(split[1], split[2], split[3]);
+        return this.msToHours(Date.now() - stad);
+    }
+
+    msToHours(duration) {
+        let milliseconds = parseInt((duration % 1000));
+        let seconds = Math.floor((duration / 1000) % 60);
+        let minutes = Math.floor((duration / (1000 * 60)) % 60);
+        let hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+        let res = hours;
+        res += minutes / 60.0;
+        res += seconds / (60.0 * 60);
+        res += milliseconds / (1000 * 60.0 * 60);
+        return res;
+    }
+
+    getFormattedTimeString = (date) => {
+        let day = date.getDay()
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        if (hours < 10) {
+            hours = '0' + hours;
+        }
+        if (minutes < 10) {
+            minutes = '0' + minutes;
+        }
+        return day + ':' + hours + ':' + minutes;
     }
 
     handleLogout(e) {
@@ -94,46 +229,39 @@ class App extends Component {
     }
 
     //Uploads data to the database
-    post_data = (formInput) => {
+    //Renamed to follow conventions
+    postData = (data) => {
 
-        this.setState({ formInfo: formInput }, () => {
-            console.log('Recording hours - Date:', this.state.formInfo.date,
-                '; Hours:', this.state.formInfo.hours, '; Work Performed:', this.state.formInfo.description);
-            let db = firebase.firestore();
-            db.collection('employees').doc(this.state.formInfo.project).set({});
-
-            var dateDoc = db.collection('employees').doc(this.state.formInfo.project).collection(this.state.user.email).doc(this.state.formInfo.date);
-
-            dateDoc.update({Date: this.state.formInfo.date})
-
-            dateDoc.get().then(snap => {
-                if (!snap.get('Entries')) { //If there is not currently an entry for this date
-                    dateDoc.set({
-                        Date: this.state.formInfo.date,
-                        Entries: [{
-                            'Entry 1': {
-                                Hours: this.state.formInfo.hours,
-                                Work_Performed: this.state.formInfo.description
-                            }
-                        }]
-                    });
-                }
-                else { //If there are multiple entries on this date
-                    dateDoc.update({
-                        Entries: firebase.firestore.FieldValue.arrayUnion({ //Append to existing array
-                            ['Entry ' + (snap.data().Entries.length + 1).toString()]: {
-                                Hours: this.state.formInfo.hours,
-                                Work_Performed: this.state.formInfo.description
-                            }
-                        })
+        let db = firebase.firestore();
+        db.collection('employees').doc(data.project).set({});
+        let dateDoc = db.collection('employees').doc(data.project).collection(this.state.user.email).doc(data.date);
+        dateDoc.update({ Date: data.date });
+        dateDoc.get().then(snap => {
+            if (!snap.get('Entries')) {
+                dateDoc.set({
+                    Date: data.date,
+                    Entries: [{
+                        'Entry 1': {
+                            Hours: data.hours,
+                            Work_Performed: data.description
+                        }
+                    }]
+                });
+            } else {
+                dateDoc.update({
+                    Entries: firebase.firestore.FieldValue.arrayUnion({
+                        ['Entry ' + (snap.data().Entries.length + 1).toString()]: {
+                            Hours: data.hours,
+                            Work_Performed: data.description
+                        }
                     })
-                }
-
-                console.log('Recording hours - Project:', this.state.formInfo.project, 'Date:', this.state.formInfo.date,
-                    '; Hours:', this.state.formInfo.hours, '; Work Performed:', this.state.formInfo.description);
-            }).then(() => { alert("Information Submitted Successfully\nRefresh to update history") });
-
-        })
+                })
+            }
+        }).then(() => {
+            alert("Information Submitted Successfully\nRefresh to update history");
+            this.removeTimer();
+            this.timerIsActive();
+        });
     }
 
     //Returns a promise that gives a list of entries falling between the startDate and endDate. Start and end date must be at most 1 year apart.
@@ -206,7 +334,9 @@ class App extends Component {
         return (
             <div className='App'>
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
-                <HourLogForm post_data={this.post_data}/>
+                <HourLogger postData={this.postData} activeTimer={this.state.activeTimer} screenWidth={this.state.screenWidth}
+                    startTimer={this.startTimer} stopTimer={this.stopTimer} removeTimer={this.removeTimer} startTime={this.state.startTime}
+                    stopTime={this.state.stopTime} hoursWorked={this.state.hoursWorked} />
                 <br/>
                 <br/>
                 <History getEntries={this.getEntriesBetweenDates} display_history={this.display_history} />
