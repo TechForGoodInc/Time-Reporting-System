@@ -266,11 +266,11 @@ class App extends Component {
   render = () => {
     return (
       <div style={{ padding: '20px' }}>
+        <Nav />
         <Header
           handleLogout={this.handleLogout}
           email={this.state.user ? this.state.user.email : ''}
         />
-        <Nav />
         <Router
           post_data={this.post_data}
           getEntries={this.getEntriesBetweenDates}
