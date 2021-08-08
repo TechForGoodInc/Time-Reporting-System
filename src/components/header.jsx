@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
-//import LogoutBtn from './logoutBtn';
+
+import FeedbackModal from './FeedbackModal';
 
 class Header extends Component {
-    render() {
+
+    render = () => {
         return (
-            <div>
-                {/*<LogoutBtn handleLogout={(e) => { this.props.handleLogout(e) }}/> Disabled until fixed */}
+            <div style={{ marginBottom: '20px' }}>
+                <FeedbackModal firebase={this.props.firebase} user={this.props.user} buttonStyle={{ float: 'right' }}/>
                 <h4 id="title">TFG Time Reporting System</h4>
                 <h6>{this.props.email}</h6>
             </div>

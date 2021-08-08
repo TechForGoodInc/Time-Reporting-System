@@ -4,9 +4,9 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import firebaseConfig from './firebaseCfg.js'
-
 import Header from './components/header';
 import History from "./components/history";
+import FeedbackModal from './components/FeedbackModal';
 import HourLogger from "./components/hourLogger";
 
 firebase.initializeApp(firebaseConfig);
@@ -333,7 +333,7 @@ class App extends Component {
     render = () => {
         return (
             <div className='App'>
-                <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} />
+                <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} firebase={firebase} user={this.state.user} />
                 <HourLogger postData={this.postData} activeTimer={this.state.activeTimer} screenWidth={this.state.screenWidth}
                     startTimer={this.startTimer} stopTimer={this.stopTimer} removeTimer={this.removeTimer} startTime={this.state.startTime}
                     stopTime={this.state.stopTime} hoursWorked={this.state.hoursWorked} />
