@@ -175,39 +175,31 @@ class App extends Component {
     }
 
     calculateHoursWorked = () => {
-        let newDate = new Date();
-        let now = this.getFormattedTimeString(newDate);
-        if (parseInt(newDate.getDay()) !== parseInt(this.state.startTime[0])) {
+        let stad = new Date();
+
+        if (parseInt(stad.getDay()) !== parseInt(this.state.startTime[0])) {
             //Timer is more than 1 day, or new day has begun, user needs to enter time manually.
             alert("Timer is more than 24 hours, please enter time manually.");
             this.removeTimer();
             return;
         }
 
-        let currentTime = now.split(':');
-        let currentHours = currentTime[1];
-        let currentMinutes = currentTime[2];
-        let beginningTime = this.state.startTime.split(':')
-        let startHours = beginningTime[1];
-        let startMinutes = beginningTime[2];
-        let totalHours = (parseFloat(currentHours) - parseFloat(startHours));
-        let totalMinutes = 0;
-        if (parseFloat(currentMinutes) < parseFloat(startMinutes)) {
-            let extraMinutes = 60 - parseFloat(startMinutes);
-            totalMinutes = parseFloat(currentMinutes) + extraMinutes;
-        } else {
-            totalMinutes = parseFloat(currentMinutes) - parseFloat(startMinutes);
-        }
+        let split = this.state.startTime.split(':');
+        stad.setHours(split[1], split[2], split[3]);
+        return this.msToHours(Date.now() - stad);
+    }
 
-        totalMinutes = totalMinutes / 60;
-        let minutes = totalMinutes.toString().split('.');
+    msToHours(duration) {
+        let milliseconds = parseInt((duration % 1000));
+        let seconds = Math.floor((duration / 1000) % 60);
+        let minutes = Math.floor((duration / (1000 * 60)) % 60);
+        let hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
 
-        let timeString = totalHours + '.' + minutes[1];
-        let totalTime = parseFloat(timeString);
-
-        console.log("Time string: " + timeString);
-        console.log("Total Time: " + totalTime);
-        return totalTime;
+        let res = hours;
+        res += minutes / 60.0;
+        res += seconds / (60.0 * 60);
+        res += milliseconds / (1000 * 60.0 * 60);
+        return res;
     }
 
     getFormattedTimeString = (date) => {
