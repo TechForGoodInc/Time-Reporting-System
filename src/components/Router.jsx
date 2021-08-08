@@ -1,7 +1,7 @@
-import Calendar from './Calendar';
-import UserSettings from './UserSettings';
 import { Redirect } from 'react-router-dom';
 import { Switch, Route } from 'react-router-dom';
+import Calendar from './Calendar';
+import UserSettings from './UserSettings';
 import LogYourHours from './LogYourHours';
 
 function Router(props) {
