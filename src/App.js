@@ -8,8 +8,6 @@ import Header from './components/header';
 import HourLogForm from './components/hourLogForm';
 import History from "./components/history";
 import FeedbackModal from './components/FeedbackModal';
-import "./components/styles.css";
-import SideBar from "./components/Sidebar";
 
 firebase.initializeApp(firebaseConfig);
 
@@ -214,7 +212,6 @@ class App extends Component {
     render = () => {
         return (
             <div className='App'>
-                <SideBar pageWrapId={"page-wrap"} outerContainerId={"App"} />
                 <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} openModal={this.changeModalState} />
                 <HourLogForm post_data={this.post_data}/>
                 <br/>
