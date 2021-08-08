@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import Button from 'react-bootstrap/Button';
+
+import FeedbackModal from './FeedbackModal';
 
 class Header extends Component {
 
-    render() {
+    render = () => {
         return (
             <div>
-                <Button variant="danger" style={{ float: 'right' }} onClick={() => this.props.openModal(true)}>Report / Suggest</Button>{' '}
+                <FeedbackModal firebase={this.props.firebase} user={this.props.user} buttonStyle={{ float: 'right' }}/>
                 <h4 id="title">TFG Time Reporting System</h4>
                 <h6>{this.props.email}</h6>
             </div>
