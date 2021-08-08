@@ -203,21 +203,14 @@ class App extends Component {
         return [];
     }
 
-    changeModalState = (value) => {
-        this.setState({ modalOpen: value });
-    }
-
-
-
     render = () => {
         return (
             <div className='App'>
-                <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} openModal={this.changeModalState} />
+                <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} firebase={firebase} user={this.state.user} />
                 <HourLogForm post_data={this.post_data}/>
                 <br/>
                 <br/>
                 <History getEntries={this.getEntriesBetweenDates} display_history={this.display_history} />
-                { this.state.modalOpen && < FeedbackModal closeModal={this.changeModalState} firebase={firebase} user={this.state.user} />}
             </div>
         );
     }

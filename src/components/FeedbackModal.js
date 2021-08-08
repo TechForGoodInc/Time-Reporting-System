@@ -2,7 +2,14 @@ import { Button } from "react-bootstrap";
 import { useState } from "react";
 import "./FeedbackModal.css";
 
-function FeedbackModal({ closeModal, firebase, user }) {
+import Modal from 'react-bootstrap/Modal';
+
+function FeedbackModal(props) {
+
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     const [feedback, setFeedback] = useState("");
     const [feedbackTitle, setFeedbackTitle] = useState("");
@@ -18,53 +25,32 @@ function FeedbackModal({ closeModal, firebase, user }) {
     }
 
     const postFeedback = () => {
-        let now = new Date().toString();
-        let db = firebase.firestore();
+        let d = new Date();
+        let db = props.firebase.firestore();
 
         db.collection("report-system").add({
-            Date: now,
+            Date: d.getFullYear() + '-' + (d.getMonth() + 1 < 10 ? '0' : '') + (d.getMonth() + 1) + '-' + (d.getDate() < 10 ? '0' : '') + d.getDate() + ' ' + d.getTime(),
             Title: feedbackTitle,
             Feedback: feedback,
             Type: feedbackType,
-            Email: user.email
+            Email: props.user.email
         }).then(() => {
             alert((feedbackType === "bug") ? "Thanks for reporting this bug." : "Thanks for contacting us.");
             setFeedback("");
             setFeedbackTitle("");
             setFeedbackType("");
-            closeModal(false);
         })
-
-        //Previous version
-        //db.collection("report-system").doc(feedbackType).collection(user.email).doc(now.toString()).get().then((doc) => {
-        //    if (doc.exists) {
-        //        db.collection("report-system").doc(feedbackType).collection(user.email).doc(now.toString()).set({
-        //            Title: feedbackTitle,
-        //            Feedback: feedback
-        //        });
-        //    } else {
-        //        db.collection("report-system").doc(feedbackType).collection(user.email).doc(now.toString()).set({
-        //            Title: feedbackTitle,
-        //            Feedback: feedback
-        //        });
-        //    }
-        //}).then(() => {
-        //    alert((feedbackType === "bug") ? "Thanks for reporting this bug." : "Thanks for contacting us.");
-        //    setFeedback("");
-        //    setFeedbackTitle("");
-        //    setFeedbackType("");
-        //    closeModal(false);
-        //});
     }
 
     return (
+        <div>
+            <Button variant="danger" style={props.buttonStyle} onClick={handleShow}>Report / Suggest</Button>
 
-        <div className="modalBackground">
-            <div className="modalContainer">
-                <div className="modalHeader">
-                    <h2>Please give us your feedback</h2>
-                </div>
-                <div className="modalBody">
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header>
+                    <Modal.Title>Please give us your feedback</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
                     <select className="feedbackSelector" onChange={(e) => { setFeedbackType(e.target.value) }} required>
                         <option hidden defaultValue="">Please choose one</option>
                         <option value="bug">Bug</option>
@@ -73,15 +59,15 @@ function FeedbackModal({ closeModal, firebase, user }) {
                     </select>
                     <input type="text" placeholder="Title" required style={{ width: "100%" }} onChange={(e) => { setFeedbackTitle(e.target.value) }} />
                     <textarea rows="12" placeholder="Leave your feedback here" required style={{ width: "100%" }} onChange={(e) => { setFeedback(e.target.value) }} />
-                </div>
-                <div className="modalFooter">
-                    <Button onClick={() => { closeModal(false) }} id="cancelButton" style={{ width: "150px", height: "50px", margin: "10px", borderRadius: "8px", cursor: "pointer" }}>Cancel</Button>
-                    <Button onClick={submitFeedback} style={{ width: "150px", height: "50px", margin: "10px", borderRadius: "8px", cursor: "pointer" }}>Submit</Button>
-                </div>
-            </div>
+                </Modal.Body>
+                <Modal.Footer align='left'>
+                    <Button variant='secondary' onClick={handleClose} >Cancel</Button>
+                    <Button variant='success' onClick={() => { submitFeedback(); handleClose() }}>Submit</Button>
+                </Modal.Footer>
+            </Modal>
         </div>
-        
-        )
+
+    )
 }
 
 export default FeedbackModal;
