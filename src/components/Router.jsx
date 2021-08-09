@@ -13,11 +13,7 @@ function Router(props) {
         path="/"
         exact
         render={() => (
-          <LogYourHours
-            post_data={props.post_data}
-            getEntries={props.getEntries}
-            display_history={props.display_history}
-          />
+            <LogYourHours hourLoggerDep={props.hourLoggerDep} historyDep={props.historyDep} />
         )}
       ></Route>
     </Switch>

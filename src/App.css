@@ -1,28 +1,6 @@
 .App {
     border-radius: 5px;
     background-color: #f2f2f2;
-    padding: 20px;
-}
-
-nav {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  min-height: 4vh;
-  background: lightblue;
-  border-radius: 8px;
-}
-.nav-links {
-  display: flex;
-  width: 50%;
-  justify-content: space-around;
-  align-items: center;
-  list-style: none;
-}
-
-li {
-  color: tan;
-  font-size: 25px;
 }
 
 input[type=text], select {
@@ -35,17 +13,48 @@ input[type=text], select {
   box-sizing: border-box;
 }
 
-input[type=submit] {
-  width: 100%;
-  background-color: #4CAF50;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
 input[type=submit]:hover {
   background-color: #45a049;
+}
+
+.hourLoggerTab {
+    border: solid;
+    border-color: darkgrey;
+    background-color: white;
+    border-width: 2px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.tempButton {
+    width: 100% !important;
+    color: white !important;
+    padding: 14px 20px !important;
+    margin: 8px 0 !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+}
+
+.popup-window {
+    position: fixed;
+    background: #00000050;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+}
+
+.popup-box {
+    position: relative;
+    width: 70%;
+    margin: 0 auto;
+    height: auto;
+    max-height: 70vh;
+    margin-top: calc(100vh - 85vh - 20px);
+    background: #fff;
+    border-radius: 4px;
+    padding: 20px;
+    border: 1px solid #999;
+    overflow: auto;
 }

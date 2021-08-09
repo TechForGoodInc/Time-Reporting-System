@@ -1,14 +1,15 @@
-import HourLogForm from './hourLogForm';
+import HourLogger from './hourLogger';
 import History from './history';
 
 function LogYourHours(props) {
   return (
     <div>
-      <HourLogForm post_data={props.post_data} />
-      <History
-        getEntries={props.getEntries}
-        display_history={props.display_history}
-      />
+          <HourLogger postData={props.hourLoggerDep.postData} activeTimer={props.hourLoggerDep.activeTimer} screenWidth={props.hourLoggerDep.screenWidth}
+              startTimer={props.hourLoggerDep.startTimer} stopTimer={props.hourLoggerDep.stopTimer} removeTimer={props.hourLoggerDep.removeTimer} startTime={props.hourLoggerDep.startTime}
+              stopTime={props.hourLoggerDep.stopTime} hoursWorked={props.hourLoggerDep.hoursWorked} />
+          <br />
+          <br />
+          <History getEntries={props.historyDep.getEntriesBetweenDates} display_history={props.historyDep.display_history} />
     </div>
   );
 }
