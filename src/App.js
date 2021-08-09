@@ -1,12 +1,13 @@
 import './App.css';
-import './main.css';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
-import firebaseConfig from './firebaseCfg.js';
+import firebaseConfig from './firebaseCfg.js'
 import Header from './components/header';
+import "./components/styles.css";
+import SideBar from "./components/Sidebar";
 import Router from './components/Router';
 import History from './components/history';
 import Nav from './components/Nav';
@@ -162,29 +163,16 @@ class App extends Component {
         );
       });
 
-      alert('Information Submitted Successfully.');
-    });
-  };
+        })
+    }
 
-  //Returns a promise that gives a list of entries falling between the startDate and endDate
-  getEntriesBetweenDates = async (startDate, endDate) => {
-    let db = firebase.firestore();
-    let res = []; //Resulting array containing all entries in range
+    //Returns a promise that gives a list of entries falling between the startDate and endDate. Start and end date must be at most 1 year apart.
+    getEntriesBetweenDates = async (startDate, endDate) => {
+        let db = firebase.firestore();
+        let res = []; //Resulting array containing all entries in range
 
-    let d1String =
-      startDate.getFullYear() +
-      '-' +
-      (startDate.getMonth() + 1 < 10 ? '0' : '') +
-      (startDate.getMonth() + 1) +
-      '-' +
-      startDate.getDate();
-    let d2String =
-      endDate.getFullYear() +
-      '-' +
-      (endDate.getMonth() + 1 < 10 ? '0' : '') +
-      (endDate.getMonth() + 1) +
-      '-' +
-      endDate.getDate();
+        let d1String = startDate.getFullYear() + '-' + (startDate.getMonth() + 1 < 10 ? '0' : '') + (startDate.getMonth() + 1) + '-' + (startDate.getDate() < 10 ? '0' : '') + startDate.getDate();
+        let d2String = endDate.getFullYear() + '-' + (endDate.getMonth() + 1 < 10 ? '0' : '') + (endDate.getMonth() + 1) + '-' + (endDate.getDate() < 10 ? '0' : '') + endDate.getDate();
 
     let projects = await db.collection('employees').get();
 
@@ -206,10 +194,9 @@ class App extends Component {
           //Temp array to store list of entries in this project that are in range
           let inRangeEntries = [];
 
-          //For every entry by this user in this project
-          for (const entry of query.docs) {
-            console.log('doc');
-            let entryDate = new Date(entry.id + 'T12:00:00+00:00');
+                //For every entry by this user in this project
+                for (const entry of query.docs) {
+                    let entryDate = new Date(entry.id + 'T12:00:00+00:00');
 
             //Setting every time to the same time to avoid errors with timezones
             startDate.setHours(12, 0 - startDate.getTimezoneOffset(), 0, 0);
@@ -255,13 +242,6 @@ class App extends Component {
     return [];
   };
 
-  //Gets all entries from a specified user
-  getAllEntries = async () => {
-    return await this.getEntriesBetweenDates(
-      new Date('0000-01-01'),
-      new Date('5000-01-01')
-    );
-  };
 
   render = () => {
     return (

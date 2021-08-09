@@ -9,73 +9,6 @@ class History extends Component {
         histBlocks: []
     }
 
-    //getNextEntries = async () => {
-    //    let db = firebase.firestore();
-    //    let res = []; //Resulting array containing next block of entries
-
-
-
-
-
-
-
-
-    //    let projects = await db.collection('employees').get();
-
-    //    //Goes through each project in the list of projects
-    //    for (const doc of projects.docs) {
-
-    //        let d = histBlocks.length > 0 ? histBlocks[histBlocks.length - 1].startDate : new Date().setHours(12, 0 - new Date().getTimezoneOffset(), 0, 0);
-    //        let dString = d.getFullYear() + '-' + (d.getMonth() + 1 < 10 ? '0' : '') + (d.getMonth() + 1) + '-' + d.getDate();
-
-    //        console.log('dString =', dString);
-
-    //        //Value becomes a list of entries in the date range in this current project
-    //        let temp = await db.collection('employees').doc(doc.id).collection(this.props.email).orderBy('Date', 'desc').startAt(dString).limit(7).get().then(async (query) => {
-
-    //            //Temp array to store list of entries in this project that are in range
-    //            let inRangeEntries = [];
-
-    //            //For every entry by this user in this project
-    //            for (const entry of query.docs) {
-    //                let entryDate = new Date(entry.id + 'T12:00:00+00:00');
-
-    //                //Setting every time to the same time to avoid errors with timezones
-    //                startDate.setHours(12, 0 - startDate.getTimezoneOffset(), 0, 0);
-    //                endDate.setHours(12, 0 - endDate.getTimezoneOffset(), 0, 0);
-
-    //                //If date is in range, add it to the array
-    //                if (startDate <= entryDate && entryDate <= endDate) {
-
-    //                    //Goes through all entries in a specific date
-    //                    for (let j = 0; j < entry.data().Entries.length; ++j) {
-    //                        try {
-    //                            inRangeEntries.push({
-    //                                project: doc.id,
-    //                                date: entry.id,
-    //                                hours: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Hours,
-    //                                desc: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Work_Performed
-    //                            })
-    //                        } catch (error) {
-    //                            console.log('Error collecting entries:', error);
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //            //If there were no entries by the user in this project, return undefined
-    //            if (inRangeEntries.length === 0) return undefined;
-
-    //            return inRangeEntries;
-    //        })
-
-    //        if (temp !== undefined) res = res.concat(temp);
-
-    //    }
-
-    //    console.log('All entries between', startDate, 'and', endDate, '=', res);
-    //    return res.reverse();
-    //}
-
     loadMore() {
         let newBlocks = [...this.state.histBlocks];
         if (newBlocks.length === 0) { //History not shown
@@ -114,7 +47,6 @@ class History extends Component {
     //ONLY LOAD ENTRIES IF USER CLICKS BUTTON SAYING SHOW HISTORY
     render() {
         
-        let showHist = false;
         return (
             <div>
                 {/* This history block is just for testing
@@ -123,15 +55,16 @@ class History extends Component {
                 */}
 
                 <div>
-                    <ul style={{ listStyleType: 'none', padding: '0'}}>
+                    <h3>History</h3>
+                    <ul style={{ listStyleType: 'none', paddingLeft: '0px' }}>
                         {this.state.histBlocks.map((data, index) => {
-                            return <li key={index}>
+                            return <li key={index} style={{ marginBottom: '20px' }} >
                                     <HistoryBlock startDate={data.startDate} endDate={data.endDate} getEntries={this.props.getEntries}></HistoryBlock>
                             </li>
                         })}
                     </ul>
                 </div>
-                <Button onClick={() => { this.loadMore(); showHist = !showHist; }}>{(this.state.histBlocks.length > 0) ? 'Load More' : 'Show History'}</Button>
+                <Button variant='secondary' style={{ width: '100%' }} onClick={() => { this.loadMore();}}>{(this.state.histBlocks.length > 0) ? 'Load More' : 'Show History'}</Button>
             </div>
         );
     }
