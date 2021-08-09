@@ -5,8 +5,7 @@ class ProjectInput extends Component {
     render() {
         return (
             <React.Fragment>
-                <label htmlFor="project">Project</label>
-                <select id="project" name="project" onChange={this.props.changeHandler}>
+                <select id="project" name="project" onChange={this.props.changeHandler} style={{ width: '180px' }}>
                     <option value="unselected">Select a Project</option>
                     <option value="Flant">Flant</option>
                     <option value="IDDPS">IDDPS</option>
@@ -19,6 +18,7 @@ class ProjectInput extends Component {
                     <option value="Blockchain Donations">Blockchain Donations</option>
                     <option value="Re-Right">Re-Right</option>
                     <option value="FireSpot">FireSpot</option>
+                    <option value="Graphic Design">Graphic Design</option>
                     <option value="Other">Other</option>
                 </select>
             </React.Fragment>

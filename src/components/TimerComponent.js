@@ -1,181 +1,295 @@
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-function TimerComponent({ firebase, currentUser, startTime, stopTime }) {
+import Button from 'react-bootstrap/Button';
 
-    const startNewTimer = async (e) => {
-        
-        e.preventDefault();
+import ProjectInput from './dataEntry/projectInput';
+import TextInput from './dataEntry/textInput';
+import entryData from './dataEntry/entryData.js';
 
-        let db = firebase.firestore();
-        db.collection('timers').doc(currentUser.email).collection('timer').doc('time').get().then((doc) => {
-            if (doc.exists) {
-
-                if (!doc.data().Time) {
-                    let db = firebase.firestore();
-                    var date = new Date();
-                    var now = date.getDay() + ':' + date.getHours() + ':' + date.getMinutes();
-                    var timerDoc = db.collection('timers').doc(currentUser.email).collection('timer').doc('time').set({ Time: now });
-                    startTime = now;
-                    document.getElementById('input-startTime').value = now.substr(2);
-                    alert("Timer started!");
-                } else {
-                    startTime = doc.data().Time.toString();
-                    var time = startTime.split(':');
-                    var displayTime = time[1] + ':' + time[2];
-                    document.getElementById('input-startTime').value = displayTime;
-                    alert("User has active timer.");
-                }
-            } else {
-                let db = firebase.firestore();
-                var date = new Date();
-                var now = date.getDay() + ':' + date.getHours() + ':' + date.getMinutes();
-                var timerDoc = db.collection('timers').doc(currentUser.email).collection('timer').doc('time').set({ Time: now });
-                startTime = now;
-                document.getElementById('input-startTime').value = now.substr(2);
-                alert("Timer started!");
+class TimerComponent extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            description: null,
+            project: "unselected",
+            showPopup: false,
+            startTimeAsDate: null,
+            submitting: false,
+            time: {
+                hours: 0,
+                minutes: 0,
+                seconds: 0,
+                milliseconds: 0
             }
-        })        
+        }
     }
 
-    function stopCurrentTimer(e) {
-        e.preventDefault();
+    submitForm = (event) => {
+        event.preventDefault();
 
-        let db = firebase.firestore();
-        db.collection('timers').doc(currentUser.email).collection('timer').doc('time').get().then((doc) => {
-            if (doc.exists) {
-                var date = new Date();
-                var now = date.getDay() + ':' + date.getHours() + ':' + date.getMinutes();
-                stopTime = now;
-                startTime = doc.data().Time.toString();
-                document.getElementById('input_stopTime').value = getFormattedTimeString(date).substr(2);
-
-                var startTimer = startTime.split(':');
-                var displayStartTime = startTimer[1] + ':' + startTimer[2];
-                document.getElementById('input-startTime').value = displayStartTime;
-
-                document.getElementById('input_hoursWorked').value = calculateHoursWorked();
-            } else {
-                alert("No active timer.");
-            }
-        })
-    }
-
-    //Delete saved start time from db
-    function removeTimer() {
-        let db = firebase.firestore();
-
-        db.collection('timers').doc(currentUser.email).collection('timer').doc('time').delete().then(() => {
-            startTime = "-";
-            stopTime = "-";
-            document.getElementById('input-startTime').value = startTime;
-            document.getElementById('input-stopTime').value = stopTime;
-        }).catch((error) => {
-            console.error("Error deleting: ", error);
-        })
-    }
-
-    function submitTimerData() {
-        //TODO: send data to App.js.post_data
-        removeTimer();
-    }
-
-    function calculateHoursWorked() {
-        var date = new Date();
-        var now = getFormattedTimeString(date);
-        console.log(now);
-        if (date.getDay() != startTime[0]) {
-            //Timer is more than 1 day, or new day has begun, user needs to enter time manually.
+        if (this.props.activeTimer) {
+            alert("Please stop the active timer");
             return;
         }
-        let currentTime = now.split(':');
-        let currentHours = currentTime[1];
-        let currentMinutes = currentTime[2];
-        
-        let beginningTime = startTime.split(':');
-        let startHours = beginningTime[1];
-        let startMinutes = beginningTime[2];
-
-        let totalHours = (parseInt(currentHours) - parseInt(startHours));
-        let totalMinutes = 0;
-        if (parseInt(currentMinutes) < parseInt(startMinutes)) {
-            let extraMinutes = 60 - parseInt(startMinutes);
-            totalMinutes = parseInt(currentMinutes) + extraMinutes;
-        } else {
-            totalMinutes = parseInt(currentMinutes) - parseInt(startMinutes);
+        if (this.state.project === "unselected") {
+            alert("Please select a project");
+            return;
         }
-        let totalTime = totalHours + ':' + totalMinutes;
+        if (!this.state.description || this.state.description === " ") {
+            alert("Please enter a description");
+            return;
+        }
+        if (this.state.description.length < 6) {
+            alert("Please enter a more expressive description");
+            return;
+        }
 
-        return totalTime;
+        let now = new Date();
+        let formattedDate = "";
+        let day = now.getDate();
+        let month = now.getMonth() + 1;
+        if (day < 10) {
+            day = "0" + day;
+        }
+        if (month < 10) {
+            month = "0" + month;
+        }
+        formattedDate = now.getFullYear() + "-" + month + "-" + day;
+
+        var data = new entryData(formattedDate, this.props.hoursWorked.toFixed(2).toString(), this.state.description, this.state.project);
+
+        this.props.postData(data);
+        this.setState({ project: 'unselected' });
     }
 
-    function getFormattedTimeString(date) {
-        let day = date.getDay()
-        let hours = date.getHours();
-        let minutes = date.getMinutes();
-        if (hours < 10) {
-            hours = '0' + hours;
-        }
-        if (minutes < 10) {
-            minutes = '0' + minutes;
-        }
-        return day + ':' + hours + ':' + minutes;
+    changeHandler = (event) => {
+        event.preventDefault();
+        this.setState({
+            [event.target.name]: event.target.value
+        })
     }
 
-    return (
+    togglePopup = () => {
+        this.setState({ showPopup: !this.state.showPopup });
+    }
 
-        <div className='timerComponent'>
-            <form onSubmit={submitTimerData} >
-                <table>
+    formatTime(d) {
+        let arr = d.split(':');
+        let newArr = [];
+        if (d[0] !== '-') {
+            for (let i = 0; i < arr.length; ++i) {
+                if (d[i] !== '-')
+                    newArr.push(arr[i].length === 1 ? '0'.concat(arr[i]) : arr[i]);
+            }
+            return newArr[0] + ':' + newArr[1] + ':' + newArr[2];
+        }
+
+        return d;
+    }
+
+    getNotStartedTimerBar() {
+        return (
+            <table>
+                <tbody>
                     <tr>
-                        <td style={{ width: '20%' }} >
-                            <select id='projectSelector'>
-                                <option defaultValue='Select Project' hidden value='selectProject'>Select Project</option>
-                                <option value='ossftgg'>OSSFTGG</option>
-                                <option value='flant'>Flant</option>
-                                <option value='iddps'>IDDPS</option>
-                                <option value='other'>Other</option>
-                            </select>
-                        </td>
-                        <td style={{ width: '50%' }} >
-                            <input type='text' id='descInput' placeholder='Enter description of work completed' />
+                        <td>
+                            <Button variant='success' onClick={this.props.startTimer}>Start Timer</Button>
                         </td>
                         <td>
-                            <input type='text' id='input-startTime' readOnly />
+                            <div style={{marginLeft: '20px', fontSize: '25px'}}>
+                                00:00:00
+                            </div>
                         </td>
-                        <td>
-                            <input type='text' id='input_stopTime' readOnly />
-                        </td>
-                        <td>
-                            <input type='text' id='input_hoursWorked' readOnly />
-                        </td>
-                        <td>
-                            <button onClick={startNewTimer} >Start</button>
-                        </td>
-                        <td>
-                            <button onClick={stopCurrentTimer} >Stop</button>
-                        </td>
-                        <td>
-                            <button onClick={removeTimer} >Delete</button>
-                        </td>
-                        <td>
-                            <input type='submit' onSubmit={submitTimerData} value='Submit' />
-                        </td> 
                     </tr>
+                </tbody>
+            </table>
+        )
+    }
+
+    getStartedTimerBar() {
+        return (
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <Button variant='danger' onClick={this.togglePopup} >Stop Timer</Button>
+                        </td>
+                        <td>
+                            <div style={{ marginLeft: '20px', fontSize: '25px' }}>
+                                {this.formatTime(this.state.time.hours + ':' + this.state.time.minutes + ':' + this.state.time.seconds)}
+                            </div>
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        )
+    }
+
+    getStoppedTimerBar() {
+        return (
+            <div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td style={{ width: '1%', paddingRight: '5px' }}>
+                                <ProjectInput changeHandler={this.changeHandler} />
+                            </td>
+                            <td style={{ paddingLeft: '5px' }}>
+                                <TextInput changeHandler={this.changeHandler} />
+                            </td>
+                            {this.props.screenWidth > 800 &&
+                                <td width='1%'>
+                                    <table width='200px'>
+                                        <tbody>
+                                            <tr>
+                                                <th style={{ color: 'green', textAlign: 'center', width: '500px' }}>Start</th>
+                                                <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Stop</th>
+                                                <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Hours</th>
+                                            </tr>
+                                            <tr>
+                                                <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                                    <p>{this.formatTime(this.props.startTime).substring(3)}</p>
+                                                </td>
+                                                <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                                    <p>{this.formatTime(this.props.stopTime).substring(3)}</p>
+                                                </td>
+                                                <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                                    <p>{this.props.hoursWorked.toFixed(2)}</p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            }
+                        </tr>
+                    </tbody>
                 </table>
-            </form>
-        </div>
-    )
+
+                {this.props.screenWidth <= 800 &&
+                    <table width='200px' align='center'>
+                        <tbody>
+                            <tr>
+                                <th style={{ color: 'green', textAlign: 'center', width: '500px' }}>Start</th>
+                                <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Stop</th>
+                                <th style={{ color: 'green', textAlign: 'center', marginInline: '5px' }}>Hours</th>
+                            </tr>
+                            <tr>
+                                <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                    <p>{this.formatTime(this.props.startTime).substring(3)}</p>
+                                </td>
+                                <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                    <p>{this.formatTime(this.props.stopTime).substring(3)}</p>
+                                </td>
+                                <td style={{ width: "33.3%", textAlign: 'center' }}>
+                                    <p>{this.props.hoursWorked.toFixed(2)}</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+
+                <div>
+                    <Button variant='secondary' style={{ width: '100px', marginInline: '10px' }} onClick={() => {
+                        this.props.removeTimer();
+                        clearInterval(this.intervalID);
+                        this.setState({ submitting: false });
+                    }}
+                    >Delete</Button>
+                    <Button variant='success' type='submit' style={{ width: '100px', float: 'right', marginInline: '10px' }} onClick={() => { this.setState({ submitting: false }); }}>Submit</Button>
+                </div>
+            </div>
+        )
+    }
+
+    msToTime(duration) {
+        let milliseconds = parseInt((duration % 1000));
+        let seconds = Math.floor((duration / 1000) % 60);
+        let minutes = Math.floor((duration / (1000 * 60)) % 60);
+        let hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+        hours = hours.toString().padStart(2, '0');
+        minutes = minutes.toString().padStart(2, '0');
+        seconds = seconds.toString().padStart(2, '0');
+        milliseconds = milliseconds.toString().padStart(3, '0');
+
+        return {
+            hours,
+            minutes,
+            seconds,
+            milliseconds
+        };
+    }
+
+    run() {
+        const diff = Date.now() - this.state.startTimeAsDate;
+        this.setState(() => ({
+        time: this.msToTime(diff)
+    }));
+    }
+
+    startClock = () => {
+        console.log('start time =', this.props.startTime)
+        let stad = new Date();
+        let split = this.props.startTime.split(':');
+        stad.setHours(split[1], split[2], split[3]);
+
+        this.setState({ startTimeAsDate: stad });
+        this.intervalID = setInterval(() => this.run(), 1000);
+    }
+
+    stopTimer = () => {
+        this.togglePopup();
+        this.props.stopTimer();
+        this.setState({ submitting: true });
+
+        let temp = this.intervalID;
+        clearInterval(temp);
+        this.intervalID = null;
+    }
+
+    componentDidUpdate = () => {
+        if (!this.intervalID && this.props.activeTimer && this.props.startTime.length > 1 && !this.state.submitting) {
+            this.startClock();
+        }
+    }
+
+    render = () => {
+        const startedTimerBar = this.getStartedTimerBar(); //When the timer is started and user is not ready to submit
+        const notStartedTimerBar = this.getNotStartedTimerBar(); //When the timer has not been started
+        const stoppedTimerBar = this.getStoppedTimerBar(); //When the timer is stopped and user is going to submit
+
+        
+
+        return (
+            <div className="timerComponent">
+                {this.state.showPopup &&
+                    <div className='popup-window'>
+                    <div className='popup-box'>
+                        <h4 style={{ marginBottom: '20px' }}>Are you sure you want to stop the timer?</h4>
+                        <Button variant='secondary' style={{ float: 'left', display: 'inline-block', width: '44%', marginInline: '3%'}} onClick={this.togglePopup}>Cancel</Button>
+                        <Button variant='danger' style={{ float: 'right', display: 'inline-block', width: '44%', marginInline: '3%' }} onClick={this.stopTimer}>Stop Timer</Button>
+                        </div>
+                    </div>
+                }
+                <form onSubmit={this.submitForm}>
+                    {this.props.activeTimer ?
+                        startedTimerBar :
+                        this.props.stopTime.length <= 1 ?
+                            notStartedTimerBar : stoppedTimerBar
+                    }
+                </form>
+            </div>
+            )
+    }
 }
 
 TimerComponent.propTypes = {
-    firebase: PropTypes.object.isRequired,
-    startTime: PropTypes.string,
-    stopTime: PropTypes.string,
-}
-
-TimerComponent.defaultProps = {
-    startTime: '-',
-    stopTime: '-',
+    activeTimer: PropTypes.bool,
+    startTimer: PropTypes.func.isRequired,
+    stopTimer: PropTypes.func.isRequired,
+    postData: PropTypes.func.isRequired,
 }
 
 export default TimerComponent
