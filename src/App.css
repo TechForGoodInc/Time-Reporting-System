@@ -2,13 +2,23 @@
   text-align: center;
 }
 
-.nav {
+nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  min-height: 4vh;
   background: lightblue;
   border-radius: 8px;
 }
 .nav-links {
-  list-style: none;
   display: flex;
-  width: 40%;
+  width: 50%;
   justify-content: space-around;
+  align-items: center;
+  list-style: none;
+}
+
+li {
+  color: tan;
+  font-size: 25px;
 }

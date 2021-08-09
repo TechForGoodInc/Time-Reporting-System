@@ -3,15 +3,15 @@ import { Link } from 'react-router-dom';
 
 function Nav() {
   return (
-    <nav className="nav">
+    <nav>
       <ul className="nav-links">
-        <Link to="/">
+        <Link style={{ textDecoration: 'none' }} to="/">
           <li>Log Hours</li>
         </Link>
-        <Link to="settings">
+        <Link style={{ textDecoration: 'none' }} to="settings">
           <li>Settings</li>
         </Link>
-        <Link to="/calendar">
+        <Link style={{ textDecoration: 'none' }} to="/calendar">
           <li>Calendar</li>
         </Link>
       </ul>
