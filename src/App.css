@@ -58,3 +58,7 @@ input[type=submit]:hover {
     border: 1px solid #999;
     overflow: auto;
 }
+
+.nav-links {
+    list-style-type: none;
+}
