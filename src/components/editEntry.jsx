@@ -75,7 +75,7 @@ class EditEntry extends Component {
     render = () => {
         return (
             <div>
-                <button style={{ border: 'none' }} onClick={this.toggleEditBox}><img src="https://cdn0.iconfinder.com/data/icons/glyphpack/45/edit-alt-512.png" width="20" height="20" alt=""></img></button>
+                <button style={{ border: 'none' , backgroundColor: '#ffffff' }} onClick={this.toggleEditBox}><img src="https://www.pngkey.com/png/detail/202-2022557_edit-comments-edit-icon-png.png" width="35" height="35" alt=""></img></button>
 
                 <Modal show={this.state.showEditBox} onHide={this.toggleEditBox}>
                     <form onSubmit={this.handleSubmit}>
