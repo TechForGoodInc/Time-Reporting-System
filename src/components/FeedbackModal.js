@@ -1,6 +1,5 @@
 import { Button } from "react-bootstrap";
 import { useState } from "react";
-import "./FeedbackModal.css";
 
 import Modal from 'react-bootstrap/Modal';
 

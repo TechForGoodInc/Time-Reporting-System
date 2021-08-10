@@ -94,3 +94,8 @@ input[type=submit]:hover {
     border: 1px solid #999;
     overflow: auto;
 }
+
+.edit-box-element {
+    padding-bottom: 5px;
+    padding-top: 5px;
+}

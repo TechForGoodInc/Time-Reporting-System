@@ -50,7 +50,7 @@ class History extends Component {
                     <ul style={{ listStyleType: 'none', paddingLeft: '0px' }}>
                         {this.state.histBlocks.map((data, index) => {
                             return <li key={index} style={{ marginBottom: '20px' }} >
-                                    <HistoryBlock startDate={data.startDate} endDate={data.endDate} getEntries={this.props.getEntries}></HistoryBlock>
+                                <HistoryBlock startDate={data.startDate} endDate={data.endDate} getEntries={this.props.getEntries} postData={this.props.postData} delete_data={this.props.delete_data} />
                             </li>
                         })}
                     </ul>

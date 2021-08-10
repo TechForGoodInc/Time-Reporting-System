@@ -6,8 +6,8 @@ import 'firebase/firestore';
 import firebaseConfig from './firebaseCfg.js'
 import Header from './components/header';
 import History from "./components/history";
-import FeedbackModal from './components/FeedbackModal';
 import HourLogger from "./components/hourLogger";
+import entryData from './components/dataEntry/entryData.js';
 
 firebase.initializeApp(firebaseConfig);
 
@@ -230,35 +230,24 @@ class App extends Component {
 
     //Uploads data to the database
     //Renamed to follow conventions
-    postData = (data) => {
+    postData = (data, alertMessage) => {
 
         let db = firebase.firestore();
         db.collection('employees').doc(data.project).set({});
         let dateDoc = db.collection('employees').doc(data.project).collection(this.state.user.email).doc(data.date);
-        dateDoc.update({ Date: data.date });
+
         dateDoc.get().then(snap => {
-            if (!snap.get('Entries')) {
-                dateDoc.set({
-                    Date: data.date,
-                    Entries: [{
-                        'Entry 1': {
-                            Hours: data.hours,
-                            Work_Performed: data.description
-                        }
-                    }]
-                });
-            } else {
-                dateDoc.update({
-                    Entries: firebase.firestore.FieldValue.arrayUnion({
-                        ['Entry ' + (snap.data().Entries.length + 1).toString()]: {
-                            Hours: data.hours,
-                            Work_Performed: data.description
-                        }
-                    })
-                })
-            }
+            let tempArray = []
+            if (snap.get('Entries')) tempArray = snap.get('Entries');
+
+            tempArray.push({
+                Hours: data.hours,
+                Work_Performed: data.description
+            })
+
+            dateDoc.set({ Date: data.date, Entries: tempArray })
         }).then(() => {
-            alert("Information Submitted Successfully\nRefresh to update history");
+            if(alertMessage) alert(alertMessage);
             this.removeTimer();
             this.timerIsActive();
         });
@@ -296,12 +285,12 @@ class App extends Component {
                         //Goes through all entries in a specific date
                         for (let j = 0; j < entry.data().Entries.length; ++j) {
                             try {
-                                inRangeEntries.push({
-                                    project: doc.id,
-                                    date: entry.id,
-                                    hours: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Hours,
-                                    desc: entry.data().Entries[j]['Entry ' + (j + 1).toString()].Work_Performed
-                                })
+                                //Determining if entry was made using old method
+                                let tempHours = entry.data().Entries[j].Hours ? entry.data().Entries[j].Hours : -300//entry.data().Entries[j]['Entry ' + (j + 1).toString()].Hours;
+                                let tempWorkPerformed = entry.data().Entries[j].Work_Performed ? entry.data().Entries[j].Work_Performed : 'This entry was not logged correctly. Contact TRS project lead to correct this'//entry.data().Entries[j]['Entry ' + (j + 1).toString()].Work_Performed;
+
+                                let newEntry = new entryData(entry.id, tempHours, tempWorkPerformed, doc.id);
+                                inRangeEntries.push(newEntry)
                             } catch (error) {
                                 console.log('Error collecting entries:', error);
                             }
@@ -330,6 +319,34 @@ class App extends Component {
         return [];
     }
 
+    // deletes data from the database
+    delete_data = async (entry) => {
+        let db = firebase.firestore();
+
+        let entries = await db.collection('employees').doc(entry.project).collection(this.state.user.email).doc(entry.date).get('Entries');
+
+        if (!entries) { //If there is not currently an entry for this date
+            alert("There is no entry to delete on this date.");
+        }
+        else { //If there are entries on this date
+            let tempArray = entries.data().Entries; //Array that will replace existing array
+            for (let i = 0; i < tempArray.length; ++i) {
+                if (tempArray[i].Hours === entry.hours && tempArray[i].Work_Performed === entry.description) {
+                    tempArray.splice(i, 1); //Removing element from array
+
+                    //Check if we need to delete the entire dateDoc
+                    if (tempArray.length > 0)
+                        await db.collection('employees').doc(entry.project).collection(this.state.user.email).doc(entry.date).update({ Entries: tempArray }); //Replace existing array with tempArray
+                    else
+                        await db.collection('employees').doc(entry.project).collection(this.state.user.email).doc(entry.date).delete();
+                    
+                    return;
+                }
+            }
+        }
+        console.log('Error deleting data');
+    }
+
     render = () => {
         return (
             <div className='App'>
@@ -339,7 +356,7 @@ class App extends Component {
                     stopTime={this.state.stopTime} hoursWorked={this.state.hoursWorked} />
                 <br/>
                 <br/>
-                <History getEntries={this.getEntriesBetweenDates} display_history={this.display_history} />
+                <History getEntries={this.getEntriesBetweenDates} display_history={this.display_history} postData={this.postData} delete_data={this.delete_data} />
             </div>
         );
     }
