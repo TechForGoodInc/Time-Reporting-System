@@ -19,6 +19,7 @@ export default firebaseConfig;
 # Testing
 
 Use `npm start` to run the app in development mode.\
+The page should open autmatically, if not\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\
