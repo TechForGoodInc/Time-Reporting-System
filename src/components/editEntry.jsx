@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
-import DateInput from './dataEntry/dateInput';
 import NumInput from './dataEntry/numInput';
 import ProjectInput from './dataEntry/projectInput';
 import TextInput from './dataEntry/textInput';
@@ -23,12 +22,18 @@ class EditEntry extends Component {
     //Sets the state every time the form is changed
     changeHandler = (event) => {
         this.setState({
-            [event.target.name]: event.target.value
+            [event.target.id]: event.target.value
         })
     }
 
     toggleEditBox = () => {
-        this.setState({ showEditBox: !this.state.showEditBox });
+        this.setState({
+            date: this.props.data.date,
+            hours: this.props.data.hours,
+            description: this.props.data.description,
+            project: this.props.data.project,
+            showEditBox: !this.state.showEditBox
+        });
     }
 
     handleSubmit = (event) => {
@@ -53,7 +58,7 @@ class EditEntry extends Component {
                 this.props.removeFromHistory();
             if (this.props.insertIntoHistory)
                 this.props.insertIntoHistory(data);
-            this.props.delete_data(this.props.data).then(() => this.props.postData(data));
+            this.props.delete_data(this.props.data).then(() => { this.props.postData(data); });
             this.toggleEditBox();
         }
     }
@@ -78,26 +83,20 @@ class EditEntry extends Component {
                             <Modal.Title>Edit Entry</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        Date: {this.props.data.date}
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Hours: <NumInput changeHandler={this.changeHandler} defaultValue={this.props.data.hours} />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <ProjectInput changeHandler={this.changeHandler} defaultValue={this.props.data.project} />
-                                        </td>
-                                        <td>
-                                            <TextInput changeHandler={this.changeHandler} defaultValue={this.props.data.description} />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div className='edit-box-element'>
+                                Date: {this.props.data.date}
+                            </div>
+                            <div className='edit-box-element'>
+                                Hours: <NumInput changeHandler={this.changeHandler} defaultValue={this.props.data.hours} />
+                            </div>
+                            <div className='edit-box-element'>
+                                Project:
+                                <br />
+                                <ProjectInput changeHandler={this.changeHandler} defaultValue={this.props.data.project} style={{ width: '100%' }} />
+                            </div>
+                            <div className='edit-box-element'>
+                                Description: <textarea rows="5" id='description' placeholder="Worked on ..." required style={{ width: '100%', border: 'ridge', borderRadius: '5px', verticalAlign: 'middle' }} defaultValue={this.props.data.description} onChange={this.changeHandler} />
+                            </div>
                         </Modal.Body>
                         <Modal.Footer align='left'>
                             <Button variant='danger' onClick={() => {this.deleteEntry(this.props.data)}}>Delete entry</Button>

@@ -88,12 +88,14 @@ class HistoryBlock extends Component {
         let temp = this.state.entries;
         temp.splice(index, 1);
         this.setState({ entries: temp });
+        this.getTotalHours();
     }
 
     insertIntoHistory = (data) => {
         let temp = this.state.entries;
         temp.push(data)
         this.setState({ entries: temp });
+        this.getTotalHours();
     }
 
     render() {
@@ -124,7 +126,7 @@ class HistoryBlock extends Component {
                                         <td>
                                             <p>{data.project}</p>
                                         </td>
-                                        <td width='70%'>
+                                        <td style={{ width: '50%', overflowWrap: 'anywhere' }}>
                                             <p>{data.description}</p>
                                         </td>
                                         <td>
