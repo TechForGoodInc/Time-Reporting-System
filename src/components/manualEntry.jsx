@@ -42,7 +42,7 @@ class ManualEntry extends Component {
             return;
         } else {
             let data = new entryData(this.state.date, this.state.hours.toString(), this.state.description, this.state.project);
-            this.props.post_data(data);
+            this.props.post_data(data, "Information Submitted Successfully\nRefresh to update history");
         }
     }
 
@@ -55,7 +55,7 @@ class ManualEntry extends Component {
                         <tr>
 
                             <td width='1%' style={{ paddingInline: '5px'}}>
-                                <DateInput changeHandler={this.changeHandler} />
+                                <DateInput defaultValue={new Date(new Date().setHours(0, 0 - new Date().getTimezoneOffset(), 0, 0)).toISOString().substr(0, 10)} changeHandler={this.changeHandler} />
                             </td>
                             {this.props.screenWidth <= 800 && <td className='hour-entry-bar-small' width='100%'></td>}
                             <td width='1%' style={{ paddingRight: '5px' }}>
