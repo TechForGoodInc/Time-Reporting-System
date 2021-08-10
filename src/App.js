@@ -235,24 +235,17 @@ class App extends Component {
         let db = firebase.firestore();
         db.collection('employees').doc(data.project).set({});
         let dateDoc = db.collection('employees').doc(data.project).collection(this.state.user.email).doc(data.date);
-        dateDoc.update({ Date: data.date });
+
         dateDoc.get().then(snap => {
-            if (!snap.get('Entries')) {
-                dateDoc.set({
-                    Date: data.date,
-                    Entries: [{
-                        Hours: data.hours,
-                        Work_Performed: data.description
-                    }]
-                });
-            } else {
-                let tempArray = snap.get('Entries');
-                tempArray.push({
-                    Hours: data.hours,
-                    Work_Performed: data.description
-                })
-                dateDoc.update({ Entries: tempArray })
-            }
+            let tempArray = []
+            if (snap.get('Entries')) tempArray = snap.get('Entries');
+
+            tempArray.push({
+                Hours: data.hours,
+                Work_Performed: data.description
+            })
+
+            dateDoc.set({ Date: data.date, Entries: tempArray })
         }).then(() => {
             if(alertMessage) alert(alertMessage);
             this.removeTimer();
@@ -332,8 +325,6 @@ class App extends Component {
 
         let entries = await db.collection('employees').doc(entry.project).collection(this.state.user.email).doc(entry.date).get('Entries');
 
-        console.log(entries.data().Entries);
-
         if (!entries) { //If there is not currently an entry for this date
             alert("There is no entry to delete on this date.");
         }
@@ -342,7 +333,13 @@ class App extends Component {
             for (let i = 0; i < tempArray.length; ++i) {
                 if (tempArray[i].Hours === entry.hours && tempArray[i].Work_Performed === entry.description) {
                     tempArray.splice(i, 1); //Removing element from array
-                    db.collection('employees').doc(entry.project).collection(this.state.user.email).doc(entry.date).update({ Entries: tempArray }); //Replace existing array with tempArray
+
+                    //Check if we need to delete the entire dateDoc
+                    if (tempArray.length > 0)
+                        await db.collection('employees').doc(entry.project).collection(this.state.user.email).doc(entry.date).update({ Entries: tempArray }); //Replace existing array with tempArray
+                    else
+                        await db.collection('employees').doc(entry.project).collection(this.state.user.email).doc(entry.date).delete();
+                    
                     return;
                 }
             }
