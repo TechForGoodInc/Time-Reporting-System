@@ -45,7 +45,7 @@ class EditEntry extends Component {
             alert("Please enter a description");
             return;
         } else if (descString.length <= 6) { //6 is an arbitrary number; 'worked' is 6 letters.
-            alert("Please enter a more expressive description");
+            alert("Please enter a more detailed description");
             return;
         } else {
             let data = new entryData(this.state.date, this.state.hours.toString(), this.state.description, this.state.project);
@@ -90,10 +90,12 @@ class EditEntry extends Component {
                                     </tr>
                                     <tr>
                                         <td>
-                                            <ProjectInput changeHandler={this.changeHandler} defaultValue={this.props.data.project} />
+                                           Project: <ProjectInput changeHandler={this.changeHandler} defaultValue={this.props.data.project} />
                                         </td>
+                                    </tr>
+                                    <tr>
                                         <td>
-                                            <TextInput changeHandler={this.changeHandler} defaultValue={this.props.data.description} />
+                                        Description:<TextInput changeHandler={this.changeHandler} defaultValue={this.props.data.description} />  
                                         </td>
                                     </tr>
                                 </tbody>
