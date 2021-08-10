@@ -27,8 +27,8 @@ class History extends Component {
             })
         }
         else { //Clicking show more history will begin to show entries by week
-            let d1 = new Date(new Date().setDate(new Date().getDate() - (newBlocks.length - 7 + 2) * 7));
-            let d2 = new Date(new Date(d1).setDate(d1.getDate() + 7));
+            let d1 = new Date(new Date().setDate((new Date().getDate() - (newBlocks.length - 7 + 2) * 7)+1));
+            let d2 = new Date(new Date(d1).setDate(d1.getDate() + 6));
 
             newBlocks.push({
                 startDate: d1,
