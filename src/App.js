@@ -248,7 +248,6 @@ class App extends Component {
             dateDoc.set({ Date: data.date, Entries: tempArray })
         }).then(() => {
             if(alertMessage) alert(alertMessage);
-            this.removeTimer();
             this.timerIsActive();
         });
     }

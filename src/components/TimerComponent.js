@@ -61,6 +61,7 @@ class TimerComponent extends Component {
 
         this.props.postData(data, "Information Submitted Successfully\nRefresh to update history");
         this.setState({ project: 'unselected' });
+        this.props.removeTimer();
     }
 
     changeHandler = (event) => {
