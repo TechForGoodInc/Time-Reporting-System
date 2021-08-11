@@ -126,21 +126,21 @@ class App extends Component {
     //starts a new timer
     startTimer = () => {
 
-        if (this.state.activeTimer) {
+        if (this.state.activeTimer) { //if user already has an active timer then we should use existing values.
             alert("User has active timer");
-        } else {
-            let newDate = new Date();
-            let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes() + ':' + newDate.getSeconds();
-            let db = firebase.firestore();
+        } else { //if there is no active timer, start a new one.
+            let newDate = new Date(); //create a Date object
+            let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes() + ':' + newDate.getSeconds(); //parse the date object
+            let db = firebase.firestore(); //get a reference to the database
             db.collection('timers').doc(this.state.user.email).get().then((doc) => {
-                if (doc.exists) {
+                if (doc.exists) { //This in case of a previous error deleting a timer, where the timer's value was erased but the actual timer document was not
                     if (!doc.data().Time) {
-                        db.collection('timers').doc(this.state.user.email).set({ Time: now });
+                        db.collection('timers').doc(this.state.user.email).set({ Time: now }); //set the start time for the timer
                         this.setState({ activeTimer: true });
                         this.setState({ startTime: now });
                         alert("Timer started!");
                     }
-                } else {
+                } else { //if there is no active timer
                     db.collection('timers').doc(this.state.user.email).set({ Time: now });
                     this.setState({ activeTimer: true });
                     this.setState({ startTime: now });
@@ -150,29 +150,32 @@ class App extends Component {
         }
     }
 
+    //stops the active timer
     stopTimer = () => {
 
-        if (!this.state.activeTimer) {
+        if (!this.state.activeTimer) { //if there is no active timer, then we don't need to stop one, always bail early to conserve resources
             alert("There is no active timer.");
         } else {
-            let newDate = new Date();
-            let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes();
-            let db = firebase.firestore();
+            let newDate = new Date(); //create a new Date object
+            let now = newDate.getDay() + ':' + newDate.getHours() + ':' + newDate.getMinutes(); //parse the date object
+            let db = firebase.firestore(); //get a reference to the database
             db.collection('timers').doc(this.state.user.email).get().then((doc) => {
-                if (doc.exists) {
+                if (doc.exists) { //if there is an active timer, stop it
                     this.setState({ stopTime: now }, () => {
-                        this.setState({ hoursWorked: this.calculateHoursWorked() });
+                        this.setState({ hoursWorked: this.calculateHoursWorked() }); //calculate the hours worked
                     });
-                    this.setState({ activeTimer: false });
+                    this.setState({ activeTimer: false }); //change our state to reflect no active timer
                 }
             })
         }
     }
 
+    //remove the timer from the database
     removeTimer = () => {
-        let db = firebase.firestore();
-        db.collection('timers').doc(this.state.user.email).delete().then(() => {
-            this.setState({ activeTimer: false });
+        let db = firebase.firestore(); //get a reference to the database
+        db.collection('timers').doc(this.state.user.email).delete().then(() => { //delete the timer document
+            //set the timer state objets back to their defaults - This could be extracted into its own method
+            this.setState({ activeTimer: false }); 
             this.setState({ startTime: "-" });
             this.setState({ stopTime: "-" });
             this.setState({ hoursWorked: 0 });
@@ -181,21 +184,24 @@ class App extends Component {
         })
     }
 
+    //calculate how many hours were workedS
     calculateHoursWorked = () => {
-        let stad = new Date();
+        let stad = new Date(); //create a Date object
 
         if (parseInt(stad.getDay()) !== parseInt(this.state.startTime[0])) {
-            //Timer is more than 1 day, or new day has begun, user needs to enter time manually.
+            //Timer is more than 1 day, or new day has begun, user needs to enter time manually. - This will be changed in the future to allow working overnight, or at least past midnight.
             alert("Timer is more than 24 hours, please enter time manually.");
-            this.removeTimer();
+            this.removeTimer(); //remove the current timer
             return;
         }
 
+        //set the Date object to the start time, then calculate the difference between then and now
         let split = this.state.startTime.split(':');
         stad.setHours(split[1], split[2], split[3]);
         return this.msToHours(Date.now() - stad);
     }
 
+    //convert milliseconds to hours
     msToHours(duration) {
         let milliseconds = parseInt((duration % 1000));
         let seconds = Math.floor((duration / 1000) % 60);
@@ -209,24 +215,27 @@ class App extends Component {
         return res;
     }
 
+    //format the date into a format that matches the database structure
+    //date should be a Date object
     getFormattedTimeString = (date) => {
         let day = date.getDay()
         let hours = date.getHours();
         let minutes = date.getMinutes();
-        if (hours < 10) {
-            hours = '0' + hours;
+        if (hours < 10) { //getHours() will return a single-digit number if less than 10
+            hours = '0' + hours; //add a 0 to single-digit numbers
         }
-        if (minutes < 10) {
-            minutes = '0' + minutes;
+        if (minutes < 10) { //getMinutes() will return a single-digit number if less than 10
+            minutes = '0' + minutes; //add a 0 to single-digit numbers
         }
         return day + ':' + hours + ':' + minutes;
     }
 
+    //Log the user out
     handleLogout(e) {
         e.preventDefault();
         firebase.auth().signOut().then(function () {
             // Redirect to google sign out.
-            window.location.assign('https://accounts.google.com/logout');
+            window.location.assign('https://accounts.google.com/logout'); //This is a temporary method to force the user to log out. A proper solution is being worked on
 
         }).catch(function (error) {
             // Error occurred.
@@ -239,24 +248,27 @@ class App extends Component {
     //Renamed to follow conventions
     postData = (data, alertMessage) => {
 
-        let db = firebase.firestore();
-        db.collection('employees').doc(data.project).set({});
-        let dateDoc = db.collection('employees').doc(data.project).collection(this.state.user.email).doc(data.date);
+        let db = firebase.firestore(); //get a reference to the database
+        db.collection('employees').doc(data.project).set({}); 
+        let dateDoc = db.collection('employees').doc(data.project).collection(this.state.user.email).doc(data.date); //get a reference to the document for the specified date
 
+        //create an array of the current entries
         dateDoc.get().then(snap => {
             let tempArray = []
             if (snap.get('Entries')) tempArray = snap.get('Entries');
 
+            //add a new entry to the end of the array
             tempArray.push({
                 Hours: data.hours,
                 Work_Performed: data.description
             })
 
+            //overwrite the current entries with the temp array which includes the new entry
             dateDoc.set({ Date: data.date, Entries: tempArray })
         }).then(() => {
             if(alertMessage) alert(alertMessage);
-            this.removeTimer();
-            this.timerIsActive();
+            this.removeTimer(); //remove the active timer
+            this.timerIsActive(); //verify timer is inactive and will also adjust the state
         });
     }
 
@@ -318,6 +330,7 @@ class App extends Component {
         return res.reverse();
     }
 
+    //gets the entries from a specified date
     getEntriesOnDate = async (d) => {
         if(d instanceof Date)
             return await this.getEntriesBetweenDates(d, d)
@@ -328,7 +341,7 @@ class App extends Component {
 
     // deletes data from the database
     delete_data = async (entry) => {
-        let db = firebase.firestore();
+        let db = firebase.firestore(); //get a reference to the database
 
         let entries = await db.collection('employees').doc(entry.project).collection(this.state.user.email).doc(entry.date).get('Entries');
 
@@ -354,6 +367,7 @@ class App extends Component {
         console.log('Error deleting data');
     }
 
+    //This where React components render their html
     render = () => {
         return (
             <div className='App'>
