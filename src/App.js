@@ -35,13 +35,14 @@ class App extends Component {
         //Signs user in if they are not already signed in
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                this.setState({ user: user });
+                this.setState({ user: user }); 
                 console.log(user.email);
                 var domain = user.email.split('@')[1]
                 console.log(domain);
                 if (domain === "techforgoodinc.org") {
                     console.log("Trusted");
-                    //document.getElementById("title").innerHTML = document.getElementById("title").innerHTML + " - " + user.email
+
+                    //Check if timer is active
                     this.timerIsActive();
                 }
                 else { //Doesn't allow non-techforgoodinc emails. This will change eventually to allow for organizations to set their own email requirements
@@ -53,6 +54,7 @@ class App extends Component {
         });
     }
 
+    //to resize the screen width
     resize() {
         this.setState({ screenWidth: window.innerWidth });
     }
@@ -64,12 +66,15 @@ class App extends Component {
     handleLogin = () => {
         var user;
 
+        //uses the Firebase sdk to get Google authentication
         var provider = new firebase.auth.GoogleAuthProvider();
 
         provider.setCustomParameters({
             hd: "techforgoodinc.org"
         });
 
+        //uses the Firebase sdk to sign in the user and uses
+        //a page redirect if the user isn't signed in or doesn't have permission.
         firebase.auth().signInWithRedirect(provider);
 
         firebase.auth()
@@ -99,11 +104,12 @@ class App extends Component {
             });
     }
 
+    //Checks if the user has an active timer
     timerIsActive = () => {
-        if (!this.state.user) {
+        if (!this.state.user) { //if there is no user - this would happen if there is an error with authentication or the user signs out.
             this.setState({ activeTimer: false });
             this.setState({ startTime: "-" });
-        } else {
+        } else { //if there is a user, check for active timer and set the startTime if so.
             let db = firebase.firestore();
             db.collection('timers').doc(this.state.user.email).get().then((doc) => {
                 if (doc.exists) {
@@ -117,6 +123,7 @@ class App extends Component {
         }
     }
 
+    //starts a new timer
     startTimer = () => {
 
         if (this.state.activeTimer) {
