@@ -14,6 +14,7 @@ function FeedbackModal(props) {
     const [feedbackTitle, setFeedbackTitle] = useState("");
     const [feedbackType, setFeedbackType] = useState("");
 
+    //Checks if the feedback fields are empty then posts
     const submitFeedback = () => {
         if (feedbackType === "" || feedback === "" || feedbackTitle === "") {
             alert("Please fill out the required fields");
@@ -23,10 +24,13 @@ function FeedbackModal(props) {
         }
     }
 
+    //Posts the feedback to the database
     const postFeedback = () => {
         let d = new Date();
         let db = props.firebase.firestore();
 
+        //Goes to the report-system in the database then adds a new entry.
+        //'add' here lets Firebase add a unique identifier
         db.collection("report-system").add({
             Date: d.getFullYear() + '-' + (d.getMonth() + 1 < 10 ? '0' : '') + (d.getMonth() + 1) + '-' + (d.getDate() < 10 ? '0' : '') + d.getDate() + ' ' + d.getTime(),
             Title: feedbackTitle,

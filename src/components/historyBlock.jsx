@@ -11,6 +11,7 @@ class HistoryBlock extends Component {
         entries: []
     }
 
+    //This is called by React when a component is successfully 'mounted' (loaded)
     componentDidMount() {
         if (this.state.totalHours === null) {
             this.props.getEntries(this.props.startDate, this.props.endDate).then((e) => {

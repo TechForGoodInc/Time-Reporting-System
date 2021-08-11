@@ -12,6 +12,7 @@ class HourLogger extends Component {
 		key: 'manual-entry'
     }
 
+	//This is called by React when a component is successfully updated
 	componentDidUpdate() {
 		if (this.props.activeTimer && this.state.key !== 'timer-entry')
 			this.setState({ key: 'timer-entry' });
