@@ -25,26 +25,28 @@ class TimerComponent extends Component {
         }
     }
 
+    //checks for valid data then passes it up to App.js
     submitForm = (event) => {
         event.preventDefault();
 
-        if (this.props.activeTimer) {
+        if (this.props.activeTimer) { //If timer is still active
             alert("Please stop the active timer");
             return;
         }
-        if (this.state.project === "unselected") {
+        if (this.state.project === "unselected") { //If no project is selected
             alert("Please select a project");
             return;
         }
-        if (!this.state.description || this.state.description === " ") {
+        if (!this.state.description || this.state.description === " ") { //If no description was entered
             alert("Please enter a description");
             return;
         }
-        if (this.state.description.length < 6) {
+        if (this.state.description.length < 6) { //If description is rather short - "worked" is a 6 letter word, feel free to modify this
             alert("Please enter a more expressive description");
             return;
         }
 
+        //Create a date and parse it to match the database structure
         let now = new Date();
         let formattedDate = "";
         let day = now.getDate();
@@ -57,23 +59,33 @@ class TimerComponent extends Component {
         }
         formattedDate = now.getFullYear() + "-" + month + "-" + day;
 
+        //Create an entryData object and give it the appropriate data to pass to App.js
         var data = new entryData(formattedDate, this.props.hoursWorked.toFixed(2).toString(), this.state.description, this.state.project);
 
+        //Call postData() from App.js and give it a success Alert message
         this.props.postData(data, "Information Submitted Successfully\nRefresh to update history");
+
+        //Reset the project selection. Just in case there is an error and user tries to resubmit
         this.setState({ project: 'unselected' });
     }
 
+    //Handles inputs being changed in the form
     changeHandler = (event) => {
-        event.preventDefault();
+        event.preventDefault(); //Prevents the page from refreshing
+
+        //The components' names correspond with the names used in the state.
+        //This will update the state when values are changed.
         this.setState({
             [event.target.name]: event.target.value
         })
     }
 
+    //Excellent example of self-documenting code
     togglePopup = () => {
         this.setState({ showPopup: !this.state.showPopup });
     }
 
+    //Formats a Date object parameter to match the database structure
     formatTime(d) {
         let arr = d.split(':');
         let newArr = [];
@@ -88,6 +100,7 @@ class TimerComponent extends Component {
         return d;
     }
 
+    //Returns a table design for when there is no active timer
     getNotStartedTimerBar() {
         return (
             <table>
@@ -107,6 +120,7 @@ class TimerComponent extends Component {
         )
     }
 
+    //Returns a table design for when there is an active timer
     getStartedTimerBar() {
         return (
             <table>
@@ -127,6 +141,7 @@ class TimerComponent extends Component {
         )
     }
 
+    //Returns a table design for when the timer has been stopped
     getStoppedTimerBar() {
         return (
             <div>
@@ -203,6 +218,7 @@ class TimerComponent extends Component {
         )
     }
 
+    //Converts milliseconds to a time format
     msToTime(duration) {
         let milliseconds = parseInt((duration % 1000));
         let seconds = Math.floor((duration / 1000) % 60);
@@ -222,6 +238,7 @@ class TimerComponent extends Component {
         };
     }
 
+    //Runs the timer
     run() {
         const diff = Date.now() - this.state.startTimeAsDate;
         this.setState(() => ({
@@ -229,6 +246,7 @@ class TimerComponent extends Component {
     }));
     }
 
+    //Starts the visual timer for the user to see how long they've worked
     startClock = () => {
         console.log('start time =', this.props.startTime)
         let stad = new Date();
@@ -239,6 +257,7 @@ class TimerComponent extends Component {
         this.intervalID = setInterval(() => this.run(), 1000);
     }
 
+    //Stops the active timer
     stopTimer = () => {
         this.togglePopup();
         this.props.stopTimer();
@@ -249,12 +268,15 @@ class TimerComponent extends Component {
         this.intervalID = null;
     }
 
+    //This is a react function that is called if the component is sucessfully updated
     componentDidUpdate = () => {
+        //Verifies a new clock is able to be started
         if (!this.intervalID && this.props.activeTimer && this.props.startTime.length > 1 && !this.state.submitting) {
             this.startClock();
         }
     }
 
+    //This is where React components render their html
     render = () => {
         const startedTimerBar = this.getStartedTimerBar(); //When the timer is started and user is not ready to submit
         const notStartedTimerBar = this.getNotStartedTimerBar(); //When the timer has not been started
@@ -285,6 +307,9 @@ class TimerComponent extends Component {
     }
 }
 
+//Prop types help make your code more robust. It's a bit more useful when used with 
+//components that are being reused frequently, and helps ensure the proper data and
+//types are being supplied to the component. Here it's used mostly as an example.
 TimerComponent.propTypes = {
     activeTimer: PropTypes.bool,
     startTimer: PropTypes.func.isRequired,
