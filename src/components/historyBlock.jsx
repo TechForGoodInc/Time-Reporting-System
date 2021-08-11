@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 
 import Table from 'react-bootstrap/Table';
 
+import entryData from './dataEntry/entryData.js';
+import EditEntry from './editEntry.jsx';
+
 class HistoryBlock extends Component {
     state = {
         totalHours: null,
@@ -81,9 +84,23 @@ class HistoryBlock extends Component {
     }
 
 
+    removeEntry = (index) => {
+        let temp = this.state.entries;
+        temp.splice(index, 1);
+        this.setState({ entries: temp });
+        this.getTotalHours();
+    }
+
+    insertIntoHistory = (data) => {
+        let temp = this.state.entries;
+        temp.push(data)
+        this.setState({ entries: temp });
+        this.getTotalHours();
+    }
+
     render() {
         return (
-            <div style={{ border: '2px solid rgba(0, 0, 0, 0.05)', borderRadius: '5px', padding: '20px', background: 'white'}}>
+            <div style={{ border: '2px solid rgba(0, 0, 0, 0.05)', borderRadius: '5px', padding: '20px', background: 'white' }}>
                 <div>
                     <h6 align="center">{this.getDay()}</h6>
                     <h6 align="right">Total Hours: {this.state.totalHours && this.state.totalHours.toFixed(1)}</h6>
@@ -109,8 +126,8 @@ class HistoryBlock extends Component {
                                         <td>
                                             <p>{data.project}</p>
                                         </td>
-                                        <td width='70%'>
-                                            <p>{data.desc}</p>
+                                        <td style={{ width: '50%', overflowWrap: 'anywhere' }}>
+                                            <p>{data.description}</p>
                                         </td>
                                         <td>
                                             <p>{data.date}</p>
@@ -118,18 +135,21 @@ class HistoryBlock extends Component {
                                         <td align="center">
                                             <p>{data.hours}</p>
                                         </td>
-                                        {/* Edit button disabled until edit functionality is built
-                                    <td width="5%" style={{ border: 'none' }} align="center">
-                                        <button style={{ border: 'none' }}><img src="https://cdn0.iconfinder.com/data/icons/glyphpack/45/edit-alt-512.png" width="20" height="20" alt=""></img></button>
-                                    </td>
-                                    */}
+                                        <td width="5%" style={{ border: 'none' }} align="center">
+                                            <EditEntry postData={this.props.postData} delete_data={this.props.delete_data} data={data}
+                                                removeFromHistory={() => {this.removeEntry(index);}}
+                                                insertIntoHistory={this.insertIntoHistory}
+                                            />
+                                        </td>
+
                                     </tr>
                                 })}
                             </tbody>
                         </Table>
                 }
             </div>
-    )};
+        )
+    };
 }
 
 export default HistoryBlock;
