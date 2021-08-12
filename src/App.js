@@ -229,86 +229,65 @@ class App extends Component {
     }
 
     //Uploads data to the database
-    //Renamed to follow conventions
-    postData = (data, alertMessage) => {
+    postData = async (data, alertMessage) => {
 
         let db = firebase.firestore();
-        db.collection('employees').doc(data.project).set({});
-        let dateDoc = db.collection('employees').doc(data.project).collection(this.state.user.email).doc(data.date);
 
-        dateDoc.get().then(snap => {
-            let tempArray = []
-            if (snap.get('Entries')) tempArray = snap.get('Entries');
-
-            tempArray.push({
-                Hours: data.hours,
-                Work_Performed: data.description
+        let user_works_on_query = await db.collection('user-works-on').where('email', '==', this.state.user.email).where('project', '==', data.project).limit(1).get();
+        if (user_works_on_query.docs.length === 0) {
+            console.log('adding', this.state.user.email, 'to', data.project)
+            await db.collection('user-works-on').add({
+                email: this.state.user.email,
+                project: data.project
             })
+        }
 
-            dateDoc.set({ Date: data.date, Entries: tempArray })
+        if (alertMessage) alert(alertMessage);
+
+        await db.collection('hour-entries').add({
+            email: this.state.user.email,
+            project: data.project,
+            date: data.date,
+            hours: data.hours,
+            description: data.description
         }).then(() => {
-            if(alertMessage) alert(alertMessage);
             this.removeTimer();
             this.timerIsActive();
-        });
+        })
     }
 
-    //Returns a promise that gives a list of entries falling between the startDate and endDate. Start and end date must be at most 1 year apart.
+    //Returns a promise that gives a list of entries falling between the startDate and endDate
     getEntriesBetweenDates = async (startDate, endDate) => {
         let db = firebase.firestore();
         let res = []; //Resulting array containing all entries in range
 
         let d1String = startDate.getFullYear() + '-' + (startDate.getMonth() + 1 < 10 ? '0' : '') + (startDate.getMonth() + 1) + '-' + (startDate.getDate() < 10 ? '0' : '') + startDate.getDate();
         let d2String = endDate.getFullYear() + '-' + (endDate.getMonth() + 1 < 10 ? '0' : '') + (endDate.getMonth() + 1) + '-' + (endDate.getDate() < 10 ? '0' : '') + endDate.getDate();
+        let query;
 
-        let projects = await db.collection('employees').get();
-
-        //Goes through each project in the list of projects
-        for (const doc of projects.docs) {
-
-            //value becomes a list of entries in the date range in this current project
-            let temp = await db.collection('employees').doc(doc.id).collection(this.state.user.email).orderBy('Date', 'desc').startAt(d2String).endAt(d1String).limit(365).get().then(async (query) => {
-                //Temp array to store list of entries in this project that are in range
-                let inRangeEntries = [];
-
-                //For every entry by this user in this project
-                for (const entry of query.docs) {
-                    let entryDate = new Date(entry.id + 'T12:00:00+00:00');
-
-                    //Setting every time to the same time to avoid errors with timezones
-                    startDate.setHours(12, 0 - startDate.getTimezoneOffset(), 0, 0);
-                    endDate.setHours(12, 0 - endDate.getTimezoneOffset(), 0, 0);
-
-                    //If date is in range, add it to the array
-                    if (startDate <= entryDate && entryDate <= endDate) {
-
-                        //Goes through all entries in a specific date
-                        for (let j = 0; j < entry.data().Entries.length; ++j) {
-                            try {
-                                //Determining if entry was made using old method
-                                let tempHours = entry.data().Entries[j].Hours ? entry.data().Entries[j].Hours : -300//entry.data().Entries[j]['Entry ' + (j + 1).toString()].Hours;
-                                let tempWorkPerformed = entry.data().Entries[j].Work_Performed ? entry.data().Entries[j].Work_Performed : 'This entry was not logged correctly. Contact TRS project lead to correct this'//entry.data().Entries[j]['Entry ' + (j + 1).toString()].Work_Performed;
-
-                                let newEntry = new entryData(entry.id, tempHours, tempWorkPerformed, doc.id);
-                                inRangeEntries.push(newEntry)
-                            } catch (error) {
-                                console.log('Error collecting entries:', error);
-                            }
-                        }
-                    }
-                }
-                //If there were no entries by the user in this project, return undefined
-                if (inRangeEntries.length === 0) return undefined;
-
-                return inRangeEntries;
-            })
-
-            if (temp !== undefined) res = res.concat(temp);
-
+        try {
+            query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('date', '>=', d1String).where('date', '<=', d2String).get();
+            for (const entry of query.docs)
+                res.push(new entryData(entry.data().date, entry.data().hours, entry.data().description, entry.data().project));
         }
-        
-        console.log('All entries between', startDate, 'and', endDate, '=', res);
-        return res.reverse();
+        catch (error) { //In case indexing has not been set up
+            console.error(error);
+            console.log('Please set up indexing using the link provided above to allow for better queries. Queries without indexing are only allowed 50 results');
+            let current = new Date(startDate);
+            let count = 0;
+            while (current.getTime() <= endDate.getTime() && count < 50) {
+                let d3String = current.getFullYear() + '-' + (current.getMonth() + 1 < 10 ? '0' : '') + (current.getMonth() + 1) + '-' + (current.getDate() < 10 ? '0' : '') + current.getDate();
+                query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('date', '==', d3String).get();
+
+                for (const entry of query.docs)
+                    res.push(new entryData(entry.data().date, entry.data().hours, entry.data().description, entry.data().project));
+                current.setDate(current.getDate() + 1);
+                ++count;
+            }
+        }
+
+        //console.log('All entries between', startDate, 'and', endDate, '=', res);
+        return res;
     }
 
     getEntriesOnDate = async (d) => {
@@ -319,32 +298,19 @@ class App extends Component {
         return [];
     }
 
-    // deletes data from the database
+    // Deletes an entry from the database
     delete_data = async (entry) => {
         let db = firebase.firestore();
 
-        let entries = await db.collection('employees').doc(entry.project).collection(this.state.user.email).doc(entry.date).get('Entries');
+        let query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('date', '==', entry.date).where('description', '==', entry.description).limit(1).get()
+        await db.collection('hour-entries').doc(query.docs[0].id).delete();
 
-        if (!entries) { //If there is not currently an entry for this date
-            alert("There is no entry to delete on this date.");
+        let entry_query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('project', '==', entry.project).limit(1).get();
+        if (entry_query.docs.length === 0) {
+            console.log('removing', this.state.user.email, 'from', entry.project);
+            let user_works_on_query = await db.collection('user-works-on').where('email', '==', this.state.user.email).where('project', '==', entry.project).limit(1).get();
+            await db.collection('user-works-on').doc(user_works_on_query.docs[0].id).delete();
         }
-        else { //If there are entries on this date
-            let tempArray = entries.data().Entries; //Array that will replace existing array
-            for (let i = 0; i < tempArray.length; ++i) {
-                if (tempArray[i].Hours === entry.hours && tempArray[i].Work_Performed === entry.description) {
-                    tempArray.splice(i, 1); //Removing element from array
-
-                    //Check if we need to delete the entire dateDoc
-                    if (tempArray.length > 0)
-                        await db.collection('employees').doc(entry.project).collection(this.state.user.email).doc(entry.date).update({ Entries: tempArray }); //Replace existing array with tempArray
-                    else
-                        await db.collection('employees').doc(entry.project).collection(this.state.user.email).doc(entry.date).delete();
-                    
-                    return;
-                }
-            }
-        }
-        console.log('Error deleting data');
     }
 
     render = () => {

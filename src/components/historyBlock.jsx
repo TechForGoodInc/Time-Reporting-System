@@ -14,7 +14,7 @@ class HistoryBlock extends Component {
     componentDidMount() {
         if (this.state.totalHours === null) {
             this.props.getEntries(this.props.startDate, this.props.endDate).then((e) => {
-                this.setState({ entries: e });
+                this.setState({ entries: e.reverse() });
             }).then(() => {
                 this.getTotalHours();
             })
@@ -30,57 +30,13 @@ class HistoryBlock extends Component {
         this.setState({ totalHours: sum });
     }
 
-    getDay() {
-        let today = new Date();
-        let yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
-        let lastWeek = new Date(new Date().setDate(new Date().getDate() - 6));
+    getHeader() {
         let d1 = this.props.startDate;
         let d2 = this.props.endDate;
-        today.setHours(12, 0 - today.getTimezoneOffset(), 0, 0);
-        yesterday.setHours(12, 0 - yesterday.getTimezoneOffset(), 0, 0);
-        lastWeek.setHours(12, 0 - lastWeek.getTimezoneOffset(), 0, 0);
-        d1.setHours(12, 0 - d1.getTimezoneOffset(), 0, 0);
-        d2.setHours(12, 0 - d2.getTimezoneOffset(), 0, 0);
 
-        let ret = 'Error';
-        if (d1 - d2 !== 0) {
-            ret = (d1.getMonth() + 1) + '/' + d1.getDate() + '/' + d1.getFullYear() + ' - ' + (d2.getMonth() + 1) + '/' + d2.getDate() + '/' + d2.getFullYear();
-        }
-        else if (today - d1 === 0) {
-            ret = 'Today';
-        } else if (yesterday <= d1) {
-            ret = 'Yesterday';
-        } else if (lastWeek <= d1) {
-            switch (d1.getDay()) {
-                case 0:
-                    ret = 'Sunday';
-                    break;
-                case 1:
-                    ret = 'Monday';
-                    break;
-                case 2:
-                    ret = 'Tuesday';
-                    break;
-                case 3:
-                    ret = 'Wednesday';
-                    break;
-                case 4:
-                    ret = 'Thursday';
-                    break;
-                case 5:
-                    ret = 'Friday';
-                    break;
-                case 6:
-                    ret = 'Saturday';
-                    break;
-                default:
-                    ret = 'Error';
-            }
-        } else {
-
-            return (d1.getMonth() + 1) + '/' + d1.getDate() + '/' + d1.getFullYear();
-        }
-        return ret;
+        if (this.props.nBlock === 0) return 'This week';
+        else if (this.props.nBlock === 1) return 'Last week'
+        else return (d1.getMonth() + 1) + '/' + d1.getDate() + '/' + d1.getFullYear() + ' - ' + (d2.getMonth() + 1) + '/' + d2.getDate() + '/' + d2.getFullYear();
     }
 
 
@@ -102,7 +58,7 @@ class HistoryBlock extends Component {
         return (
             <div style={{ border: '2px solid rgba(0, 0, 0, 0.05)', borderRadius: '5px', padding: '20px', background: 'white' }}>
                 <div>
-                    <h6 align="center">{this.getDay()}</h6>
+                    <h6 align="center">{this.getHeader()}</h6>
                     <h6 align="right">Total Hours: {this.state.totalHours && this.state.totalHours.toFixed(1)}</h6>
                 </div>
                 {(this.state.totalHours === 0) ? <h6>You have no entries for this date</h6> :
@@ -114,9 +70,6 @@ class HistoryBlock extends Component {
                                     <th>Description</th>
                                     <th>Date</th>
                                     <th>Hours</th>
-                                    {/* Edit button disabled until edit functionality is built
-                                <th>Edit</th>
-                                */}
                                 </tr>
                             </thead>
 
