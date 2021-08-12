@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import Table from 'react-bootstrap/Table';
 
-import entryData from './dataEntry/entryData.js';
 import EditEntry from './editEntry.jsx';
 
 class HistoryBlock extends Component {

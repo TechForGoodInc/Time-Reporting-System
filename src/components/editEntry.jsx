@@ -5,7 +5,6 @@ import Modal from 'react-bootstrap/Modal';
 
 import NumInput from './dataEntry/numInput';
 import ProjectInput from './dataEntry/projectInput';
-import TextInput from './dataEntry/textInput';
 import entryData from './dataEntry/entryData.js';
 
 
