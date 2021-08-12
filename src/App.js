@@ -251,7 +251,6 @@ class App extends Component {
             hours: data.hours,
             description: data.description
         }).then(() => {
-            this.removeTimer();
             this.timerIsActive();
         })
     }
