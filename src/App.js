@@ -229,18 +229,28 @@ class App extends Component {
     }
 
     //Uploads data to the database
-    postData = (data, alertMessage) => {
+    postData = async (data, alertMessage) => {
 
         let db = firebase.firestore();
 
-        db.collection('hour-entries').add({
+        let user_works_on_query = await db.collection('user-works-on').where('email', '==', this.state.user.email).where('project', '==', data.project).limit(1).get();
+        if (user_works_on_query.docs.length === 0) {
+            console.log('adding', this.state.user.email, 'to', data.project)
+            await db.collection('user-works-on').add({
+                email: this.state.user.email,
+                project: data.project
+            })
+        }
+
+        if (alertMessage) alert(alertMessage);
+
+        await db.collection('hour-entries').add({
             email: this.state.user.email,
             project: data.project,
             date: data.date,
             hours: data.hours,
             description: data.description
         }).then(() => {
-            if (alertMessage) alert(alertMessage);
             this.removeTimer();
             this.timerIsActive();
         })
@@ -294,6 +304,13 @@ class App extends Component {
 
         let query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('date', '==', entry.date).where('description', '==', entry.description).limit(1).get()
         await db.collection('hour-entries').doc(query.docs[0].id).delete();
+
+        let entry_query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('project', '==', entry.project).limit(1).get();
+        if (entry_query.docs.length === 0) {
+            console.log('removing', this.state.user.email, 'from', entry.project);
+            let user_works_on_query = await db.collection('user-works-on').where('email', '==', this.state.user.email).where('project', '==', entry.project).limit(1).get();
+            await db.collection('user-works-on').doc(user_works_on_query.docs[0].id).delete();
+        }
     }
 
     render = () => {
