@@ -253,13 +253,30 @@ class App extends Component {
 
         let d1String = startDate.getFullYear() + '-' + (startDate.getMonth() + 1 < 10 ? '0' : '') + (startDate.getMonth() + 1) + '-' + (startDate.getDate() < 10 ? '0' : '') + startDate.getDate();
         let d2String = endDate.getFullYear() + '-' + (endDate.getMonth() + 1 < 10 ? '0' : '') + (endDate.getMonth() + 1) + '-' + (endDate.getDate() < 10 ? '0' : '') + endDate.getDate();
+        let query;
 
-        let query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('date', '>=', d1String).where('date', '<=', d2String).get();
+        try {
+            query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('date', '>=', d1String).where('date', '<=', d2String).get();
+            for (const entry of query.docs)
+                res.push(new entryData(entry.data().date, entry.data().hours, entry.data().description, entry.data().project));
+        }
+        catch (error) { //In case indexing has not been set up
+            console.error(error);
+            console.log('Please set up indexing using the link provided above to allow for better queries. Queries without indexing are only allowed 50 results');
+            let current = new Date(startDate);
+            let count = 0;
+            while (current.getTime() <= endDate.getTime() && count < 50) {
+                let d3String = current.getFullYear() + '-' + (current.getMonth() + 1 < 10 ? '0' : '') + (current.getMonth() + 1) + '-' + (current.getDate() < 10 ? '0' : '') + current.getDate();
+                query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('date', '==', d3String).get();
 
-        for (const entry of query.docs)
-            res.push(new entryData(entry.data().date, entry.data().hours, entry.data().description, entry.data().project));
+                for (const entry of query.docs)
+                    res.push(new entryData(entry.data().date, entry.data().hours, entry.data().description, entry.data().project));
+                current.setDate(current.getDate() + 1);
+                ++count;
+            }
+        }
 
-        console.log('All entries between', startDate, 'and', endDate, '=', res);
+        //console.log('All entries between', startDate, 'and', endDate, '=', res);
         return res;
     }
 
