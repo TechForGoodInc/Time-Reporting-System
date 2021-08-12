@@ -275,7 +275,7 @@ class App extends Component {
     delete_data = async (entry) => {
         let db = firebase.firestore();
 
-        let query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('date', '==', entry.date).where('description', '==', entry.description).get()
+        let query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('date', '==', entry.date).where('description', '==', entry.description).limit(1).get()
         await db.collection('hour-entries').doc(query.docs[0].id).delete();
     }
 
