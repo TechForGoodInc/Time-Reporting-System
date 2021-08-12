@@ -7,18 +7,24 @@ function FeedbackModal(props) {
 
     const [show, setShow] = useState(false);
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
     const [feedback, setFeedback] = useState("");
     const [feedbackTitle, setFeedbackTitle] = useState("");
     const [feedbackType, setFeedbackType] = useState("");
+
+    const handleClose = () => {
+        setShow(false);
+        setFeedback('');
+        setFeedbackTitle('');
+        setFeedbackType('');
+    }
+    const handleShow = () => setShow(true);
 
     const submitFeedback = () => {
         if (feedbackType === "" || feedback === "" || feedbackTitle === "") {
             alert("Please fill out the required fields");
             return;
         } else {
+            handleClose();
             postFeedback();
         }
     }
@@ -61,7 +67,7 @@ function FeedbackModal(props) {
                 </Modal.Body>
                 <Modal.Footer align='left'>
                     <Button variant='secondary' onClick={handleClose} >Cancel</Button>
-                    <Button variant='success' onClick={() => { submitFeedback(); handleClose() }}>Submit</Button>
+                    <Button variant='success' onClick={submitFeedback}>Submit</Button>
                 </Modal.Footer>
             </Modal>
         </div>
