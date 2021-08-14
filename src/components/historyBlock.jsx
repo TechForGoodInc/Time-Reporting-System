@@ -48,7 +48,18 @@ class HistoryBlock extends Component {
 
     insertIntoHistory = (data) => {
         let temp = this.state.entries;
-        temp.push(data)
+
+        let inserted = false;
+        for (let i = 0; i < temp.length; ++i) {
+            if (temp[i].date <= data.date) {
+                temp.splice(i, 0, data);
+                inserted = true;
+                break;
+            }
+        }
+        if (!inserted)
+            temp.push(data);
+
         this.setState({ entries: temp });
         this.getTotalHours();
     }
