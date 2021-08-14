@@ -1,5 +1,6 @@
 import './App.css';
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
@@ -7,6 +8,10 @@ import firebaseConfig from './firebaseCfg.js'
 import Header from './components/header';
 import History from "./components/history";
 import HourLogger from "./components/hourLogger";
+import "./styles.css";
+import Sidebar from "./components/Sidebar";
+import Router from './components/Router';
+import Nav from './components/Nav';
 import entryData from './components/dataEntry/entryData.js';
 
 firebase.initializeApp(firebaseConfig);
@@ -64,20 +69,21 @@ class App extends Component {
     handleLogin = () => {
         var user;
 
-        var provider = new firebase.auth.GoogleAuthProvider();
+    var provider = new firebase.auth.GoogleAuthProvider();
 
-        provider.setCustomParameters({
-            hd: "techforgoodinc.org"
-        });
+    provider.setCustomParameters({
+      hd: 'techforgoodinc.org',
+    });
 
-        firebase.auth().signInWithRedirect(provider);
+    firebase.auth().signInWithRedirect(provider);
 
-        firebase.auth()
-            .getRedirectResult()
-            .then((result) => {
-                if (result.credential) {
-                    /** @type {firebase.auth.OAuthCredential} */
-                    //var credential = result.credential;
+    firebase
+      .auth()
+      .getRedirectResult()
+      .then((result) => {
+        if (result.credential) {
+          /** @type {firebase.auth.OAuthCredential} */
+          //var credential = result.credential;
 
                     // This gives you a Google Access Token. You can use it to access the Google API.
                     //var token = credential.accessToken;
@@ -289,9 +295,8 @@ class App extends Component {
         return res;
     }
 
-    getEntriesOnDate = async (d) => {
-        if(d instanceof Date)
-            return await this.getEntriesBetweenDates(d, d)
+  getEntriesOnDate = async (d) => {
+    if (d instanceof Date) return await this.getEntriesBetweenDates(d, d);
 
         console.log('Error getting entry on date: parameter is not of type Date');
         return [];
@@ -315,13 +320,28 @@ class App extends Component {
     render = () => {
         return (
             <div className='App'>
-                <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} firebase={firebase} user={this.state.user} />
-                <HourLogger postData={this.postData} activeTimer={this.state.activeTimer} screenWidth={this.state.screenWidth}
-                    startTimer={this.startTimer} stopTimer={this.stopTimer} removeTimer={this.removeTimer} startTime={this.state.startTime}
-                    stopTime={this.state.stopTime} hoursWorked={this.state.hoursWorked} />
-                <br/>
-                <br/>
-                <History getEntries={this.getEntriesBetweenDates} display_history={this.display_history} postData={this.postData} delete_data={this.delete_data} />
+                <Sidebar />
+                <div style={{ padding: '20px' }}>
+                    <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} firebase={firebase} user={this.state.user} />
+                    <Router
+                        hourLoggerDep={{
+                            postData: this.postData,
+                            activeTimer: this.state.activeTimer,
+                            screenWidth: this.state.screenWidth,
+                            startTimer: this.startTimer,
+                            stopTimer: this.stopTimer,
+                            removeTimer: this.removeTimer,
+                            startTime: this.state.startTime,
+                            stopTime: this.state.stopTime,
+                            hoursWorked: this.state.hoursWorked,
+                        }}
+                        historyDep={{
+                            getEntries: this.getEntriesBetweenDates,
+                            postData: this.postData,
+                            delete_data: this.delete_data
+                        }}
+                    />
+                </div>
             </div>
         );
     }
