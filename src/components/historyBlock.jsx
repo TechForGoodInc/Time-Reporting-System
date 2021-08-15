@@ -11,7 +11,6 @@ class HistoryBlock extends Component {
     }
 
     componentDidMount() {
-
         if (this.state.totalHours === null) {
             if (this.props.preloadedBlock) {
                 let entries = this.props.preloadedBlock;
@@ -105,13 +104,14 @@ class HistoryBlock extends Component {
                                         <td align="center">
                                             <p>{data.hours}</p>
                                         </td>
-                                        <td width="5%" style={{ border: 'none' }} align="center">
-                                            <EditEntry postData={this.props.postData} delete_data={this.props.delete_data} data={data}
-                                                removeFromHistory={() => {this.removeEntry(index);}}
-                                                insertIntoHistory={this.insertIntoHistory}
-                                            />
-                                        </td>
-
+                                        {this.props.postData !== undefined &&
+                                            <td width="5%" style={{ border: 'none' }} align="center">
+                                                <EditEntry postData={this.props.postData} delete_data={this.props.delete_data} data={data}
+                                                    removeFromHistory={() => { this.removeEntry(index); }}
+                                                    insertIntoHistory={this.insertIntoHistory}
+                                                />
+                                            </td>
+                                        }
                                     </tr>
                                 })}
                             </tbody>

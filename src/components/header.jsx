@@ -12,7 +12,7 @@ class Header extends Component {
                 <FeedbackModal firebase={this.props.firebase} user={this.props.user} buttonStyle={{ float: 'right' }} />
                 {this.props.isSupervisor &&
                     <div>
-                        <NavLink to="/supervisortools"><Button variant='primary' style={{ float: 'right', marginInline: '10px' }} >Supervisor tools</Button></NavLink>
+                        <NavLink to="/supervisortools"><Button variant='warning' style={{ float: 'right', marginInline: '10px' }} >Supervisor tools</Button></NavLink>
                         <NavLink to="/"><Button variant='success' style={{ float: 'right' }} to='/supervisortools' >Log hours page</Button></NavLink>
                     </div>
                 }
