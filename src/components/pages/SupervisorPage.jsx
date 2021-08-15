@@ -187,7 +187,7 @@ class SupervisorPage extends Component {
 		await this.setState({ showAll: true, totalEntries: totalEntries, totalContributors: totalContributors});
 	}
 
-	refreshAllView = async () => {
+	refreshCumulativeView = async () => {
 		await this.setState({ showAll: false });
 		await this.setState({ showAll: true });
     }
@@ -266,7 +266,10 @@ class SupervisorPage extends Component {
 								<br />
 								<h2>Project Data</h2>
 								{this.state.projectNames.map((data, index) => {
-									return <div key={index}>{this.renderProject(data)}</div>
+									return <div key={index}>
+										{this.renderProject(data)}
+										<History preloadedData={this.state.loadedProjects[data].entries} />
+										</div>
 								})}
 							</div>
 						}
