@@ -11,8 +11,15 @@ class HistoryBlock extends Component {
     }
 
     componentDidMount() {
+
         if (this.state.totalHours === null) {
-            this.props.getEntries(this.props.startDate, this.props.endDate).then((e) => {
+            if (this.props.preloadedBlock) {
+                let entries = this.props.preloadedBlock;
+                this.setState({ entries: entries }, this.getTotalHours);
+                return;
+            }
+
+            this.props.getEntries(this.props.startDate, this.props.endDate, this.props.email).then((e) => {
                 this.setState({ entries: e.reverse() });
             }).then(() => {
                 this.getTotalHours();

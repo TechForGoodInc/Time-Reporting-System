@@ -17,7 +17,7 @@ input[type=submit]:hover {
   background-color: #45a049;
 }
 
-.hourLoggerTab {
+.borderedTab {
     border: solid;
     border-color: darkgrey;
     background-color: white;

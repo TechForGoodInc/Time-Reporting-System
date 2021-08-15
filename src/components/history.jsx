@@ -27,6 +27,23 @@ class History extends Component {
         })
     }
 
+    formatDate(date) {
+        return date.getFullYear() + '-' + (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1) + '-' + (date.getDate() < 10 ? '0' : '') + date.getDate();
+    }
+
+    getPreloadedBlock(startDate, endDate) {
+        let start = this.formatDate(startDate);
+        let end = this.formatDate(endDate);
+        let data = this.props.preloadedData;
+        let res = [];
+        for (let i = 0; i < data.length; ++i) {
+            if (data[i].date >= start && data[i].date <= end)
+                res.push(data[i]);
+        }
+
+        return res;
+    }
+
     render() {
         return (
             <div>
@@ -34,8 +51,10 @@ class History extends Component {
                     <h3>History</h3>
                     <ul style={{ listStyleType: 'none', paddingLeft: '0px' }}>
                         {this.state.histBlocks.map((data, index) => {
+                            let preloaded = this.props.preloadedData ? this.getPreloadedBlock(data.startDate, data.endDate) : null;
+
                             return <li key={index} style={{ marginBottom: '20px' }} >
-                                <HistoryBlock startDate={data.startDate} endDate={data.endDate} getEntries={this.props.getEntries} postData={this.props.postData} delete_data={this.props.delete_data} nBlock={index} />
+                                <HistoryBlock startDate={data.startDate} endDate={data.endDate} getEntries={this.props.getEntries} postData={this.props.postData} delete_data={this.props.delete_data} nBlock={index} email={this.props.email} preloadedBlock={preloaded} />
                             </li>
                         })}
                     </ul>

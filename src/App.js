@@ -1,17 +1,13 @@
 import './App.css';
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import firebaseConfig from './firebaseCfg.js'
-import Header from './components/header';
-import History from "./components/history";
-import HourLogger from "./components/hourLogger";
 import "./styles.css";
-import Sidebar from "./components/Sidebar";
 import Router from './components/Router';
-import Nav from './components/Nav';
+import Header from './components/header';
+//import Sidebar from './components/Sidebar';
 import entryData from './components/dataEntry/entryData.js';
 
 firebase.initializeApp(firebaseConfig);
@@ -21,12 +17,14 @@ class App extends Component {
         super();
         this.state = {
             user: null,
+            userEmail: null,
             formInfo: null,
             activeTimer: null,
             startTime: "-",
             stopTime: "-",
             hoursWorked: 0,
-            screenWidth: window.innerWidth
+            screenWidth: window.innerWidth,
+            isSupervisor: false
         }
     }
 
@@ -40,14 +38,13 @@ class App extends Component {
         //Signs user in if they are not already signed in
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                this.setState({ user: user });
-                console.log(user.email);
+                this.setState({ user: user, userEmail: user.email });
                 var domain = user.email.split('@')[1]
-                console.log(domain);
                 if (domain === "techforgoodinc.org") {
-                    console.log("Trusted");
-                    //document.getElementById("title").innerHTML = document.getElementById("title").innerHTML + " - " + user.email
                     this.timerIsActive();
+                    firebase.firestore().collection('supervisors').doc(this.state.user.email).get().then((doc) => {
+                        this.setState({ isSupervisor: doc.exists });
+                    });
                 }
                 else { //Doesn't allow non-techforgoodinc emails. This will change eventually to allow for organizations to set their own email requirements
                     this.handleLogin();
@@ -67,32 +64,28 @@ class App extends Component {
     }
 
     handleLogin = () => {
-        var user;
+        var provider = new firebase.auth.GoogleAuthProvider();
 
-    var provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({
+            hd: 'techforgoodinc.org',
+        });
 
-    provider.setCustomParameters({
-      hd: 'techforgoodinc.org',
-    });
+        firebase.auth().signInWithRedirect(provider);
 
-    firebase.auth().signInWithRedirect(provider);
-
-    firebase
-      .auth()
-      .getRedirectResult()
-      .then((result) => {
-        if (result.credential) {
-          /** @type {firebase.auth.OAuthCredential} */
-          //var credential = result.credential;
+        firebase
+            .auth()
+            .getRedirectResult()
+            .then((result) => {
+                if (result.credential) {
+                    /** @type {firebase.auth.OAuthCredential} */
+                    //var credential = result.credential;
 
                     // This gives you a Google Access Token. You can use it to access the Google API.
                     //var token = credential.accessToken;
                     // ...
-                    console.log(user.first_name);
                 }
                 // The signed-in user info.
-                user = result.user;
-                this.setState({ user: user }, this.timerIsActive());
+                this.setState({ user: result.user });
             }).catch((error) => {
                 //// Handle Errors here.
                 //var errorCode = error.code;
@@ -113,11 +106,9 @@ class App extends Component {
             let db = firebase.firestore();
             db.collection('timers').doc(this.state.user.email).get().then((doc) => {
                 if (doc.exists) {
-                    this.setState({ activeTimer: true });
-                    this.setState({ startTime: doc.data().Time });
+                    this.setState({ activeTimer: true, startTime: doc.data().Time });
                 } else {
-                    this.setState({ activeTimer: false });
-                    this.setState({ startTime: "-" });
+                    this.setState({ activeTimer: false, startTime: "-" });
                 }
             })
         }
@@ -235,23 +226,27 @@ class App extends Component {
     }
 
     //Uploads data to the database
-    postData = async (data, alertMessage) => {
+    postData = async (data, alertMessage, email = this.state.user.email) => {
+        if (alertMessage) alert(alertMessage);
 
         let db = firebase.firestore();
 
-        let user_works_on_query = await db.collection('user-works-on').where('email', '==', this.state.user.email).where('project', '==', data.project).limit(1).get();
+        let user_works_on_query = await db.collection('user-works-on').where('email', '==', email).where('project', '==', data.project).limit(1).get();
         if (user_works_on_query.docs.length === 0) {
-            console.log('adding', this.state.user.email, 'to', data.project)
+            console.log('adding', email, 'to', data.project)
             await db.collection('user-works-on').add({
-                email: this.state.user.email,
+                email: email,
                 project: data.project
             })
         }
+        let projects_query = await db.collection('projects').doc(data.project).get();
+        if (!projects_query.exists) {
+            db.collection('projects').doc(data.project).set({});
+        }
 
-        if (alertMessage) alert(alertMessage);
 
         await db.collection('hour-entries').add({
-            email: this.state.user.email,
+            email: email,
             project: data.project,
             date: data.date,
             hours: data.hours,
@@ -262,7 +257,7 @@ class App extends Component {
     }
 
     //Returns a promise that gives a list of entries falling between the startDate and endDate
-    getEntriesBetweenDates = async (startDate, endDate) => {
+    getEntriesBetweenDates = async (startDate, endDate, email = this.state.user.email) => {
         let db = firebase.firestore();
         let res = []; //Resulting array containing all entries in range
 
@@ -271,7 +266,7 @@ class App extends Component {
         let query;
 
         try {
-            query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('date', '>=', d1String).where('date', '<=', d2String).get();
+            query = await db.collection('hour-entries').where('email', '==', email).where('date', '>=', d1String).where('date', '<=', d2String).get();
             for (const entry of query.docs)
                 res.push(new entryData(entry.data().date, entry.data().hours, entry.data().description, entry.data().project));
         }
@@ -282,7 +277,7 @@ class App extends Component {
             let count = 0;
             while (current.getTime() <= endDate.getTime() && count < 50) {
                 let d3String = current.getFullYear() + '-' + (current.getMonth() + 1 < 10 ? '0' : '') + (current.getMonth() + 1) + '-' + (current.getDate() < 10 ? '0' : '') + current.getDate();
-                query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('date', '==', d3String).get();
+                query = await db.collection('hour-entries').where('email', '==', email).where('date', '==', d3String).get();
 
                 for (const entry of query.docs)
                     res.push(new entryData(entry.data().date, entry.data().hours, entry.data().description, entry.data().project));
@@ -303,16 +298,16 @@ class App extends Component {
     }
 
     // Deletes an entry from the database
-    delete_data = async (entry) => {
+    delete_data = async (entry, email = this.state.user.email) => {
         let db = firebase.firestore();
 
-        let query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('date', '==', entry.date).where('description', '==', entry.description).limit(1).get()
+        let query = await db.collection('hour-entries').where('email', '==', email).where('date', '==', entry.date).where('description', '==', entry.description).limit(1).get()
         await db.collection('hour-entries').doc(query.docs[0].id).delete();
 
-        let entry_query = await db.collection('hour-entries').where('email', '==', this.state.user.email).where('project', '==', entry.project).limit(1).get();
+        let entry_query = await db.collection('hour-entries').where('email', '==', email).where('project', '==', entry.project).limit(1).get();
         if (entry_query.docs.length === 0) {
-            console.log('removing', this.state.user.email, 'from', entry.project);
-            let user_works_on_query = await db.collection('user-works-on').where('email', '==', this.state.user.email).where('project', '==', entry.project).limit(1).get();
+            console.log('removing', email, 'from', entry.project);
+            let user_works_on_query = await db.collection('user-works-on').where('email', '==', email).where('project', '==', entry.project).limit(1).get();
             await db.collection('user-works-on').doc(user_works_on_query.docs[0].id).delete();
         }
     }
@@ -320,10 +315,13 @@ class App extends Component {
     render = () => {
         return (
             <div className='App'>
+                {/* Disabling sidebar until more routing is available
                 <Sidebar />
+                */}
                 <div style={{ padding: '20px' }}>
-                    <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} firebase={firebase} user={this.state.user} />
+                    <Header handleLogout={this.handleLogout} email={(this.state.user) ? this.state.user.email : ''} firebase={firebase} isSupervisor={this.state.isSupervisor} />
                     <Router
+                        email={(this.state.user) ? this.state.user.email : ''}
                         hourLoggerDep={{
                             postData: this.postData,
                             activeTimer: this.state.activeTimer,

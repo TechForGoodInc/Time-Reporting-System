@@ -12,7 +12,7 @@ class LogYourHours extends Component {
                     stopTime={this.props.hourLoggerDep.stopTime} hoursWorked={this.props.hourLoggerDep.hoursWorked} />
                 <br />
                 <br />
-                <History getEntries={this.props.historyDep.getEntries} postData={this.props.historyDep.postData} delete_data={this.props.historyDep.delete_data} />
+                <History getEntries={this.props.historyDep.getEntries} postData={this.props.historyDep.postData} delete_data={this.props.historyDep.delete_data} user={this.props.historyDep.user}/>
             </div>
         );
     }
